@@ -4,1016 +4,497 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Viewer | Quirki</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,400;0,600;1,400;1,600&family=DM+Sans:wght=300;400;500;600&family=Lora:ital,wght=0,400;0,500;1,400&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Design Tokens (Dark Theme Default) */
-            --bg:          #1a1c1e;      
-            --bg-nav:      #1c1e20;      /* Dark Charcoal Gray */
-            --bg-card:     #212326;      
-            --bg-section:  #1e2022;      
-            --teal:        #00e5c4;      /* Identity Glow Teal */
-            --teal-dim:    #00b89e;      
-            --teal-glow:   rgba(0, 229, 196, 0.08); /* Profile Restrained Glow */
-            --text:        #d8dde3;      
-            --text-muted:  #7b8694;      /* Muted Luxury Gray Control Color */
-            --border:      rgba(255, 255, 255, 0.06); /* Faint Glass Separator */
-
-            /* Typography */
-            --serif: 'Playfair Display', Georgia, serif;
-            --sans: 'DM Sans', sans-serif;
-            --reading: 'Lora', Georgia, serif;
-            
-            --profile-img: none;
+            --bg:         #1a1c1e;
+            --bg-nav:     #1c1e20;
+            --bg-card:    #212326;
+            --bg-section: #1e2022;
+            --teal:       #00e5c4;
+            --teal-dim:   #00b89e;
+            --teal-glow:  rgba(0,229,196,0.08);
+            --text:       #d8dde3;
+            --text-muted: #7b8694;
+            --border:     rgba(255,255,255,0.06);
+            --serif:      'Playfair Display', Georgia, serif;
+            --sans:       'DM Sans', sans-serif;
+            --reading:    'Lora', Georgia, serif;
         }
-
-        /* Light Theme Override Matrix */
         body.light {
-            --bg:          #f7f4eb;      
-            --bg-nav:      #fbfaf7;      
-            --bg-card:     #ffffff;      
-            --bg-section:  #eae6db;      
-            --teal:        #801818;      /* Deep Crimson for light editorial aesthetic */
-            --teal-dim:    #601010;      
-            --teal-glow:   rgba(128, 24, 24, 0.05); 
-            --text:        #1c1b18;      
-            --text-muted:  #706e64;      
-            --border:      rgba(128, 24, 24, 0.12);
+            --bg:         #f7f4eb;
+            --bg-nav:     #fbfaf7;
+            --bg-card:    #ffffff;
+            --bg-section: #eae6db;
+            --teal:       #801818;
+            --teal-dim:   #601010;
+            --teal-glow:  rgba(128,24,24,0.05);
+            --text:       #1c1b18;
+            --text-muted: #706e64;
+            --border:     rgba(128,24,24,0.12);
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing:border-box; margin:0; padding:0; }
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--sans);
-            font-size: 0.92rem;
-            min-height: 100vh;
-            transition: background-color 0.2s ease, color 0.2s ease;
+            background:var(--bg); color:var(--text);
+            font-family:var(--sans); font-size:0.92rem;
+            min-height:100vh; transition:background 0.2s,color 0.2s;
         }
 
-        /* ─────────────────────────────
-             QUIRKI QUIET LUXURY NAV
-        ───────────────────────────── */
+        /* NAV */
         .quirki-nav {
-            position: sticky;       /* Pinned to the very top */
-            top: 0;
-            left: 0;
-            z-index: 1000;          /* Remains cleanly above content while scrolling */
-            width: 100%;
-            height: 56px;           /* Elegant, compact height layout */
-            background-color: var(--bg-nav);
-            border-bottom: 1px solid var(--border); /* Glass-like separator line */
-            display: flex;
-            align-items: center;    /* Perfect vertical centering along baseline */
-            justify-content: space-between; /* Brand left, empty breathing room middle, controls right */
-            padding: 0 24px;        /* 24px horizontal edge padding */
-            user-select: none;
+            position:sticky; top:0; z-index:1000; width:100%; height:56px;
+            background:var(--bg-nav); border-bottom:1px solid var(--border);
+            display:flex; align-items:center; justify-content:space-between;
+            padding:0 24px; user-select:none;
         }
-
-        .nav-left, .nav-right {
-            display: flex;
-            align-items: center;
-        }
-
-        /* Left Side Brand Layout */
+        .nav-left, .nav-right { display:flex; align-items:center; }
+        .nav-right { gap:14px; }
         .quirki-logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;               /* Intentional 8px gap between icon and text */
-            font-family: var(--serif);
-            font-size: 1.25rem;
-            font-style: italic;     /* Italic */
-            font-weight: 600;        /* Semi-bold */
-            text-transform: lowercase; /* Lowercase editorial branding */
-            color: var(--teal);      
-            text-decoration: none;
-            letter-spacing: -0.01em;
+            display:flex; align-items:center; gap:8px;
+            font-family:var(--serif); font-size:1.25rem; font-style:italic;
+            font-weight:600; color:var(--teal); text-decoration:none;
         }
-
-        .quirki-logo svg {
-            flex-shrink: 0;
-            color: var(--teal);
-        }
-
-        /* Right Side Utility Control Cadence */
-        .nav-right {
-            gap: 14px;             /* Exact 14px separation rhythm: 🌙 ←14px→ 🔔 ←14px→ [Z] */
-        }
-
-        /* Secondary Lightweight Theme Control */
         .theme-toggle {
-            background: none;
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            transition: color 0.2s ease, transform 0.1s ease;
+            background:none; border:none; font-size:1rem; cursor:pointer;
+            padding:4px; color:var(--text-muted); transition:color 0.2s;
         }
-        .theme-toggle:hover {
-            color: var(--teal);     /* Shifts to brand color on hover glow */
-        }
-        .theme-toggle:active {
-            transform: scale(0.95);
-        }
-
-        /* Airy Outlined Notification Control */
+        .theme-toggle:hover { color:var(--teal); }
         .notif-btn {
-            position: relative;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            transition: color 0.2s ease;
-            text-decoration: none;
+            position:relative; color:var(--text-muted); display:flex;
+            align-items:center; padding:4px; text-decoration:none; transition:color 0.2s;
         }
-        .notif-btn:hover {
-            color: var(--teal);
-        }
-
-        /* Non-anxiety visual indicator dot offset to top-right corner outer boundary */
+        .notif-btn:hover { color:var(--teal); }
         .notif-dot {
-            position: absolute;
-            top: 1px;
-            right: 1px;
-            width: 5px;
-            height: 5px;
-            background-color: var(--teal);
-            border-radius: 50%;
-            box-shadow: 0 0 6px var(--teal);
+            position:absolute; top:1px; right:1px; width:5px; height:5px;
+            background:var(--teal); border-radius:50%; box-shadow:0 0 6px var(--teal);
         }
-
-        /* Visual Anchor Profile Box */
         .profile-box {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;     /* Rounded square, oriented workspace box */
-            background-color: var(--teal-glow); /* Faint teal tint background */
-            background-image: var(--profile-img);
-            background-size: cover;
-            background-position: center;
-            border: 1px solid rgba(0, 229, 196, 0.25); /* Restrained teal outline border */
-            color: var(--teal);     /* Fallback uppercase letter placeholder token style */
-            font-family: var(--sans);
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            cursor: pointer;
-            overflow: hidden;
-            transition: border-color 0.2s ease;
+            width:32px; height:32px; border-radius:6px; background:var(--teal-glow);
+            border:1px solid rgba(0,229,196,0.25); color:var(--teal);
+            font-family:var(--sans); font-weight:600; font-size:0.85rem;
+            display:flex; align-items:center; justify-content:center;
+            text-decoration:none; cursor:pointer; transition:border-color 0.2s;
         }
-        .profile-box:hover {
-            border-color: var(--teal);
-        }
+        .profile-box:hover { border-color:var(--teal); }
 
-        body.light .profile-box {
-            border-color: rgba(128, 24, 24, 0.25);
-        }
-
-        /* Smoothly flags visibility out once profile picture is updated */
-        body.has-profile-pic .profile-box {
-            color: transparent;
-            background-color: var(--bg-section);
-            border-color: var(--border);
-        }
-
-
-        /* --- SCREEN LAYER 1: BOOK DETAILS MAIN SCENE --- */
+        /* BOOK DETAILS SCENE */
         #bookDetailsScene {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-bottom: 100px;
+            display:flex; flex-direction:column; align-items:center; padding-bottom:100px;
         }
+        .hero-container {
+            width:100%; max-width:720px;
+            display:flex; flex-direction:column; align-items:center;
+            padding:60px 20px 20px;
+        }
+        .book-cover-wrap { margin-bottom:35px; }
+        .book-cover {
+            width:200px; height:280px;
+            background:var(--bg-card); border:1px solid var(--border);
+            border-radius:8px; box-shadow:0 20px 40px rgba(0,0,0,0.5);
+            display:flex; align-items:center; justify-content:center;
+            background-size:cover; background-position:center; overflow:hidden;
+        }
+        .book-cover img {
+            width:100%; height:100%; object-fit:cover; display:none; border-radius:8px;
+        }
+        .cover-svg-wrap { width:100%; height:100%; }
+        .cover-svg-wrap svg { width:100%; height:100%; }
 
-        .hero-presentation-container {
-            width: 100%;
-            max-width: 720px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: left;
-            padding: 60px 20px 20px 20px;
+        .metadata-block { width:100%; margin-bottom:24px; text-align:center; }
+        .book-title {
+            font-family:var(--serif); font-size:clamp(1.8rem,6vw,2.4rem);
+            font-weight:400; line-height:1.2; color:var(--text); margin-bottom:6px;
         }
+        .book-author { font-size:0.95rem; color:var(--text-muted); }
+        .book-author span { color:var(--teal); }
 
-        .book-canvas-wrapper {
-            position: relative;
-            margin-bottom: 35px;
+        .metrics-panel {
+            width:100%; display:grid; grid-template-columns:repeat(3,1fr);
+            background:var(--bg-card); border:1px solid var(--border);
+            border-radius:8px; margin-bottom:24px;
         }
+        .metric-cell { padding:14px; text-align:center; border-right:1px solid var(--border); }
+        .metric-cell:last-child { border-right:none; }
+        .metric-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.18em; color:var(--text-muted); margin-bottom:4px; }
+        .metric-value { font-family:var(--serif); font-size:1.5rem; font-weight:600; color:var(--text); }
 
-        .book-cover-artifice {
-            width: 200px;
-            height: 280px;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px; 
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-size: cover;
-            background-position: center;
+        .start-btn {
+            width:100%; background:var(--teal); border:none; color:var(--bg-nav);
+            padding:18px; border-radius:4px; font-size:1rem; font-weight:600;
+            cursor:pointer; transition:background 0.2s; margin-bottom:40px;
         }
+        .start-btn:hover { background:var(--teal-dim); }
 
-        .fallback-artwork-circle {
-            width: 64px;
-            height: 64px;
-            background-color: var(--bg-section);
-            border-radius: 50%;
-            border: 2px solid var(--bg);
-            position: relative;
+        .narrative-body { width:100%; max-width:720px; padding:0 10px; }
+        .synopsis { font-size:0.95rem; line-height:1.6; color:var(--text); margin-bottom:24px; }
+        .tags-cloud { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:40px; }
+        .tag-pill {
+            background:var(--bg-card); border:1px solid var(--border);
+            color:var(--text-muted); padding:5px 12px; border-radius:4px; font-size:0.85rem;
         }
-        .fallback-artwork-circle::after {
-            content: '';
-            position: absolute;
-            top: 14px; left: 14px; width: 8px; height: 8px;
-            background: var(--bg); border-radius: 50%;
-            box-shadow: 18px 4px 0 var(--bg), 7px 20px 0 var(--bg), 22px 20px 0 var(--bg);
+        .toc-header {
+            display:flex; justify-content:space-between; align-items:center;
+            margin-bottom:16px; margin-top:20px;
         }
+        .toc-label { font-size:0.7rem; color:var(--teal); text-transform:uppercase; letter-spacing:0.18em; font-weight:500; }
+        .toc-downloads { display:flex; gap:8px; }
+        .dl-btn {
+            background:none; border:1px solid var(--border); color:var(--text-muted);
+            padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;
+        }
+        .dl-btn:hover { border-color:var(--text-muted); color:var(--text); }
+        .toc-list { display:flex; flex-direction:column; border-top:1px solid var(--border); margin-bottom:40px; }
+        .toc-row {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:18px 0; border-bottom:1px solid var(--border); cursor:pointer;
+        }
+        .toc-row:hover .toc-ch-title { color:var(--teal); }
+        .toc-ch-title { font-family:var(--serif); font-size:1.25rem; color:var(--text); transition:color 0.2s; }
+        .back-link {
+            display:block; text-align:center; font-size:0.85rem; color:var(--text-muted);
+            text-decoration:none; margin-top:40px; transition:color 0.2s;
+        }
+        .back-link:hover { color:var(--teal); }
 
-        .metadata-text-block {
-            width: 100%;
-            margin-bottom: 24px;
-            text-align: center;
+        /* READER SCENE */
+        #readerScene {
+            display:none; min-height:100vh; flex-direction:column;
+            align-items:center; padding-bottom:160px;
         }
+        .reader-bar {
+            width:100%; height:56px; display:flex; justify-content:space-between;
+            align-items:center; padding:0 24px; border-bottom:1px solid var(--border);
+            position:sticky; top:0; background:var(--bg); z-index:10; transition:background 0.2s;
+        }
+        .reader-btn {
+            background:none; border:none; color:var(--text-muted); cursor:pointer;
+            display:flex; align-items:center; transition:color 0.2s;
+        }
+        .reader-btn:hover { color:var(--text); }
+        .reader-book-title { font-family:var(--serif); font-size:0.9rem; font-style:italic; color:var(--text-muted); }
+        .reader-col { width:100%; max-width:680px; padding:60px 20px 20px; }
+        .chapter-headline {
+            font-family:var(--serif); font-size:clamp(2rem,5vw,2.6rem);
+            color:var(--text); font-weight:400; margin-bottom:8px; line-height:1.2;
+        }
+        .chapter-byline {
+            font-size:0.8rem; color:var(--text-muted); margin-bottom:40px;
+            border-bottom:1px solid var(--border); padding-bottom:24px;
+        }
+        .prose-body {
+            font-family:var(--reading); font-size:17px; line-height:1.8;
+            color:var(--text); transition:font-size 0.15s,font-family 0.15s;
+        }
+        .prose-body p { margin-bottom:24px; }
+        .pagination {
+            display:flex; justify-content:space-between; align-items:center;
+            margin-top:80px; border-top:1px solid var(--border); padding-top:24px;
+        }
+        .page-btn {
+            font-family:var(--sans); font-size:0.85rem; font-weight:500;
+            color:var(--text-muted); background:none; border:none; cursor:pointer;
+            padding:8px 4px; transition:color 0.2s;
+        }
+        .page-btn:hover { color:var(--teal); }
+        .page-btn.hidden { visibility:hidden; pointer-events:none; }
 
-        .book-main-title {
-            font-family: var(--serif);
-            font-size: clamp(1.8rem, 6vw, 2.4rem);
-            font-weight: 400;
-            line-height: 1.2;
-            color: var(--text);
-            margin-bottom: 6px;
+        /* SETTINGS DRAWER */
+        .settings-drawer {
+            position:fixed; bottom:0; left:0; right:0; background:var(--bg-nav);
+            border-top:1px solid var(--border); padding:24px 40px; z-index:100;
+            display:none; flex-direction:column; gap:20px;
+            box-shadow:0 -10px 40px rgba(0,0,0,0.5);
         }
+        .drawer-row { display:flex; align-items:center; gap:24px; }
+        .drawer-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.18em; color:var(--text-muted); width:120px; flex-shrink:0; }
+        .drawer-size-cluster { display:flex; align-items:center; gap:16px; }
+        .drawer-btn {
+            background:var(--bg-card); border:1px solid var(--border); color:var(--text-muted);
+            padding:6px 16px; border-radius:4px; cursor:pointer; font-size:0.85rem;
+            height:36px; display:flex; align-items:center; justify-content:center; transition:all 0.2s;
+        }
+        .drawer-btn:hover { border-color:var(--text); color:var(--text); }
+        .font-size-label { font-family:var(--serif); font-weight:600; color:var(--text); font-size:1rem; min-width:44px; text-align:center; }
+        .font-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; flex:1; }
+        .font-btn {
+            background:var(--bg-card); border:1px solid var(--border); color:var(--text-muted);
+            padding:10px; border-radius:4px; cursor:pointer; font-size:0.9rem; transition:all 0.2s; text-align:center;
+        }
+        .font-btn:hover { border-color:var(--text); color:var(--text); }
+        .font-btn.active { border-color:var(--teal); color:var(--teal); background:rgba(0,229,196,0.02); }
+        .drawer-close {
+            position:absolute; top:20px; right:24px; background:none; border:none;
+            color:var(--text-muted); cursor:pointer;
+        }
+        .drawer-close:hover { color:var(--text); }
 
-        .book-byline-author {
-            font-size: 0.95rem;
-            color: var(--text-muted);
+        /* EMPTY STATE */
+        .empty-state {
+            flex:1; display:flex; flex-direction:column; align-items:center;
+            justify-content:center; gap:12px; padding:80px 20px; text-align:center;
+            color:var(--text-muted);
         }
-        .book-byline-author span {
-            color: var(--teal);
-        }
-
-        .metrics-tri-panel {
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin-bottom: 24px;
-        }
-
-        .metric-cell {
-            padding: 14px;
-            text-align: center;
-            border-right: 1px solid var(--border);
-        }
-        .metric-cell:last-child {
-            border-right: none;
-        }
-
-        .metric-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        .metric-value {
-            font-family: var(--serif);
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .primary-action-trigger {
-            width: 100%;
-            background-color: var(--teal);
-            border: none;
-            color: var(--bg-nav);
-            padding: 18px;
-            border-radius: 4px; 
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .primary-action-trigger:hover {
-            background-color: var(--teal-dim);
-        }
-
-        .narrative-body-container {
-            width: 100%;
-            max-width: 720px;
-            padding: 0 10px;
-        }
-
-        .synopsis-text-area {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: var(--text);
-            margin-bottom: 24px;
-        }
-
-        .genre-pill-cloud {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 40px;
-        }
-
-        .genre-tag-node {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 5px 12px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-
-        .section-segment-header-line {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            margin-top: 20px;
-        }
-
-        .section-segment-label {
-            font-size: 0.7rem;
-            color: var(--teal);
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            font-weight: 500;
-        }
-
-        .header-inline-download-cluster {
-            display: flex;
-            gap: 8px;
-        }
-
-        .inline-download-tag {
-            background: none;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-        .inline-download-tag:hover {
-            border-color: var(--text-muted);
-            color: var(--text);
-        }
-
-        .toc-tabular-matrix {
-            display: flex;
-            flex-direction: column;
-            border-top: 1px solid var(--border);
-            margin-bottom: 40px;
-        }
-
-        .toc-matrix-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 0;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .toc-matrix-row:hover .toc-chapter-title {
-            color: var(--teal);
-        }
-
-        .toc-meta-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .toc-chapter-title {
-            font-family: var(--serif);
-            font-size: 1.25rem;
-            color: var(--text);
-            transition: color 0.2s;
-        }
-
-        /* --- SCREEN LAYER 2: IMMERSIVE READER MODE --- */
-        #readerImmersiveScene {
-            display: none; 
-            min-height: 100vh;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            padding-bottom: 160px;
-        }
-
-        .reader-top-sticky-bar {
-            width: 100%;
-            height: 56px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 24px;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            background-color: var(--bg);
-            z-index: 10;
-            transition: background-color 0.2s ease;
-        }
-
-        .reader-nav-action-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.2s;
-        }
-        .reader-nav-action-btn:hover {
-            color: var(--text);
-        }
-
-        .reader-running-center-title {
-            font-family: var(--serif);
-            font-size: 0.9rem;
-            font-style: italic;
-            color: var(--text-muted);
-        }
-
-        .reader-prose-editorial-column {
-            width: 100%;
-            max-width: 680px;
-            padding: 60px 20px 20px 20px;
-        }
-
-        .editorial-chapter-main-headline {
-            font-family: var(--serif);
-            font-size: clamp(2rem, 5vw, 2.6rem);
-            color: var(--text);
-            font-weight: 400;
-            margin-bottom: 8px;
-            line-height: 1.2;
-        }
-
-        .editorial-byline-stats {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 40px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 24px;
-        }
-
-        .immersive-reading-prose-body {
-            font-family: var(--reading);
-            font-size: 17px; 
-            line-height: 1.8;
-            color: var(--text);
-            transition: font-size 0.15s ease, font-family 0.15s ease;
-        }
-        .immersive-reading-prose-body p {
-            margin-bottom: 24px;
-        }
-
-        .pagination-turn-trigger-system {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 80px;
-            border-top: 1px solid var(--border);
-            padding-top: 24px;
-        }
-
-        .pagination-node-link {
-            font-family: var(--sans);
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px 4px;
-            transition: color 0.2s ease;
-            display: flex;
-            align-items: center;
-        }
-        .pagination-node-link:hover {
-            color: var(--teal);
-        }
-        .pagination-node-link.hidden-node {
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        /* --- SETTINGS DRAWER --- */
-        .reading-settings-bottom-drawer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: var(--bg-nav);
-            border-top: 1px solid var(--border);
-            padding: 24px 40px;
-            z-index: 100;
-            display: none; 
-            flex-direction: column;
-            gap: 20px;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-        }
-
-        .drawer-row-layout {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-
-        .drawer-section-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            color: var(--text-muted);
-            width: 120px;
-            flex-shrink: 0;
-        }
-
-        .drawer-size-controls-cluster {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .drawer-action-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 6px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .drawer-action-btn:hover {
-            border-color: var(--text);
-            color: var(--text);
-        }
-
-        .drawer-size-indicator-node {
-            font-family: var(--serif);
-            font-weight: 600;
-            color: var(--text);
-            font-size: 1rem;
-            min-width: 44px;
-            text-align: center;
-        }
-
-        .font-selection-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            flex: 1;
-        }
-
-        .font-selection-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-        .font-selection-btn:hover {
-            border-color: var(--text);
-            color: var(--text);
-        }
-        .font-selection-btn.active-setting {
-            border-color: var(--teal);
-            color: var(--teal);
-            background: rgba(0, 229, 196, 0.02);
-        }
-
-        .drawer-dismiss-trigger {
-            position: absolute;
-            top: 20px;
-            right: 24px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-        .drawer-dismiss-trigger:hover {
-            color: var(--text);
-        }
-
-        .workspace-return-footer-anchor {
-            display: block;
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            margin-top: 40px;
-            transition: color 0.2s ease;
-        }
-        .workspace-return-footer-anchor:hover {
-            color: var(--teal);
-        }
+        .empty-state h2 { font-family:var(--serif); font-size:1.4rem; font-style:italic; color:var(--text); }
+        .empty-state p { font-size:0.88rem; line-height:1.6; }
     </style>
 </head>
 <body>
 
-    <nav class="quirki-nav">
-        <div class="nav-left">
-            <a href="quirki-home.html" class="quirki-logo">
-                <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
-                    <path d="M13 2 C14.5 2 15.5 3 15 4.5 C16.5 3.5 18.5 4 19 5.5 C19.5 7 18.5 8.5 17 8.5 C18.5 9 19.5 10.5 19 12 C18.5 13.5 17 14 15.5 13.5 C16.5 15 16 17 14.5 17.5 C13 18 11.5 17 11.5 15.5 C10.5 17 9 17.5 7.5 16.5 C6 15.5 6 13.5 7.5 12.5 C6 12.5 4.5 11.5 4.5 10 C4.5 8.5 5.5 7.5 7 7.5 C5.5 7 4.5 5.5 5 4 C5.5 2.5 7.5 2 9 3 C8.5 1.5 10 0.5 11.5 1 C12.5 1.5 13 2 13 2Z" fill="currentColor"/>
-                </svg>
-                quirki
-            </a>
-        </div>
-
-        <div class="nav-right">
-            <button class="theme-toggle" id="globalThemeToggleTrigger" onclick="toggleTheme()">
-                🌙
-            </button>
-
-            <a href="quirki-notif.html" class="notif-btn">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M10 2a6 6 0 0 0-6 6v2.5L2.5 13h15L16 10.5V8a6 6 0 0 0-6-6Z"
-                        stroke="currentColor"
-                        stroke-width="1.4"
-                        stroke-linejoin="round"/>
-                    <path d="M8 15a2 2 0 0 0 4 0"
-                        stroke="currentColor"
-                        stroke-width="1.4"/>
-                </svg>
-                <span class="notif-dot"></span>
-            </a>
-
-            <a href="quirki-profile.html" class="profile-box" id="globalUserProfileBox">
-                Z
-            </a>
-        </div>
-    </nav>
-
-    <div id="bookDetailsScene">
-        <main class="hero-presentation-container">
-            <div class="book-canvas-wrapper">
-                <div class="book-cover-artifice" id="renderingTargetCover">
-                    <div class="fallback-artwork-circle" id="renderingFallbackGraphic"></div>
-                </div>
-            </div>
-
-            <div class="metadata-text-block">
-                <h1 class="book-main-title" id="renderingTargetTitle">Ashveil</h1>
-                <div class="book-byline-author">by <span id="renderingTargetAuthor">Zee</span></div>
-            </div>
-
-            <div class="metrics-tri-panel">
-                <div class="metric-cell">
-                    <div class="metric-label">Likes</div>
-                    <div class="metric-value" id="metricCellLikes">0</div>
-                </div>
-                <div class="metric-cell">
-                    <div class="metric-label">Adds</div>
-                    <div class="metric-value" id="metricCellAdds">0</div>
-                </div>
-                <div class="metric-cell">
-                    <div class="metric-label">Views</div>
-                    <div class="metric-value" id="metricCellViews">0</div>
-                </div>
-            </div>
-
-            <button class="primary-action-trigger" onclick="transitionToImmersiveReader(0)">Start Reading</button>
-
-            <div class="narrative-body-container">
-                <div class="synopsis-text-area" id="renderingTargetSummary">
-                    No summary available.
-                </div>
-
-                <div class="genre-pill-cloud" id="renderingTargetTags"></div>
-
-                <div id="tableOfContentsSegment">
-                    <div class="section-segment-header-line">
-                        <span class="section-segment-label">Table of Contents</span>
-                        <div class="header-inline-download-cluster">
-                            <button class="inline-download-tag">Download EPUB</button>
-                            <button class="inline-download-tag">Download PDF</button>
-                        </div>
-                    </div>
-                    
-                    <div class="toc-tabular-matrix" id="renderingTargetTOC"></div>
-                </div>
-
-                <a href="workspace.html" class="workspace-return-footer-anchor">← Return to Workspace</a>
-            </div>
-        </main>
+<nav class="quirki-nav">
+    <div class="nav-left">
+        <a href="quirki-home.html" class="quirki-logo">
+            <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+                <path d="M13 2 C14.5 2 15.5 3 15 4.5 C16.5 3.5 18.5 4 19 5.5 C19.5 7 18.5 8.5 17 8.5 C18.5 9 19.5 10.5 19 12 C18.5 13.5 17 14 15.5 13.5 C16.5 15 16 17 14.5 17.5 C13 18 11.5 17 11.5 15.5 C10.5 17 9 17.5 7.5 16.5 C6 15.5 6 13.5 7.5 12.5 C6 12.5 4.5 11.5 4.5 10 C4.5 8.5 5.5 7.5 7 7.5 C5.5 7 4.5 5.5 5 4 C5.5 2.5 7.5 2 9 3 C8.5 1.5 10 0.5 11.5 1 C12.5 1.5 13 2 13 2Z" fill="currentColor"/>
+            </svg>
+            quirki
+        </a>
     </div>
+    <div class="nav-right">
+        <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+        <a href="quirki-notif.html" class="notif-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2a6 6 0 0 0-6 6v2.5L2.5 13h15L16 10.5V8a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                <path d="M8 15a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.4"/>
+            </svg>
+            <span class="notif-dot"></span>
+        </a>
+        <a href="quirki-profile.html" class="profile-box">Z</a>
+    </div>
+</nav>
 
-
-    <div id="readerImmersiveScene">
-        <nav class="reader-top-sticky-bar">
-            <button class="reader-nav-action-btn" onclick="exitReaderToDetailsView()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            </button>
-            <div class="reader-running-center-title" id="readerTopBarBookTitle">Book Title</div>
-            <button class="reader-nav-action-btn" onclick="toggleSettingsDrawer(true)">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-            </button>
-        </nav>
-
-        <article class="reader-prose-editorial-column">
-            <h1 class="editorial-chapter-main-headline" id="readerContentChapterTitle">Chapter Title</h1>
-            <div class="editorial-byline-stats" id="readerContentMetaByline"> </div>
-
-            <div class="immersive-reading-prose-body" id="immersiveProseCore"></div>
-
-            <footer class="pagination-turn-trigger-system">
-                <button class="pagination-node-link" id="prevChapterBtn" onclick="navigateAdjacentChapter(-1)">
-                    ← Prev
-                </button>
-                <button class="pagination-node-link" id="nextChapterBtn" onclick="navigateAdjacentChapter(1)">
-                    Next →
-                </button>
-            </footer>
-        </article>
-
-        <div class="reading-settings-bottom-drawer" id="readerSettingsOverlayDrawer">
-            <button class="drawer-dismiss-trigger" onclick="toggleSettingsDrawer(false)">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-
-            <div class="drawer-row-layout">
-                <span class="drawer-section-label">Reading Settings</span>
-                <button class="drawer-action-btn" id="drawerThemeBtn" onclick="toggleTheme()">Mode</button>
-            </div>
-
-            <div class="drawer-row-layout">
-                <div class="drawer-size-controls-cluster">
-                    <button class="drawer-action-btn" onclick="alterReaderFontSize(-1)">A-</button>
-                    <div class="drawer-size-indicator-node" id="drawerFontSizePxLabel">17px</div>
-                    <button class="drawer-action-btn" onclick="alterReaderFontSize(1)">A+</button>
+<!-- BOOK DETAILS -->
+<div id="bookDetailsScene">
+    <main class="hero-container">
+        <div class="book-cover-wrap">
+            <div class="book-cover" id="bookCover"></div>
+        </div>
+        <div class="metadata-block">
+            <h1 class="book-title" id="bookTitle"></h1>
+            <div class="book-author">by <span id="bookAuthor"></span></div>
+        </div>
+        <div class="metrics-panel">
+            <div class="metric-cell"><div class="metric-label">Likes</div><div class="metric-value">0</div></div>
+            <div class="metric-cell"><div class="metric-label">Adds</div><div class="metric-value">0</div></div>
+            <div class="metric-cell"><div class="metric-label">Views</div><div class="metric-value">0</div></div>
+        </div>
+        <button class="start-btn" onclick="openReader(0)">Start Reading</button>
+        <div class="narrative-body">
+            <div class="synopsis" id="bookSynopsis"></div>
+            <div class="tags-cloud" id="bookTags"></div>
+            <div class="toc-header">
+                <span class="toc-label">Table of Contents</span>
+                <div class="toc-downloads">
+                    <button class="dl-btn">Download EPUB</button>
+                    <button class="dl-btn">Download PDF</button>
                 </div>
             </div>
+            <div class="toc-list" id="tocList"></div>
+            <a href="quirki-writing.html" class="back-link">← Return to Writing</a>
+        </div>
+    </main>
+</div>
 
-            <div class="drawer-row-layout">
-                <div class="font-selection-grid">
-                    <button class="font-selection-btn active-setting" id="fBtnLora" onclick="setReaderFont('Lora')">Lora</button>
-                    <button class="font-selection-btn" id="fBtnPlayfair" onclick="setReaderFont('Playfair')">Playfair</button>
-                    <button class="font-selection-btn" id="fBtnSans" onclick="setReaderFont('Sans')">Sans</button>
-                </div>
+<!-- READER -->
+<div id="readerScene">
+    <div class="reader-bar">
+        <button class="reader-btn" onclick="closeReader()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div class="reader-book-title" id="readerTitle"></div>
+        <button class="reader-btn" onclick="openDrawer(true)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+    </div>
+    <article class="reader-col">
+        <h1 class="chapter-headline" id="chapterTitle"></h1>
+        <div class="chapter-byline" id="chapterByline"></div>
+        <div class="prose-body" id="proseBody"></div>
+        <footer class="pagination">
+            <button class="page-btn" id="prevBtn" onclick="navigate(-1)">← Prev</button>
+            <button class="page-btn" id="nextBtn" onclick="navigate(1)">Next →</button>
+        </footer>
+    </article>
+    <div class="settings-drawer" id="settingsDrawer">
+        <button class="drawer-close" onclick="openDrawer(false)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="drawer-row">
+            <span class="drawer-label">Theme</span>
+            <button class="drawer-btn" onclick="toggleTheme()">Toggle</button>
+        </div>
+        <div class="drawer-row">
+            <span class="drawer-label">Font Size</span>
+            <div class="drawer-size-cluster">
+                <button class="drawer-btn" onclick="changeFontSize(-1)">A-</button>
+                <div class="font-size-label" id="fontSizeLabel">17px</div>
+                <button class="drawer-btn" onclick="changeFontSize(1)">A+</button>
+            </div>
+        </div>
+        <div class="drawer-row">
+            <span class="drawer-label">Font</span>
+            <div class="font-grid">
+                <button class="font-btn active" id="fLora" onclick="setFont('Lora')">Lora</button>
+                <button class="font-btn" id="fPlayfair" onclick="setFont('Playfair')">Playfair</button>
+                <button class="font-btn" id="fSans" onclick="setFont('Sans')">Sans</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        let currentActiveChapterIndex = 0;
-        let globalFontSizePX = 17;
+<script>
+// ─── State ────────────────────────────────────────────────
+let book = null;
+let chapterIndex = 0;
+let fontSize = 17;
 
-        let activeBookState = {
-    title: "", author: "", summary: "",
-    likes: "0", adds: "0", views: "0",
-    coverUrl: "", tags: [], chapters: []
-};
-        activeBookState = fallbackMockBookAsset;
+// ─── Init ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+    // Theme
+    if (localStorage.getItem('quirki-theme') === 'light') {
+        document.body.classList.add('light');
+        document.getElementById('themeBtn').textContent = '🌑';
+    }
 
-        // --- DOM INIT PIPELINE ---
-        window.addEventListener("DOMContentLoaded", () => {
-            if (localStorage.getItem('quirki-theme') === 'light') {
-                document.body.classList.add('light');
-                updateThemeUiComponents(true);
-            }
+    // Load book data
+    const raw = localStorage.getItem('activePreviewPayload');
 
-            // Sync saved custom image modifier
-            const savedAvatarPic = localStorage.getItem('quirki-user-avatar');
-            if (savedAvatarPic) {
-                document.documentElement.style.setProperty('--profile-img', `url('${savedAvatarPic}')`);
-                document.body.classList.add('has-profile-pic');
-            }
+    if (!raw) {
+        showEmpty('No preview data found. Go back to your book and click Preview.');
+        return;
+    }
 
-            const cachedWorkspaceData = localStorage.getItem('activePreviewPayload');
-            if (cachedWorkspaceData) {
-                try {
-                    const parsedEpub = JSON.parse(cachedWorkspaceData);
-                    let finalChaptersList = [];
+    try {
+        const data = JSON.parse(raw);
+        book = {
+            title:    data.title    || 'Untitled',
+            author:   data.author   || 'Unknown Author',
+            summary:  data.summary  || data.synopsis || '',
+            coverUrl: data.coverUrl || data.cover    || '',
+            tags:     Array.isArray(data.tags) ? data.tags : [],
+            chapters: Array.isArray(data.chapters) ? data.chapters.map((ch, i) => ({
+                title:   ch.title   || `Chapter ${i + 1}`,
+                content: ch.content || '<p>No content.</p>'
+            })) : []
+        };
+    } catch(e) {
+        showEmpty('Could not read book data. Try previewing again from the Book Builder.');
+        return;
+    }
 
-                    const rawChaptersArray = parsedEpub.chapters || parsedEpub.sections || parsedEpub.manuscript || parsedEpub.stories;
+    if (book.chapters.length === 0) {
+        showEmpty('This book has no chapters yet.');
+        return;
+    }
 
-                    if (Array.isArray(rawChaptersArray) && rawChaptersArray.length > 0) {
-                        finalChaptersList = rawChaptersArray.map((ch, idx) => ({
-                            title: ch.title || `Untitled Section ${idx + 1}`,
-                            content: ch.content || ch.htmlContent || ch.body || "<p>No chapter body available.</p>"
-                        }));
-                    } 
-                    else if (parsedEpub.content && parsedEpub.content.includes('class="preview-chapter-node"')) {
-                        const tempContainer = document.createElement('div');
-                        tempContainer.innerHTML = parsedEpub.content;
-                        const sections = tempContainer.querySelectorAll('.preview-chapter-node');
-                        
-                        sections.forEach((sec, idx) => {
-                            const h2 = sec.querySelector('h2');
-                            const div = sec.querySelector('div');
-                            finalChaptersList.push({
-                                title: h2 ? h2.textContent : `Untitled Section ${idx + 1}`,
-                                content: div ? div.innerHTML : sec.innerHTML
-                            });
-                        });
-                    }
+    renderDetails();
+});
 
-                    let detectedTags = [];
-                    if (Array.isArray(parsedEpub.tags)) {
-                        detectedTags = parsedEpub.tags;
-                    } else if (typeof parsedEpub.tags === 'string' && parsedEpub.tags.trim()) {
-                        detectedTags = parsedEpub.tags.split(',').map(t => t.trim());
-                    } else if (parsedEpub.genre) {
-                        detectedTags = [parsedEpub.genre];
-                    }
+// ─── Render book details page ─────────────────────────────
+function renderDetails() {
+    document.title = `${book.title} | Quirki`;
+    document.getElementById('bookTitle').textContent   = book.title;
+    document.getElementById('bookAuthor').textContent  = book.author;
+    document.getElementById('bookSynopsis').textContent = book.summary;
 
-                    activeBookState = {
-                        title: parsedEpub.bookTitle || parsedEpub.title || "Untitled Book",
-                        author: parsedEpub.author || "Unknown Author",
-                        summary: parsedEpub.summary || parsedEpub.synopsis || "Preview Mode: Active manuscript workspace deployment tracking layer.",
-                        likes: parsedEpub.likes || "0",
-                        adds: parsedEpub.adds || "0",
-                        views: parsedEpub.views || "0",
-                        coverUrl: parsedEpub.coverUrl || parsedEpub.cover || "",
-                        tags: detectedTags.length > 0 ? detectedTags : ["Manuscript"],
-                        chapters: finalChaptersList.length > 0 ? finalChaptersList : [
-                            { 
-                                title: parsedEpub.chapterTitle || "Workspace Compilation Draft", 
-                                content: parsedEpub.content || "<p>No text content parsed.</p>" 
-                            }
-                        ]
-                    };
+    // Cover
+    const coverEl = document.getElementById('bookCover');
+    if (book.coverUrl) {
+        coverEl.style.backgroundImage = `url('${book.coverUrl}')`;
+    } else {
+        coverEl.style.backgroundImage = 'none';
+    }
 
-                    const coverBox = document.getElementById("renderingTargetCover");
-                    const fallbackGraphic = document.getElementById("renderingFallbackGraphic");
-                    if (activeBookState.coverUrl) {
-                        coverBox.style.backgroundImage = `url('${activeBookState.coverUrl}')`;
-                        fallbackGraphic.style.display = "none";
-                    } else {
-                        coverBox.style.backgroundImage = "none";
-                        fallbackGraphic.style.display = "block";
-                    }
+    // Tags
+    const tagsEl = document.getElementById('bookTags');
+    tagsEl.innerHTML = book.tags.length
+        ? book.tags.map(t => `<span class="tag-pill">${t}</span>`).join('')
+        : '';
 
-                } catch (error) {
-                    console.error("Auto-Detect Parser Exception:", error);
-                }
-            }
+    // TOC
+    const tocEl = document.getElementById('tocList');
+    tocEl.innerHTML = book.chapters.map((ch, i) => `
+        <div class="toc-row" onclick="openReader(${i})">
+            <div class="toc-ch-title">${ch.title}</div>
+        </div>
+    `).join('');
+}
 
-            renderBookLandingDetails();
-        });
+// ─── Empty state ──────────────────────────────────────────
+function showEmpty(msg) {
+    document.getElementById('bookDetailsScene').innerHTML = `
+        <div class="empty-state">
+            <h2>Nothing to preview</h2>
+            <p>${msg}</p>
+            <a href="quirki-writing.html" style="margin-top:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;">← Back to Writing</a>
+        </div>
+    `;
+}
 
-        function renderBookLandingDetails() {
-            document.getElementById("renderingTargetTitle").textContent = activeBookState.title;
-            document.getElementById("renderingTargetAuthor").textContent = activeBookState.author;
-            document.getElementById("renderingTargetSummary").textContent = activeBookState.summary;
-            
-            document.getElementById("metricCellLikes").textContent = activeBookState.likes;
-            document.getElementById("metricCellAdds").textContent = activeBookState.adds;
-            document.getElementById("metricCellViews").textContent = activeBookState.views;
+// ─── Reader ───────────────────────────────────────────────
+function openReader(idx) {
+    chapterIndex = idx;
+    document.getElementById('bookDetailsScene').style.display = 'none';
+    document.getElementById('readerScene').style.display      = 'flex';
+    window.scrollTo(0, 0);
+    mountChapter();
+}
 
-            const tagsBox = document.getElementById("renderingTargetTags");
-            tagsBox.innerHTML = activeBookState.tags.map(t => `<span class="genre-tag-node">${t}</span>`).join('');
+function closeReader() {
+    document.getElementById('readerScene').style.display      = 'none';
+    document.getElementById('bookDetailsScene').style.display = 'flex';
+    openDrawer(false);
+    window.scrollTo(0, 0);
+}
 
-            const tocBox = document.getElementById("renderingTargetTOC");
-            tocBox.innerHTML = activeBookState.chapters.map((ch, index) => {
-                return `
-                    <div class="toc-matrix-row" onclick="transitionToImmersiveReader(${index})">
-                        <div class="toc-meta-stack">
-                            <span class="toc-chapter-title">${ch.title}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+function mountChapter() {
+    const ch = book.chapters[chapterIndex];
+    if (!ch) return;
 
-        /* --- IMMERSIVE ENGINE LAYER --- */
-        function transitionToImmersiveReader(chapterIndex) {
-            currentActiveChapterIndex = chapterIndex;
-            document.getElementById("bookDetailsScene").style.display = "none";
-            document.getElementById("readerImmersiveScene").style.display = "flex";
-            window.scrollTo(0, 0);
-            mountChapterToReaderFrame();
-        }
+    document.getElementById('readerTitle').textContent   = book.title;
+    document.getElementById('chapterTitle').textContent  = ch.title;
+    document.getElementById('chapterByline').textContent = `Chapter ${chapterIndex + 1} of ${book.chapters.length}`;
+    document.getElementById('proseBody').innerHTML       = ch.content;
+    document.getElementById('proseBody').style.fontSize = `${fontSize}px`;
 
-        function exitReaderToDetailsView() {
-            document.getElementById("readerImmersiveScene").style.display = "none";
-            document.getElementById("bookDetailsScene").style.display = "flex";
-            toggleSettingsDrawer(false);
-            window.scrollTo(0, 0);
-        }
+    document.getElementById('prevBtn').className = 'page-btn' + (chapterIndex === 0 ? ' hidden' : '');
+    document.getElementById('nextBtn').className = 'page-btn' + (chapterIndex === book.chapters.length - 1 ? ' hidden' : '');
+}
 
-        function mountChapterToReaderFrame() {
-            const ch = activeBookState.chapters[currentActiveChapterIndex];
-            if (!ch) return;
+function navigate(dir) {
+    const next = chapterIndex + dir;
+    if (next >= 0 && next < book.chapters.length) {
+        chapterIndex = next;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        mountChapter();
+    }
+}
 
-            document.getElementById("readerTopBarBookTitle").textContent = activeBookState.title;
-            document.getElementById("readerContentChapterTitle").textContent = ch.title;
-            
-            document.getElementById("readerContentMetaByline").innerHTML = ` `;
-            document.getElementById("immersiveProseCore").innerHTML = ch.content;
+// ─── Settings drawer ──────────────────────────────────────
+function openDrawer(state) {
+    document.getElementById('settingsDrawer').style.display = state ? 'flex' : 'none';
+}
 
-            const prevBtn = document.getElementById("prevChapterBtn");
-            const nextBtn = document.getElementById("nextChapterBtn");
+function changeFontSize(dir) {
+    fontSize = Math.min(34, Math.max(12, fontSize + dir));
+    document.getElementById('fontSizeLabel').textContent = `${fontSize}px`;
+    document.getElementById('proseBody').style.fontSize = `${fontSize}px`;
+}
 
-            if (currentActiveChapterIndex > 0) {
-                prevBtn.classList.remove("hidden-node");
-            } else {
-                prevBtn.classList.add("hidden-node");
-            }
+function setFont(key) {
+    const prose = document.getElementById('proseBody');
+    document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+    if (key === 'Lora')     { prose.style.fontFamily = 'var(--reading)'; document.getElementById('fLora').classList.add('active'); }
+    if (key === 'Playfair') { prose.style.fontFamily = 'var(--serif)';   document.getElementById('fPlayfair').classList.add('active'); }
+    if (key === 'Sans')     { prose.style.fontFamily = 'var(--sans)';    document.getElementById('fSans').classList.add('active'); }
+}
 
-            if (currentActiveChapterIndex < activeBookState.chapters.length - 1) {
-                nextBtn.classList.remove("hidden-node");
-            } else {
-                nextBtn.classList.add("hidden-node");
-            }
-        }
-
-        function navigateAdjacentChapter(directionStep) {
-            const target = currentActiveChapterIndex + directionStep;
-            if (target >= 0 && target < activeBookState.chapters.length) {
-                currentActiveChapterIndex = target;
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                mountChapterToReaderFrame();
-            }
-        }
-
-        /* --- FONTS & EDITORIAL CONFIG CONTROLLER --- */
-        function toggleSettingsDrawer(forceOpenState) {
-            const drawer = document.getElementById("readerSettingsOverlayDrawer");
-            drawer.style.display = forceOpenState ? "flex" : "none";
-        }
-
-        function alterReaderFontSize(incrementDirection) {
-            globalFontSizePX += (incrementDirection * 1);
-            if (globalFontSizePX < 12) globalFontSizePX = 12;
-            if (globalFontSizePX > 34) globalFontSizePX = 34;
-
-            document.getElementById("drawerFontSizePxLabel").textContent = `${globalFontSizePX}px`;
-            document.getElementById("immersiveProseCore").style.fontSize = `${globalFontSizePX}px`;
-        }
-
-        function setReaderFont(fontKey) {
-            const prose = document.getElementById("immersiveProseCore");
-            document.getElementById("fBtnLora").classList.remove("active-setting");
-            document.getElementById("fBtnPlayfair").classList.remove("active-setting");
-            document.getElementById("fBtnSans").classList.remove("active-setting");
-
-            if (fontKey === 'Lora') {
-                prose.style.fontFamily = "var(--reading)";
-                document.getElementById("fBtnLora").classList.add("active-setting");
-            } else if (fontKey === 'Playfair') {
-                prose.style.fontFamily = "var(--serif)";
-                document.getElementById("fBtnPlayfair").classList.add("active-setting");
-            } else if (fontKey === 'Sans') {
-                prose.style.fontFamily = "var(--sans)";
-                document.getElementById("fBtnSans").classList.add("active-setting");
-            }
-        }
-
-        /* --- THEME CONTROLLER --- */
-        function toggleTheme() {
-            document.body.classList.toggle('light');
-            const isLightActive = document.body.classList.contains('light');
-            
-            localStorage.setItem('quirki-theme', isLightActive ? 'light' : 'dark');
-            updateThemeUiComponents(isLightActive);
-        }
-
-        function updateThemeUiComponents(isLight) {
-            const navToggleBtn = document.getElementById('globalThemeToggleTrigger');
-            const drawerBtn = document.getElementById('drawerThemeBtn');
-            
-            if (navToggleBtn) navToggleBtn.textContent = isLight ? "🌑" : "🌙";
-            if (drawerBtn) drawerBtn.textContent = isLight ? "Light Mode" : "Dark Mode";
-        }
-    </script>
+// ─── Theme ────────────────────────────────────────────────
+function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = isLight ? '🌑' : '🌙';
+}
+</script>
 </body>
 </html>
