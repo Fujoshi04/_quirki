@@ -238,7 +238,20 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
   content:attr(data-placeholder);
   color:var(--muted2);pointer-events:none;
 }
-[contenteditable] p{margin-bottom:20px;}
+
+/* Preserve exactly what the author types:
+   - Single Enter = new line, no extra gap
+   - Double Enter (empty paragraph) = visible blank line gap
+   The browser's natural paragraph spacing is replaced with
+   zero margin so only genuine empty lines create space. */
+[contenteditable] p{
+  margin:0;
+  padding:0;
+  line-height:inherit;
+}
+[contenteditable] p:empty::after{
+  content:'\00a0'; /* non-breaking space keeps empty <p> full height */
+}
 
 .word-count-bar{
   padding:6px 32px;border-top:1px solid var(--border);
@@ -490,6 +503,7 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
           contenteditable="true"
           data-placeholder="Start writing here…"
           oninput="onProseChange()"
+          onkeydown="handleProseKeydown(event)"
         ></div>
       </div>
       <div class="word-count-bar" id="wordCountBar">0 words</div>
@@ -700,8 +714,15 @@ function loadChapterIntoEditor(id){
   if(!ch){ showEmptyState(); return; }
   document.getElementById('emptyState').style.display    = 'none';
   document.getElementById('activeEditor').style.display  = 'flex';
+  // Ensure Enter key always produces <p> not <div> or <br>
+  document.execCommand('defaultParagraphSeparator', false, 'p');
   document.getElementById('chapterTitleInput').value = ch.title || '';
-  document.getElementById('proseEditor').innerHTML   = ch.content || '';
+  const rawContent = ch.content || '';
+  // Wrap bare text nodes in <p> if content has none
+  document.getElementById('proseEditor').innerHTML =
+    rawContent && !rawContent.includes('<p') && !rawContent.includes('<br')
+      ? '<p>' + rawContent + '</p>'
+      : rawContent || '';
   updateWordCount();
 }
 
@@ -775,8 +796,30 @@ function setupDragDrop(){
 function execCmd(cmd){ document.execCommand(cmd, false, null); document.getElementById('proseEditor').focus(); }
 
 function insertParagraphBreak(){
-  document.execCommand('insertHTML', false, '<p><br></p>');
+  // Insert a deliberate blank line (scene break)
+  document.execCommand('insertParagraph', false, null);
+  document.execCommand('insertParagraph', false, null);
   document.getElementById('proseEditor').focus();
+}
+
+function handleProseKeydown(e){
+  if(e.key !== 'Enter') return;
+  e.preventDefault();
+
+  const sel = window.getSelection();
+  if(!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+
+  // Find the current block element (paragraph the cursor is in)
+  let node = range.startContainer;
+  while(node && node.parentNode && node.parentNode.id !== 'proseEditor'){
+    node = node.parentNode;
+  }
+
+  // If cursor is in an empty paragraph, this second Enter creates the blank gap
+  // (the empty <p> already exists, so we just insert another paragraph below)
+  // Otherwise just insert a normal paragraph
+  document.execCommand('insertParagraph', false, null);
 }
 
 function onTitleChange(){
