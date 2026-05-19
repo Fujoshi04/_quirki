@@ -364,7 +364,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── KEY FIX: read from sessionStorage, same as builder writes ──
-    const raw = sessionStorage.getItem('activePreviewPayload');
+    const raw = localStorage.getItem('activePreviewPayload');
 
     if(!raw){
         showEmpty('No preview data found. Go back to your book and click Preview →.');
