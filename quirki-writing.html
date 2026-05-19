@@ -6,6 +6,7 @@
     <title>Quirki — Writing Engine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -13,6 +14,7 @@
             --bg:#1a1c1e; --bg-nav:#1c1e20; --bg-card:#212326; --bg-section:#1e2022;
             --teal:#00e5c4; --teal-dim:#00b89e; --teal-glow:rgba(0,229,196,0.08);
             --text:#d8dde3; --text-muted:#6a7480; --border:rgba(255,255,255,0.06);
+            --red:#e05555;
             --serif:'Playfair Display',Georgia,serif; --sans:'DM Sans',sans-serif;
             --avatar-border: 1.5px solid rgba(0,229,196,0.25);
         }
@@ -26,31 +28,29 @@
 
         body { background:var(--bg); color:var(--text); font-family:var(--sans); font-weight:300; min-height:100vh; transition: background 0.25s, color 0.25s; }
 
-        /* ── NAV BAR ── */
+        /* ── NAV ── */
         nav { position:sticky; top:0; z-index:100; background:var(--bg-nav); border-bottom:1px solid var(--border); padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between; }
         .nav-left { display:flex; align-items:center; gap:16px; }
         .nav-back { color:var(--text-muted); cursor:pointer; transition:color 0.2s; display:flex; align-items:center; text-decoration:none; background:none; border:none; }
         .nav-back:hover { color:var(--teal); }
-        .logo { display:flex; align-items:center; gap:8px; font-family:var(--serif); font-size:1.4rem; font-weight:600; color:var(--teal); font-style:italic; text-decoration:none; flex-shrink:0; cursor:pointer; }
+        .logo { display:flex; align-items:center; gap:8px; font-family:var(--serif); font-size:1.4rem; font-weight:600; color:var(--teal); font-style:italic; text-decoration:none; flex-shrink:0; }
         .logo svg { width:24px; height:24px; }
         .nav-right { display:flex; align-items:center; gap:14px; }
-        
-        .nav-bell { color:var(--text-muted); cursor:pointer; transition:color 0.2s; display:flex; align-items:center; position:relative; text-decoration: none; }
+        .nav-bell { color:var(--text-muted); cursor:pointer; transition:color 0.2s; display:flex; align-items:center; position:relative; text-decoration:none; }
         .nav-bell:hover { color:var(--teal); }
         .nav-bell .dot { position:absolute; top:0; right:0; width:7px; height:7px; border-radius:50%; background:var(--teal); border:1.5px solid var(--bg-nav); }
-        
         .nav-avatar { width:32px; height:32px; border-radius:4px; background:var(--teal-glow); border:var(--avatar-border); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--teal); font-size:0.85rem; font-weight:500; text-decoration:none; overflow:hidden; }
         .theme-toggle { background:none; border:none; cursor:pointer; color:var(--text-muted); display:flex; align-items:center; transition:color 0.2s; font-size:1rem; padding:4px; border-radius:6px; }
         .theme-toggle:hover { color:var(--teal); }
 
-        /* ── MAIN LAYOUT ── */
+        /* ── LAYOUT ── */
         main { max-width:600px; margin:0 auto; padding:40px 24px 80px; }
         .page-title { font-family:var(--serif); font-size:clamp(1.8rem,6vw,2.4rem); font-weight:600; color:#e4e9ee; line-height:1.15; margin-bottom:40px; animation:fadeUp 0.35s ease both; }
         body.light .page-title { color:#1c1b18; }
-        .section-label { font-size:0.7rem; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--teal); margin-bottom:14px; }
+        .section-label { font-size:0.7rem; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--teal); margin-bottom:14px; display:block; }
         .section-divider { height:1px; background:var(--border); margin:40px 0 32px; }
 
-        /* ── ACTION INTERFACES ── */
+        /* ── CREATE BTN ── */
         .create-btn { display:flex; align-items:center; justify-content:space-between; width:100%; padding:22px 24px; background:var(--bg-card); border:1px solid var(--border); border-radius:10px; cursor:pointer; text-decoration:none; transition:border-color 0.2s, background 0.2s; margin-bottom:36px; }
         .create-btn:hover { border-color:rgba(0,229,196,0.4); background:#232527; }
         body.light .create-btn:hover { border-color:rgba(122,46,46,0.4); background:#fcf9f2; }
@@ -60,27 +60,45 @@
         .create-btn-sub { font-size:0.8rem; color:var(--text-muted); font-weight:300; }
         .create-btn-icon { width:38px; height:38px; border-radius:8px; background:var(--teal-glow); border:1px solid rgba(0,229,196,0.2); display:flex; align-items:center; justify-content:center; color:var(--teal); font-size:1.4rem; flex-shrink:0; }
 
-        /* ── DYNAMIC INVENTORY LIST ── */
+        /* ── BOOKS LIST ── */
         .books-list-container { display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
         .empty-state-text { font-size:0.85rem; color:var(--text-muted); font-style:italic; padding:10px 0; }
-        .book-list-item { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; text-decoration:none; transition: border-color 0.15s; }
-        .book-list-item:hover { border-color: var(--teal); }
-        .book-item-title { font-family:var(--serif); font-size:1rem; font-weight:600; color:#e0e5ea; }
+
+        .book-list-item {
+            background:var(--bg-card); border:1px solid var(--border); border-radius:8px;
+            padding:16px 20px; display:flex; justify-content:space-between; align-items:center;
+            transition:border-color 0.15s;
+        }
+        .book-list-item:hover { border-color:var(--teal); }
+        .book-item-title { font-family:var(--serif); font-size:1rem; font-weight:600; color:#e0e5ea; margin-bottom:3px; }
         body.light .book-item-title { color:#1c1b18; }
         .book-item-meta { font-size:0.78rem; color:var(--text-muted); }
+        .book-item-actions { display:flex; gap:14px; align-items:center; flex-shrink:0; }
+        .book-action-edit { color:var(--teal); text-decoration:none; font-size:0.8rem; background:none; border:none; cursor:pointer; padding:0; }
+        .book-action-delete { color:var(--red); background:none; border:none; cursor:pointer; font-size:0.8rem; padding:0; transition:opacity 0.15s; }
+        .book-action-delete:hover { opacity:0.7; }
 
-        /* ── ORGANISATION BLOCKS ── */
+        /* Loading skeleton */
+        .skeleton { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px 20px; height:64px; animation:pulse 1.4s ease infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* ── ORGANISE ── */
         .organise-info { font-size:0.88rem; color:var(--text-muted); font-weight:300; line-height:1.6; margin-bottom:20px; border-left:2px solid rgba(0,229,196,0.2); padding-left:16px; }
         body.light .organise-info { border-left:2px solid rgba(122,46,46,0.2); }
         .group-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:18px 20px; margin-bottom:10px; }
-        .group-name { font-family:var(--serif); font-size:1rem; font-weight:600; color:#e0e5ea; margin-bottom:4px; }
+        .group-name { font-family:var(--serif); font-size:1rem; font-weight:600; color:#e0e5ea; margin-bottom:8px; }
         body.light .group-name { color:#1c1b18; }
+        .group-books { display:flex; flex-direction:column; gap:6px; }
+        .group-book-row { display:flex; justify-content:space-between; align-items:center; font-size:0.82rem; color:var(--text-muted); padding:4px 0; border-bottom:1px solid var(--border); }
+        .group-book-row:last-child { border-bottom:none; }
+        .group-empty { font-size:0.78rem; color:var(--text-muted); font-style:italic; }
+        .group-add-book-select { background:var(--bg-section); border:1px solid var(--border); color:var(--text); border-radius:4px; padding:5px 8px; font-size:0.78rem; margin-top:10px; width:100%; }
         .organise-add { display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--teal); cursor:pointer; padding:12px 0; font-weight:400; background:none; border:none; }
 
         /* ── ANALYTICS ── */
         .analytics-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; padding:0; background:none; border:none; cursor:pointer; }
         .analytics-toggle-label { font-size:0.7rem; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--teal); }
-        .analytics-chevron { color:var(--teal); font-size:0.9rem; transition: transform 0.2s; }
+        .analytics-chevron { color:var(--teal); font-size:0.9rem; transition:transform 0.2s; }
         #analytics-view { display:none; }
         #analytics-view.open { display:block; }
         .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:28px; }
@@ -94,6 +112,25 @@
         .eng-value { font-family:var(--serif); font-size:1.15rem; font-weight:600; color:#e4e9ee; }
         body.light .eng-value { color:#1c1b18; }
 
+        /* ── TOAST ── */
+        .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--bg-card); border:1px solid var(--border); color:var(--text); padding:10px 20px; border-radius:6px; opacity:0; transition:all 0.2s; pointer-events:none; z-index:999; font-size:0.85rem; }
+        .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+        .toast.error { border-color:var(--red); color:var(--red); }
+        .toast.success { border-color:var(--teal); color:var(--teal); }
+
+        /* ── CONFIRM MODAL ── */
+        .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:500; display:none; align-items:center; justify-content:center; }
+        .modal-overlay.show { display:flex; }
+        .modal-box { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:28px 24px; max-width:360px; width:90%; }
+        .modal-title { font-family:var(--serif); font-size:1.1rem; color:#e0e5ea; margin-bottom:8px; }
+        body.light .modal-title { color:#1c1b18; }
+        .modal-sub { font-size:0.83rem; color:var(--text-muted); margin-bottom:24px; line-height:1.5; }
+        .modal-actions { display:flex; gap:10px; justify-content:flex-end; }
+        .modal-cancel { background:none; border:1px solid var(--border); color:var(--text-muted); padding:9px 18px; border-radius:5px; cursor:pointer; font-size:0.85rem; }
+        .modal-cancel:hover { border-color:var(--text-muted); }
+        .modal-confirm { background:var(--red); border:none; color:#fff; padding:9px 18px; border-radius:5px; cursor:pointer; font-size:0.85rem; font-weight:500; }
+        .modal-confirm:hover { opacity:0.85; }
+
         @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
         @media(max-width:480px) { main{padding:32px 20px 80px;} .engagement-grid{grid-template-columns:1fr;} }
     </style>
@@ -102,7 +139,9 @@
 
 <nav>
     <div class="nav-left">
-        <a href="quirki-home.html" class="nav-back"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="quirki-home.html" class="nav-back">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
         <a href="quirki-home.html" class="logo">
             <svg viewBox="0 0 26 26" fill="none"><path d="M13 2 C14.5 2 15.5 3 15 4.5 C16.5 3.5 18.5 4 19 5.5 C19.5 7 18.5 8.5 17 8.5 C18.5 9 19.5 10.5 19 12 C18.5 13.5 17 14 15.5 13.5 C16.5 15 16 17 14.5 17.5 C13 18 11.5 17 11.5 15.5 C10.5 17 9 17.5 7.5 16.5 C6 15.5 6 13.5 7.5 12.5 C6 12.5 4.5 11.5 4.5 10 C4.5 8.5 5.5 7.5 7 7.5 C5.5 7 4.5 5.5 5 4 C5.5 2.5 7.5 2 9 3 C8.5 1.5 10 0.5 11.5 1 C12.5 1.5 13 2 13 2Z" fill="currentColor"/></svg>
             quirki
@@ -110,13 +149,17 @@
     </div>
     <div class="nav-right">
         <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button>
-        <a href="quirki-notif.html" class="nav-bell"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 0-6 6v2.5L2.5 13h15L16 10.5V8a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 15a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.4"/></svg><span class="dot"></span></a>
-        <a href="quirki-profile.html" class="nav-avatar">Z</a>
+        <a href="quirki-notif.html" class="nav-bell">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 0-6 6v2.5L2.5 13h15L16 10.5V8a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 15a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.4"/></svg>
+            <span class="dot"></span>
+        </a>
+        <a href="quirki-profile.html" class="nav-avatar" id="navAvatar">?</a>
     </div>
 </nav>
 
 <main>
     <h1 class="page-title">Writing</h1>
+
     <a href="booksetup.html" class="create-btn">
         <div class="create-btn-body">
             <div class="create-btn-title">Create your book</div>
@@ -125,139 +168,278 @@
         <div class="create-btn-icon">+</div>
     </a>
 
-    <p class="section-label">Your Books</p>
-    <div class="books-list-container" id="your-books-list"></div>
+    <span class="section-label">Your Books</span>
+    <div class="books-list-container" id="your-books-list">
+        <div class="skeleton"></div>
+        <div class="skeleton" style="opacity:0.5"></div>
+    </div>
 
     <div class="section-divider"></div>
-    <p class="section-label">Organise Your Books</p>
-    <p class="organise-info">Group your books into series, trilogies, or any custom collection layout.</p>
+
+    <span class="section-label">Organise Your Books</span>
+    <p class="organise-info">Group your books into series, trilogies, or any custom collection.</p>
     <div id="group-container"></div>
-    <button class="organise-add" onclick="createNewGroup()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Create a new group</button>
-
-    <div class="section-divider"></div>
-
-    <p class="section-label" style="margin-top:20px;">View Analytics For</p>
-    <div id="analytics-blob-container" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px;"></div>
-    
-    <button class="analytics-toggle" onclick="toggleAnalytics()">
-        <span class="analytics-toggle-label">Analytics</span>
-        <span class="analytics-chevron" id="analytics-chevron">▾</span>
+    <button class="organise-add" onclick="createNewGroup()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Create a new group
     </button>
 
-    <div id="analytics-view">
-        <div class="stat-grid" style="margin-top:24px;">
+    <div class="section-divider"></div>
+
+    <span class="section-label" style="margin-top:20px;">Analytics</span>
+    <div style="margin-top:16px;">
+        <div class="stat-grid">
             <div class="stat-card"><div class="stat-label">Words Written</div><div class="stat-value" id="analytic-words">---</div></div>
-            <div class="stat-card"><div class="stat-label">Subscribers</div><div class="stat-value" id="analytic-subs">---</div></div>
+            <div class="stat-card"><div class="stat-label">Subscribers</div><div class="stat-value">---</div></div>
         </div>
         <div class="engagement-grid">
-            <div class="eng-card"><div class="eng-label">Adds</div><div class="eng-value" id="analytic-adds">---</div></div>
-            <div class="eng-card"><div class="eng-label">Comments</div><div class="eng-value" id="analytic-comments">---</div></div>
-            <div class="eng-card"><div class="eng-label">Reviews</div><div class="eng-value" id="analytic-reviews">---</div></div>
+            <div class="eng-card"><div class="eng-label">Adds</div><div class="eng-value">---</div></div>
+            <div class="eng-card"><div class="eng-label">Comments</div><div class="eng-value">---</div></div>
+            <div class="eng-card"><div class="eng-label">Reviews</div><div class="eng-value">---</div></div>
         </div>
     </div>
 </main>
 
+<!-- Delete confirm modal -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+        <div class="modal-title">Delete this book?</div>
+        <div class="modal-sub" id="deleteModalSub">This will permanently remove the book from your cloud library. This cannot be undone.</div>
+        <div class="modal-actions">
+            <button class="modal-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="modal-confirm" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-    let library = JSON.parse(localStorage.getItem('quirki-library') || '[]');
+// ─── Supabase ─────────────────────────────────────────────
+const SUPABASE_URL = 'https://niefhnktetrehrbesduz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_7cLg3pnVrkV4IjhMakr-DA_l4BtiUis';
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    function renderSavedBooks() {
-        const container = document.getElementById('your-books-list');
-        const blobContainer = document.getElementById('analytics-blob-container');
-        
-        container.innerHTML = library.length ? '' : '<div class="empty-state-text">No saved books found. Create a book above to begin writing.</div>';
-        blobContainer.innerHTML = ''; 
+// ─── State ────────────────────────────────────────────────
+let currentUser = null;
+let userBooks = [];
+let groups = JSON.parse(localStorage.getItem('quirki-groups') || '[]');
+let pendingDeleteId = null;
 
-        library.forEach(book => {
-            const words = calculateWords(book);
-            
-            container.innerHTML += `
-                <div class="book-list-item">
-                    <div>
-                        <div class="book-item-title">${escapeHTML(book.title)}</div>
-                        <div class="book-item-meta">${book.chapters ? book.chapters.length : 0} Ch. · ${words.toLocaleString()} words</div>
-                    </div>
-                    <div style="display:flex; gap:15px;">
-                        <a href="booksetup.html?id=${book.id}" style="color:var(--teal); text-decoration:none; font-size:0.8rem;">Edit</a>
-                        <button onclick="deleteBook('${book.id}')" style="color:#e05555; background:none; border:none; cursor:pointer; font-size:0.8rem;">Delete</button>
-                    </div>
+// ─── Init ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+    if (localStorage.getItem('quirki-theme') === 'light') {
+        document.body.classList.add('light');
+        document.getElementById('theme-btn').textContent = '🌑';
+    }
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
+    currentUser = user;
+    document.getElementById('navAvatar').textContent = (user.email || 'U')[0].toUpperCase();
+
+    await loadBooks();
+    renderGroups();
+});
+
+// ─── Load books from Supabase ─────────────────────────────
+async function loadBooks() {
+    const { data, error } = await supabaseClient
+        .from('books')
+        .select('id, title, author_name, chapters, created_at')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false });
+
+    const container = document.getElementById('your-books-list');
+
+    if (error) {
+        container.innerHTML = '<div class="empty-state-text">Could not load books. Check your connection.</div>';
+        return;
+    }
+
+    userBooks = data || [];
+    renderBooks();
+    renderAnalyticsWords();
+}
+
+// ─── Render books list ────────────────────────────────────
+function renderBooks() {
+    const container = document.getElementById('your-books-list');
+
+    if (userBooks.length === 0) {
+        container.innerHTML = '<div class="empty-state-text">No saved books yet. Create one above to get started.</div>';
+        return;
+    }
+
+    container.innerHTML = userBooks.map(book => {
+        const words = countWords(book.chapters);
+        const chCount = Array.isArray(book.chapters) ? book.chapters.length : 0;
+        return `
+            <div class="book-list-item">
+                <div>
+                    <div class="book-item-title">${escapeHTML(book.title || 'Untitled')}</div>
+                    <div class="book-item-meta">${chCount} chapter${chCount !== 1 ? 's' : ''} · ${words.toLocaleString()} words</div>
+                </div>
+                <div class="book-item-actions">
+                    <a href="booksetup.html?id=${book.id}" class="book-action-edit">Edit</a>
+                    <button class="book-action-delete" onclick="openDeleteModal('${book.id}', '${escapeHTML(book.title || 'Untitled')}')">Delete</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ─── Word count ───────────────────────────────────────────
+function countWords(chapters) {
+    if (!Array.isArray(chapters)) return 0;
+    return chapters.reduce((total, ch) => {
+        const txt = (ch.content || '').replace(/<[^>]*>/g, ' ').trim();
+        return total + (txt ? txt.split(/\s+/).length : 0);
+    }, 0);
+}
+
+function renderAnalyticsWords() {
+    const total = userBooks.reduce((sum, b) => sum + countWords(b.chapters), 0);
+    document.getElementById('analytic-words').textContent = total > 0 ? total.toLocaleString() : '---';
+}
+
+// ─── Delete ───────────────────────────────────────────────
+function openDeleteModal(bookId, bookTitle) {
+    pendingDeleteId = bookId;
+    document.getElementById('deleteModalSub').textContent =
+        `"${bookTitle}" will be permanently removed from your cloud library. This cannot be undone.`;
+    document.getElementById('deleteModal').classList.add('show');
+}
+
+function closeDeleteModal() {
+    pendingDeleteId = null;
+    document.getElementById('deleteModal').classList.remove('show');
+}
+
+async function confirmDelete() {
+    if (!pendingDeleteId) return;
+
+    const { error } = await supabaseClient
+        .from('books')
+        .delete()
+        .eq('id', pendingDeleteId)
+        .eq('user_id', currentUser.id); // safety check
+
+    closeDeleteModal();
+
+    if (error) {
+        showToast('Failed to delete. Try again.', 'error');
+        return;
+    }
+
+    userBooks = userBooks.filter(b => b.id !== pendingDeleteId);
+    pendingDeleteId = null;
+    renderBooks();
+    renderAnalyticsWords();
+    showToast('Book deleted.', 'success');
+}
+
+// ─── Groups (local, since no backend yet) ────────────────
+function renderGroups() {
+    const container = document.getElementById('group-container');
+    if (groups.length === 0) { container.innerHTML = ''; return; }
+
+    container.innerHTML = groups.map((group, gIdx) => {
+        const bookOptions = userBooks
+            .filter(b => !group.bookIds.includes(b.id))
+            .map(b => `<option value="${b.id}">${escapeHTML(b.title || 'Untitled')}</option>`)
+            .join('');
+
+        const groupBookRows = group.bookIds.map(bid => {
+            const book = userBooks.find(b => b.id === bid);
+            if (!book) return '';
+            return `
+                <div class="group-book-row">
+                    <span>${escapeHTML(book.title || 'Untitled')}</span>
+                    <button onclick="removeFromGroup(${gIdx}, '${bid}')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.75rem;">Remove</button>
                 </div>
             `;
-            blobContainer.innerHTML += `<button onclick="updateAnalytics('${book.id}', this)">${escapeHTML(book.title)}</button>`;
-        });
+        }).join('');
+
+        return `
+            <div class="group-card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <div class="group-name">${escapeHTML(group.name)}</div>
+                    <button onclick="deleteGroup(${gIdx})" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.75rem;">Remove group</button>
+                </div>
+                <div class="group-books">
+                    ${groupBookRows || '<div class="group-empty">No books added yet.</div>'}
+                </div>
+                ${bookOptions ? `
+                    <select class="group-add-book-select" onchange="addToGroup(${gIdx}, this)">
+                        <option value="">+ Add a book to this group</option>
+                        ${bookOptions}
+                    </select>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+function createNewGroup() {
+    const name = prompt('Name your book group:');
+    if (!name || !name.trim()) return;
+    groups.push({ name: name.trim(), bookIds: [] });
+    saveGroups();
+    renderGroups();
+}
+
+function addToGroup(groupIdx, selectEl) {
+    const bookId = selectEl.value;
+    if (!bookId) return;
+    if (!groups[groupIdx].bookIds.includes(bookId)) {
+        groups[groupIdx].bookIds.push(bookId);
+        saveGroups();
+        renderGroups();
     }
+    selectEl.value = '';
+}
 
-    function calculateWords(book) {
-        if (!book.chapters) return 0;
-        return book.chapters.reduce((acc, ch) => {
-            const txt = (ch.content || '').replace(/<[^>]*>/g, ' ').trim();
-            return acc + (txt ? txt.split(/\s+/).length : 0);
-        }, 0);
-    }
+function removeFromGroup(groupIdx, bookId) {
+    groups[groupIdx].bookIds = groups[groupIdx].bookIds.filter(id => id !== bookId);
+    saveGroups();
+    renderGroups();
+}
 
-    function updateAnalytics(bookId, btnElement) {
-        document.querySelectorAll('#analytics-blob-container button').forEach(b => b.className = '');
-        btnElement.className = 'blob-active';
-        
-        const book = library.find(b => b.id === bookId);
-        if (book) {
-            document.getElementById('analytic-words').textContent = calculateWords(book).toLocaleString();
-            document.getElementById('analytic-subs').textContent = "0"; 
-            document.getElementById('analytic-adds').textContent = "0";
-            document.getElementById('analytic-comments').textContent = "0";
-            document.getElementById('analytic-reviews').textContent = "0";
-        }
-    }
+function deleteGroup(groupIdx) {
+    if (!confirm('Remove this group?')) return;
+    groups.splice(groupIdx, 1);
+    saveGroups();
+    renderGroups();
+}
 
-    function deleteBook(id) {
-        if(!confirm("Are you sure?")) return;
-        library = library.filter(b => b.id !== id);
-        localStorage.setItem('quirki-library', JSON.stringify(library));
-        
-        document.getElementById('analytic-words').textContent = "---";
-        document.getElementById('analytic-subs').textContent = "---";
-        document.getElementById('analytic-adds').textContent = "---";
-        document.getElementById('analytic-comments').textContent = "---";
-        document.getElementById('analytic-reviews').textContent = "---";
-        
-        renderSavedBooks();
-    }
+function saveGroups() {
+    localStorage.setItem('quirki-groups', JSON.stringify(groups));
+}
 
-    function toggleTheme() {
-        document.body.classList.toggle('light');
-        const isLight = document.body.classList.contains('light');
-        localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
-        document.getElementById('theme-btn').textContent = isLight ? '🌑' : '🌙';
-    }
+// ─── Theme ────────────────────────────────────────────────
+function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
+    document.getElementById('theme-btn').textContent = isLight ? '🌑' : '🌙';
+}
 
-    function toggleAnalytics() {
-        const panel = document.getElementById('analytics-view');
-        const chev = document.getElementById('analytics-chevron');
-        panel.classList.toggle('open');
-        chev.style.transform = panel.classList.contains('open') ? 'rotate(180deg)' : 'none';
-    }
+// ─── Helpers ──────────────────────────────────────────────
+function escapeHTML(str) {
+    return String(str).replace(/[&<>'"]/g, tag => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[tag] || tag));
+}
 
-    function createNewGroup() {
-        const groupName = prompt("Name your custom book group collection:");
-        if (!groupName || groupName.trim() === "") return;
-        const container = document.getElementById('group-container');
-        container.innerHTML += `<div class="group-card"><div class="group-name">${escapeHTML(groupName)}</div></div>`;
-    }
-
-    function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
-
-    const style = document.createElement('style');
-    style.innerHTML = `#analytics-blob-container button { background:var(--bg-card); color:var(--text-muted); border:1px solid var(--border); padding:6px 14px; border-radius:20px; cursor:pointer; font-size:0.75rem; transition:all 0.2s; margin-bottom: 5px; } #analytics-blob-container button:hover { border-color:var(--teal); color:var(--teal); } #analytics-blob-container button.blob-active { background:var(--teal); color:var(--bg); border-color:var(--teal); }`;
-    document.head.appendChild(style);
-
-    (function() {
-        if(localStorage.getItem('quirki-theme') === 'light') {
-            document.body.classList.add('light');
-            document.getElementById('theme-btn').textContent = '🌑';
-        } else {
-            document.getElementById('theme-btn').textContent = '🌙';
-        }
-        renderSavedBooks();
-    })();
+function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    setTimeout(() => { t.className = 'toast'; }, 2800);
+}
 </script>
 </body>
 </html>
