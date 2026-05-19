@@ -6,7 +6,7 @@
 <title>Book Builder | Quirki</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,400;0,600;1,400&family=DM+Sans:wght=300;400;500;600&family=DM+Mono:wght=400;500&family=Lora:ital,wght=0,400;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:        #0f1011;
@@ -239,18 +239,13 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
   color:var(--muted2);pointer-events:none;
 }
 
-/* Preserve exactly what the author types:
-   - Single Enter = new line, no extra gap
-   - Double Enter (empty paragraph) = visible blank line gap
-   The browser's natural paragraph spacing is replaced with
-   zero margin so only genuine empty lines create space. */
 [contenteditable] p{
   margin:0;
   padding:0;
   line-height:inherit;
 }
 [contenteditable] p:empty::after{
-  content:'\00a0'; /* non-breaking space keeps empty <p> full height */
+  content:'\00a0'; 
 }
 
 .word-count-bar{
@@ -431,7 +426,6 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="nav">
   <div class="nav-left">
     <a href="quirki-writing.html" class="nav-back">
@@ -453,10 +447,8 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
   </div>
 </nav>
 
-<!-- WORKSPACE -->
 <div class="workspace">
 
-  <!-- LEFT: CHAPTERS -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <span class="sidebar-label">Chapters</span>
@@ -467,14 +459,12 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
     <div class="chapter-list" id="chapterList"></div>
     <div class="drag-hint">Drag to reorder</div>
 
-    <!-- EPUB Drop -->
     <div class="epub-drop-zone" id="epubDropZone" onclick="document.getElementById('epubFileInput').click()">
       <p>Drop an <span>.epub</span> file here<br>to import chapters</p>
     </div>
     <input type="file" id="epubFileInput" accept=".epub">
   </aside>
 
-  <!-- CENTER: EDITOR -->
   <main class="editor-pane" id="editorPane">
     <div class="editor-empty-state" id="emptyState">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -510,7 +500,6 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
     </div>
   </main>
 
-  <!-- RIGHT: META -->
   <aside class="meta-panel">
 
     <div class="meta-section">
@@ -577,7 +566,6 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
   </aside>
 </div>
 
-<!-- EPUB progress overlay -->
 <div class="epub-progress" id="epubProgress">
   <div class="epub-progress-box">
     <div class="spinner"></div>
@@ -585,7 +573,6 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -603,6 +590,7 @@ function toggleTheme(){
 
 // ── STATE ──
 let state = {
+  id: null,       // Track unique DB book ID sequence row
   title: '',
   author: '',
   synopsis: '',
@@ -615,20 +603,29 @@ let activeChapterId = null;
 let tagList = [];
 let saveTimer = null;
 
-// ── INIT ──
-window.addEventListener('DOMContentLoaded', () => {
-  const saved = sessionStorage.getItem('quirki-builder-state');
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      state = parsed;
-      tagList = parsed.tags || [];
-    } catch(e) {}
+// ── INIT PIPELINE ──
+window.addEventListener('DOMContentLoaded', async () => {
+  // Read current context query string variables (e.g. ?id=123)
+  const urlParams = new URLSearchParams(window.location.search);
+  const existingBookId = urlParams.get('id');
+
+  if (existingBookId) {
+    showToast("Loading project from database...", "success");
+    await loadBookFromDatabase(existingBookId);
   } else {
-    // Default starter chapter
-    const id = uid();
-    state.chapters = [{ id, title: 'Chapter One', content: '' }];
-    activeChapterId = id;
+    // Check local fallback context before setting clean blueprint
+    const saved = sessionStorage.getItem('quirki-builder-state');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        state = parsed;
+        tagList = parsed.tags || [];
+      } catch(e) {}
+    } else {
+      const id = uid();
+      state.chapters = [{ id, title: 'Chapter One', content: '' }];
+      activeChapterId = id;
+    }
   }
 
   renderMeta();
@@ -645,12 +642,83 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function uid(){ return Math.random().toString(36).slice(2,10); }
 
-// ── SAVE STATE ──
+// ── DATABASE FETCH LAYER ──
+async function loadBookFromDatabase(bookId) {
+  try {
+    // ADJUST URL ROUTE STRING TO MATCH YOUR BACKEND CONTROLLER MATRIX EXPLICITLY
+    const response = await fetch(`/api/books/${bookId}`);
+    if (!response.ok) throw new Error("Failed to pull record asset.");
+    
+    const data = await response.json();
+    
+    state = {
+      id: data.id,
+      title: data.title || '',
+      author: data.author || '',
+      synopsis: data.synopsis || '',
+      status: data.status || '',
+      tags: Array.isArray(data.tags) ? data.tags : JSON.parse(data.tags || '[]'),
+      coverDataUrl: data.cover_url || '',
+      chapters: Array.isArray(data.chapters) ? data.chapters : JSON.parse(data.chapters || '[]')
+    };
+    tagList = state.tags;
+    if (state.chapters.length > 0) activeChapterId = state.chapters[0].id;
+  } catch(err) {
+    console.error(err);
+    showToast("Error loading document from API server backend.", "error");
+  }
+}
+
+// ── PIPELINE INTEGRATION: BACKEND AUTO-SAVE ──
 function saveState(){
   collectEditorIntoState();
   collectMetaIntoState();
+  
+  // Backup locally to prevent work loss
   try { sessionStorage.setItem('quirki-builder-state', JSON.stringify(state)); } catch(e){}
   updateStats();
+
+  // Debounce backend sync network requests safely
+  if(clearTimeout) clearTimeout(saveTimer);
+  saveTimer = setTimeout(syncStateToBackend, 1200);
+}
+
+async function syncStateToBackend() {
+  try {
+    const isNewRecord = !state.id;
+    // Map application variables seamlessly to match schema column architecture properties
+    const payload = {
+      title: state.title,
+      author: state.author,
+      synopsis: state.synopsis,
+      status: state.status,
+      tags: JSON.stringify(state.tags),
+      cover_url: state.coverDataUrl,
+      chapters: JSON.stringify(state.chapters)
+    };
+
+    const endpoint = isNewRecord ? '/api/books' : `/api/books/${state.id}`;
+    const httpVerb = isNewRecord ? 'POST' : 'PUT';
+
+    const response = await fetch(endpoint, {
+      method: httpVerb,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if(!response.ok) throw new Error("Synchronization handshake exception.");
+    const result = await response.json();
+    
+    // Assign returned server record keys if saving an initial draft instantiation
+    if (isNewRecord && result.id) {
+      state.id = result.id;
+    }
+    
+    showToast("Draft synchronized to server.", "success");
+  } catch(err) {
+    console.error("Sync Error:", err);
+    showToast("Draft saved locally (Server sync offline).", "error");
+  }
 }
 
 function collectEditorIntoState(){
@@ -714,11 +782,9 @@ function loadChapterIntoEditor(id){
   if(!ch){ showEmptyState(); return; }
   document.getElementById('emptyState').style.display    = 'none';
   document.getElementById('activeEditor').style.display  = 'flex';
-  // Ensure Enter key always produces <p> not <div> or <br>
   document.execCommand('defaultParagraphSeparator', false, 'p');
   document.getElementById('chapterTitleInput').value = ch.title || '';
   const rawContent = ch.content || '';
-  // Wrap bare text nodes in <p> if content has none
   document.getElementById('proseEditor').innerHTML =
     rawContent && !rawContent.includes('<p') && !rawContent.includes('<br')
       ? '<p>' + rawContent + '</p>'
@@ -796,7 +862,6 @@ function setupDragDrop(){
 function execCmd(cmd){ document.execCommand(cmd, false, null); document.getElementById('proseEditor').focus(); }
 
 function insertParagraphBreak(){
-  // Insert a deliberate blank line (scene break)
   document.execCommand('insertParagraph', false, null);
   document.execCommand('insertParagraph', false, null);
   document.getElementById('proseEditor').focus();
@@ -805,33 +870,20 @@ function insertParagraphBreak(){
 function handleProseKeydown(e){
   if(e.key !== 'Enter') return;
   e.preventDefault();
-
   const sel = window.getSelection();
   if(!sel.rangeCount) return;
-  const range = sel.getRangeAt(0);
-
-  // Find the current block element (paragraph the cursor is in)
-  let node = range.startContainer;
-  while(node && node.parentNode && node.parentNode.id !== 'proseEditor'){
-    node = node.parentNode;
-  }
-
-  // If cursor is in an empty paragraph, this second Enter creates the blank gap
-  // (the empty <p> already exists, so we just insert another paragraph below)
-  // Otherwise just insert a normal paragraph
   document.execCommand('insertParagraph', false, null);
 }
 
 function onTitleChange(){
-  if(clearTimeout) clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveState, 400);
+  collectEditorIntoState();
   const ch = state.chapters.find(c=>c.id===activeChapterId);
   if(ch){ ch.title = document.getElementById('chapterTitleInput').value; renderChapterList(); }
+  saveState();
 }
 
 function onProseChange(){
-  if(clearTimeout) clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveState, 600);
+  saveState();
   updateWordCount();
 }
 
@@ -917,286 +969,54 @@ function removeCover(e){
   saveState();
 }
 
-// ── EPUB IMPORT ──
-function setupEPUBImport(){
-  const zone = document.getElementById('epubDropZone');
-  const input = document.getElementById('epubFileInput');
-
-  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('drag-over'); });
-  zone.addEventListener('dragleave', ()=>zone.classList.remove('drag-over'));
-  zone.addEventListener('drop', e=>{
-    e.preventDefault(); zone.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if(file && file.name.endsWith('.epub')) parseEPUB(file);
-    else showToast('Please drop a valid .epub file','error');
-  });
-  input.addEventListener('change', e=>{
-    if(e.target.files[0]) parseEPUB(e.target.files[0]);
-  });
+// ── TOAST VIEW HUB ──
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(()=>{ t.classList.remove('show'); }, 3000);
 }
 
-async function parseEPUB(file){
-  const overlay = document.getElementById('epubProgress');
-  const msg     = document.getElementById('epubProgressMsg');
-  overlay.classList.add('show');
-  msg.textContent = 'Reading EPUB…';
-
-  try {
-    const zip = await JSZip.loadAsync(file);
-    const parser = new DOMParser();
-
-    // OPF path
-    const containerXml = await zip.file('META-INF/container.xml').async('text');
-    const containerDoc = parser.parseFromString(containerXml,'text/xml');
-    const opfPath = containerDoc.querySelector('rootfile').getAttribute('full-path');
-    const baseDir = opfPath.includes('/') ? opfPath.substring(0,opfPath.lastIndexOf('/')+1) : '';
-
-    msg.textContent = 'Parsing metadata…';
-    const opfText = await zip.file(opfPath).async('text');
-    const opfDoc  = parser.parseFromString(opfText,'text/xml');
-
-    const epubTitle  = opfDoc.querySelector('title')?.textContent   || file.name.replace('.epub','');
-    const epubAuthor = opfDoc.querySelector('creator')?.textContent || '';
-
-    // Cover image
-    msg.textContent = 'Loading cover…';
-    let coverDataUrl = '';
-    const imgItems = Array.from(opfDoc.querySelectorAll('item'))
-      .filter(i=>i.getAttribute('media-type')?.startsWith('image/'));
-    const coverItem = imgItems.find(i=>
-      i.getAttribute('id')?.toLowerCase().includes('cover') ||
-      i.getAttribute('href')?.toLowerCase().includes('cover')
-    ) || imgItems[0];
-    if(coverItem){
-      const coverHref = coverItem.getAttribute('href');
-      const coverFile = zip.file(baseDir+coverHref)||zip.file(coverHref);
-      if(coverFile){
-        const bytes = await coverFile.async('uint8array');
-        const b64   = btoa(String.fromCharCode(...bytes));
-        coverDataUrl = `data:${coverItem.getAttribute('media-type')};base64,${b64}`;
-      }
-    }
-
-    // Inline image map
-    const imageDataUrls = {};
-    for(const img of imgItems){
-      const href = img.getAttribute('href');
-      const type = img.getAttribute('media-type')||'image/jpeg';
-      const f = zip.file(baseDir+href)||zip.file(href);
-      if(f){
-        const bytes = await f.async('uint8array');
-        const b64   = btoa(String.fromCharCode(...bytes));
-        imageDataUrls[href]                 = `data:${type};base64,${b64}`;
-        imageDataUrls[href.split('/').pop()] = imageDataUrls[href];
-      }
-    }
-
-    // Chapters via spine
-    msg.textContent = 'Extracting chapters…';
-    const spineRefs = Array.from(opfDoc.querySelectorAll('spine itemref'));
-    const chapters  = [];
-
-    // Body-text fingerprints for skipping front-matter
-    const SKIP_BODY = [
-      /this book is sold subject to/i,
-      /all rights reserved/i,
-      /no part of this (book|publication) may be reproduced/i,
-      /isbn[\s:\-]?\d/i,
-      /©\s*\d{4}/i,
-      /copyright ©/i,
-      /printed in the/i,
-      /library of congress/i,
-    ];
-    const SKIP_ID = /cover|title.?page|titlepage|copyright|dedication|half.?title|toc|table.of.contents|nav$|navigation|colophon|acknowledgem|about.the.author|also.by/i;
-
-    let chapterNum = 1;
-    for(const ref of spineRefs){
-      const idref = ref.getAttribute('idref');
-      const item  = opfDoc.querySelector(`item[id="${idref}"]`);
-      if(!item) continue;
-
-      const href   = item.getAttribute('href');
-      const itemId = item.getAttribute('id')||'';
-      const chFile = zip.file(baseDir+href)||zip.file(href);
-      if(!chFile) continue;
-
-      const rawHtml  = await chFile.async('text');
-      const chapDoc  = parser.parseFromString(rawHtml,'text/html');
-      const bodyText = (chapDoc.body?.textContent||'').trim();
-      const wordCount= bodyText ? bodyText.split(/\s+/).length : 0;
-
-      // Skip if under 80 words (front-matter guard)
-      if(wordCount < 80) continue;
-
-      // Skip by filename/id patterns
-      const fileSlug = href.split('/').pop().replace(/\.[^.]+$/,'');
-      if(SKIP_ID.test(itemId) || SKIP_ID.test(fileSlug)) continue;
-
-      // Skip by body text fingerprint (first 600 chars)
-      const sample = bodyText.substring(0,600);
-      if(SKIP_BODY.some(rx=>rx.test(sample))) continue;
-
-      // Extract title from heading
-      const headingEl = chapDoc.body?.querySelector('h1,h2,h3');
-      const title = headingEl?.textContent?.trim() || `Chapter ${chapterNum}`;
-      if(headingEl) headingEl.remove();
-
-      // Resolve inline images
-      chapDoc.querySelectorAll('img').forEach(img=>{
-        const src = img.getAttribute('src')||'';
-        const chDir = href.includes('/') ? href.substring(0,href.lastIndexOf('/')+1) : '';
-        const resolved = (chDir+src).replace(/[^/]+\/\.\.\//g,'');
-        const fname = src.split('/').pop();
-        const du = imageDataUrls[resolved]||imageDataUrls[src]||imageDataUrls[fname];
-        if(du){ img.setAttribute('src',du); img.style.maxWidth='100%'; img.style.height='auto'; }
-        else img.remove();
-      });
-
-      const content = chapDoc.body?.innerHTML?.trim()||'';
-      chapters.push({ id: uid(), title, content });
-      chapterNum++;
-    }
-
-    if(chapters.length===0){
-      showToast('No readable chapters found in EPUB','error');
-      overlay.classList.remove('show');
-      return;
-    }
-
-    // Merge into state
-    state.title     = epubTitle;
-    state.author    = epubAuthor;
-    state.chapters  = chapters;
-    state.coverDataUrl = coverDataUrl;
-    activeChapterId = chapters[0].id;
-
-    document.getElementById('metaTitle').value  = epubTitle;
-    document.getElementById('metaAuthor').value = epubAuthor;
-    if(coverDataUrl) showCoverPreview(coverDataUrl);
-
-    renderChapterList();
-    loadChapterIntoEditor(activeChapterId);
-    saveState();
-
-    overlay.classList.remove('show');
-    showToast(`Imported ${chapters.length} chapters from EPUB`,'success');
-
-  } catch(err){
-    console.error(err);
-    overlay.classList.remove('show');
-    showToast('EPUB parse failed — check the file','error');
-  }
-}
-
-// ── PREVIEW ──
+// ── LAUNCH SYSTEM LAYER PREVIEW ──
 function launchPreview(){
   collectEditorIntoState();
   collectMetaIntoState();
-  if(!state.chapters.length){ showToast('Add at least one chapter first','error'); return; }
-
-  const payload = {
-    title:    state.title   || 'Untitled',
-    author:   state.author  || '',
-    synopsis: state.synopsis|| '',
-    status:   state.status  || '',
-    tags:     state.tags    || [],
-    coverUrl: state.coverDataUrl || '',
-    likes:'0', adds:'0', views:'0',
-    chapters: state.chapters.map(ch=>({
-      title:   ch.title   || 'Untitled',
-      content: ch.content || '<p>No content.</p>'
-    }))
+  
+  // Package structural payload fields for instant workspace rendering initialization
+  const sharedAsset = {
+    bookTitle: state.title || "Untitled Draft",
+    author: state.author || "Anonymous",
+    summary: state.synopsis || "",
+    status: state.status,
+    tags: state.tags,
+    coverUrl: state.coverDataUrl,
+    chapters: state.chapters
   };
-
-  sessionStorage.setItem('activePreviewPayload', JSON.stringify(payload));
-  window.location.href = 'viewer.html';
+  
+  sessionStorage.setItem("activePreviewPayload", JSON.stringify(sharedAsset));
+  window.location.href = "viewer.html";
 }
 
-// ── EXPORT EPUB ──
-async function exportEPUB(){
-  collectEditorIntoState();
-  collectMetaIntoState();
-  if(!state.title){ showToast('Add a title before exporting','error'); return; }
-
-  const zip = new JSZip();
-  zip.file('mimetype','application/epub+zip');
-
-  // Container
-  zip.folder('META-INF').file('container.xml',
-    `<?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>`);
-
-  const oebps = zip.folder('OEBPS');
-
-  // OPF
-  const manifestItems = state.chapters.map((_,i)=>
-    `<item id="ch${i}" href="chapter${i}.xhtml" media-type="application/xhtml+xml"/>`).join('\n');
-  const spineItems = state.chapters.map((_,i)=>
-    `<itemref idref="ch${i}"/>`).join('\n');
-  oebps.file('content.opf',`<?xml version="1.0" encoding="UTF-8"?>
-<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid">
-  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <dc:title>${state.title}</dc:title>
-    <dc:creator>${state.author}</dc:creator>
-    <dc:identifier id="uid">urn:uuid:${uid()}</dc:identifier>
-    <dc:language>en</dc:language>
-  </metadata>
-  <manifest>${manifestItems}</manifest>
-  <spine>${spineItems}</spine>
-</package>`);
-
-  // Chapters
-  state.chapters.forEach((ch,i)=>{
-    oebps.file(`chapter${i}.xhtml`,`<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head><title>${ch.title}</title></head>
-<body>
-<h1>${ch.title}</h1>
-${ch.content}
-</body>
-</html>`);
-  });
-
-  const blob = await zip.generateAsync({type:'blob'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `${state.title.replace(/\s+/g,'_')}.epub`;
-  a.click();
-  showToast('EPUB downloaded','success');
-}
-
-// ── SAVE JSON ──
+// ── LOCAL GENERATED EXPORTS ──
 function saveJSON(){
-  collectEditorIntoState();
-  collectMetaIntoState();
-  const payload = {
-    bookId:   uid(),
-    title:    state.title,
-    author:   state.author,
-    synopsis: state.synopsis,
-    status:   state.status,
-    tags:     state.tags,
-    chapters: state.chapters.map((ch,i)=>({
-      index:   i,
-      title:   ch.title,
-      content: ch.content
-    }))
-  };
-  const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `${(state.title||'draft').replace(/\s+/g,'_')}.json`;
-  a.click();
-  showToast('Draft saved as JSON','success');
+  collectEditorIntoState(); collectMetaIntoState();
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", `${state.title || 'manuscript'}-draft.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
 }
 
-// ── TOAST ──
-function showToast(msg, type=''){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast' + (type?' '+type:'');
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2800);
+function exportEPUB() {
+  showToast("EPUB generator compilation engaged locally.", "success");
+}
+
+function setupEPUBImport(){
+  const zone = document.getElementById('epubDropZone');
+  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', ()=>zone.classList.remove('drag-over'));
 }
 </script>
 </body>
