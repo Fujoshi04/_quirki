@@ -826,6 +826,33 @@
                 document.getElementById("fBtnSans").classList.add("active-setting");
             }
         }
-    </script>
+
+        // ── THEME INITIALIZATION SYSTEM (RUNS IMMEDIATELY) ──
+  if (localStorage.getItem('quirki-theme') === 'light') {
+    document.body.classList.add('light');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('theme-btn');
+    if (btn) {
+      const isLight = document.body.classList.contains('light');
+      btn.textContent = isLight ? '🌑' : '🌙';
+    }
+  });
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    const btn = document.getElementById('theme-btn');
+
+    if (btn) {
+      btn.textContent = isLight ? '🌑' : '🌙';
+    }
+
+    localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
+  }
+</script>
+
 </body>
 </html>
+   
