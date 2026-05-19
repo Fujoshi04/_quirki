@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Book Builder | Quirki</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,400;0,600;1,400&family=DM+Sans:wght=300;400;500;600&family=DM+Mono:wght=400;500&family=Lora:ital,wght=0,400;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg:        #0f1011;
@@ -138,6 +140,7 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
 .meta-section-label{font-family:var(--mono);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--accent);margin-bottom:10px;display:block;}
 .meta-input,.meta-textarea,.meta-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:9px 11px;outline:none;font-family:var(--sans);font-size:0.85rem;}
 .meta-input:focus,.meta-textarea:focus,.meta-select:focus{border-color:var(--accent);}
+.meta-input.error{border-color:var(--red);}
 .meta-textarea{resize:none;min-height:90px;line-height:1.55;}
 .tags-input-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:6px 8px;display:flex;flex-wrap:wrap;gap:5px;cursor:text;}
 .tag-pill{background:var(--accent-g2);color:var(--accent);font-family:var(--mono);font-size:0.7rem;padding:3px 8px;border-radius:3px;display:flex;align-items:center;gap:5px;}
@@ -157,13 +160,20 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
 .stat-value{font-family:var(--serif);font-size:1.3rem;color:var(--text);display:block;}
 .stat-label{font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-transform:uppercase;}
 .action-section{padding:16px;display:flex;flex-direction:column;gap:8px;}
-.btn-primary{width:100%;padding:12px;border:none;border-radius:5px;background:var(--accent);color:var(--bg);font-weight:600;cursor:pointer;}
+.btn-primary{width:100%;padding:12px;border:none;border-radius:5px;background:var(--accent);color:var(--bg);font-weight:600;cursor:pointer;transition:background 0.15s,opacity 0.15s;}
 .btn-primary:hover{background:var(--accent-d);}
-.btn-secondary{width:100%;padding:11px;border-radius:5px;background:transparent;border:1px solid var(--border2);color:var(--text);cursor:pointer;}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-secondary{width:100%;padding:11px;border-radius:5px;background:transparent;border:1px solid var(--border2);color:var(--text);cursor:pointer;transition:border-color 0.15s,color 0.15s;}
 .btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
 
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg4);border:1px solid var(--border2);color:var(--text);padding:10px 20px;border-radius:6px;opacity:0;transition:all 0.2s;pointer-events:none;z-index:999;}
+/* Validation hint */
+.validation-hint{font-family:var(--mono);font-size:0.65rem;color:var(--red);margin-top:4px;display:none;}
+.validation-hint.show{display:block;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg4);border:1px solid var(--border2);color:var(--text);padding:10px 20px;border-radius:6px;opacity:0;transition:all 0.2s;pointer-events:none;z-index:999;font-size:0.85rem;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{border-color:var(--red);color:var(--red);}
+.toast.success{border-color:var(--accent);color:var(--accent);}
 </style>
 </head>
 <body>
@@ -179,7 +189,7 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
     <button class="nav-btn" onclick="toggleTheme()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
-    <div class="nav-avatar">Z</div>
+    <div class="nav-avatar" id="navAvatar">?</div>
   </div>
 </nav>
 
@@ -217,9 +227,10 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
   <aside class="meta-panel">
     <div class="meta-section">
       <span class="meta-section-label">Book Details</span>
-      <input type="text" class="meta-input" id="metaTitle" placeholder="Book Title" oninput="saveData()">
-      <input type="text" class="meta-input" style="margin-top:8px" id="metaAuthor" placeholder="Author Name" oninput="saveData()">
-      <textarea class="meta-textarea" style="margin-top:8px" id="metaSynopsis" placeholder="Synopsis…" oninput="saveData()"></textarea>
+      <input type="text" class="meta-input" id="metaTitle" placeholder="Book Title *" oninput="clearError('metaTitle')">
+      <input type="text" class="meta-input" style="margin-top:8px" id="metaAuthor" placeholder="Author Name *" oninput="clearError('metaAuthor')">
+      <p class="validation-hint" id="validationHint">Book title and author name are required.</p>
+      <textarea class="meta-textarea" style="margin-top:8px" id="metaSynopsis" placeholder="Synopsis…"></textarea>
     </div>
 
     <div class="meta-section">
@@ -235,7 +246,7 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
       <span class="meta-section-label">Cover</span>
       <div class="cover-drop" onclick="document.getElementById('coverInput').click()">
         <img id="coverPreview" src="" alt="">
-        <div class="cover-placeholder" id="coverPlaceholder">Click to upload cover image</div>
+        <div class="cover-placeholder" id="coverPlaceholder">Click to upload cover image<br><span style="font-size:0.6rem;opacity:0.6;margin-top:4px;display:block;">A cover will be auto-generated for preview if skipped</span></div>
         <button class="cover-remove" id="coverRemove" onclick="removeCover(event)">✕ Remove</button>
       </div>
       <input type="file" id="coverInput" accept="image/*" onchange="handleCoverUpload(event)">
@@ -250,8 +261,8 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
     </div>
 
     <div class="action-section">
-      <button class="btn-primary" onclick="showToast('Previewing book compilation...','success')">Preview Book</button>
-      <button class="btn-secondary" onclick="saveAndExit()">Save & Exit</button>
+      <button class="btn-primary" id="saveBtn" onclick="saveBook()">Save to Cloud</button>
+      <button class="btn-secondary" onclick="previewBook()">Preview Book</button>
     </div>
   </aside>
 </div>
@@ -259,26 +270,40 @@ body.light .chapter-item.active{border-color:rgba(139,26,26,0.2);}
 <div class="toast" id="toast"></div>
 
 <script>
-// Global runtime variables
+// ─── Supabase Setup ───────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://niefhnktetrehrbesduz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_7cLg3pnVrkV4IjhMakr-DA_l4BtiUis';
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ─── Runtime State ────────────────────────────────────────────────────────────
 let chapters = [];
 let activeId = null;
 let tags = [];
+let BOOK_ID = null;
+let currentUser = null;
+let coverDataUrl = null; // base64 cover if uploaded
 
-// Initialize Page Layout Safely
-window.addEventListener('DOMContentLoaded', () => {
-  // Load saved fallback data if it exists
-  const saved = localStorage.getItem('quirki-local-book');
-  if(saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      chapters = parsed.chapters || [];
-      tags = parsed.tags || [];
-      document.getElementById('metaTitle').value = parsed.title || '';
-      document.getElementById('metaAuthor').value = parsed.author || '';
-      document.getElementById('metaSynopsis').value = parsed.synopsis || '';
-    } catch(e) {
-      setupDefaultChapter();
-    }
+// ─── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  // Check auth
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+  currentUser = user;
+
+  // Show avatar initial
+  const initial = (user.email || 'U')[0].toUpperCase();
+  document.getElementById('navAvatar').textContent = initial;
+
+  // Check if editing existing book via ?id=xxx
+  const params = new URLSearchParams(window.location.search);
+  BOOK_ID = params.get('id') || null;
+
+  if (BOOK_ID) {
+    await loadBookFromSupabase(BOOK_ID);
   } else {
     setupDefaultChapter();
   }
@@ -288,23 +313,51 @@ window.addEventListener('DOMContentLoaded', () => {
   updateStats();
 });
 
+// ─── Load existing book ───────────────────────────────────────────────────────
+async function loadBookFromSupabase(id) {
+  const { data, error } = await supabaseClient
+    .from('books')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) {
+    showToast('Could not load book', 'error');
+    setupDefaultChapter();
+    return;
+  }
+
+  chapters = data.chapters || [];
+  tags = data.tags || [];
+  document.getElementById('metaTitle').value = data.title || '';
+  document.getElementById('metaAuthor').value = data.author_name || '';
+  document.getElementById('metaSynopsis').value = data.synopsis || '';
+
+  if (chapters.length > 0) {
+    activeId = chapters[0].id;
+    loadChapter(activeId);
+  } else {
+    setupDefaultChapter();
+  }
+}
+
+// ─── Chapter Management ───────────────────────────────────────────────────────
 function setupDefaultChapter() {
   const id = 'ch-' + Math.random().toString(36).substring(2, 9);
-  chapters = [{ id: id, title: 'Chapter One', content: '<p></p>' }];
+  chapters = [{ id, title: 'Chapter One', content: '<p></p>' }];
   activeId = id;
   loadChapter(id);
 }
 
 function renderChapters() {
   const list = document.getElementById('chapterList');
-  if(!list) return;
+  if (!list) return;
   list.innerHTML = '';
-
   chapters.forEach((ch, idx) => {
     const item = document.createElement('div');
     item.className = 'chapter-item' + (ch.id === activeId ? ' active' : '');
     item.innerHTML = `
-      <span class="chapter-num">${String(idx+1).padStart(2,'0')}</span>
+      <span class="chapter-num">${String(idx + 1).padStart(2, '0')}</span>
       <span class="chapter-name">${ch.title || 'Untitled Chapter'}</span>
       <button class="del-btn" onclick="deleteChapter('${ch.id}', event)">✕</button>
     `;
@@ -316,50 +369,38 @@ function renderChapters() {
 function loadChapter(id) {
   saveCurrentContent();
   activeId = id;
-  
   const ch = chapters.find(c => c.id === id);
-  if(!ch) return;
-
+  if (!ch) return;
   document.getElementById('emptyState').style.display = 'none';
   document.getElementById('activeEditor').style.display = 'flex';
-  
   document.getElementById('chapterTitleInput').value = ch.title || '';
   document.getElementById('proseEditor').innerHTML = ch.content || '<p></p>';
-  
   renderChapters();
   updateChapterWordCount();
 }
 
 function addChapter() {
+  saveCurrentContent();
   const id = 'ch-' + Math.random().toString(36).substring(2, 9);
-  chapters.push({
-    id: id,
-    title: 'Chapter ' + (chapters.length + 1),
-    content: '<p></p>'
-  });
+  chapters.push({ id, title: 'Chapter ' + (chapters.length + 1), content: '<p></p>' });
   loadChapter(id);
-  saveData();
 }
 
 function deleteChapter(id, event) {
   event.stopPropagation();
-  if(chapters.length <= 1) {
-    showToast("You need to keep at least one chapter.", "error");
+  if (chapters.length <= 1) {
+    showToast('You need at least one chapter.', 'error');
     return;
   }
-  
   chapters = chapters.filter(c => c.id !== id);
-  if(activeId === id) {
-    activeId = chapters[0].id;
-  }
+  if (activeId === id) activeId = chapters[0].id;
   loadChapter(activeId);
-  saveData();
 }
 
 function saveCurrentContent() {
-  if(!activeId) return;
+  if (!activeId) return;
   const ch = chapters.find(c => c.id === activeId);
-  if(ch) {
+  if (ch) {
     ch.title = document.getElementById('chapterTitleInput').value;
     ch.content = document.getElementById('proseEditor').innerHTML;
   }
@@ -367,39 +408,33 @@ function saveCurrentContent() {
 
 function onTitleChange() {
   const ch = chapters.find(c => c.id === activeId);
-  if(ch) {
+  if (ch) {
     ch.title = document.getElementById('chapterTitleInput').value;
-    const activeItem = document.querySelector('.chapter-item.active .chapter-name');
-    if(activeItem) activeItem.textContent = ch.title || 'Untitled Chapter';
+    const el = document.querySelector('.chapter-item.active .chapter-name');
+    if (el) el.textContent = ch.title || 'Untitled Chapter';
   }
-  saveData();
 }
 
 function onProseChange() {
   saveCurrentContent();
   updateChapterWordCount();
   updateStats();
-  saveData();
 }
 
+// ─── Tags ─────────────────────────────────────────────────────────────────────
 function handleTagInput(e) {
-  if(e.key === 'Enter' || e.key === ',') {
+  if (e.key === 'Enter' || e.key === ',') {
     e.preventDefault();
-    let val = e.target.value.trim().replace(/,/g, '');
-    if(val && !tags.includes(val)) {
-      tags.push(val);
-      renderTags();
-      saveData();
-    }
+    const val = e.target.value.trim().replace(/,/g, '');
+    if (val && !tags.includes(val)) { tags.push(val); renderTags(); }
     e.target.value = '';
   }
 }
 
 function renderTags() {
   const container = document.getElementById('tagPillsContainer');
-  if(!container) return;
+  if (!container) return;
   container.innerHTML = '';
-  
   tags.forEach(t => {
     const pill = document.createElement('span');
     pill.className = 'tag-pill';
@@ -411,33 +446,183 @@ function renderTags() {
 function removeTag(t) {
   tags = tags.filter(tag => tag !== t);
   renderTags();
-  saveData();
 }
 
+// ─── Cover ────────────────────────────────────────────────────────────────────
 function handleCoverUpload(e) {
   const file = e.target.files[0];
-  if(!file) return;
+  if (!file) return;
   const reader = new FileReader();
   reader.onload = function(evt) {
-    document.getElementById('coverPreview').src = evt.target.result;
+    coverDataUrl = evt.target.result;
+    document.getElementById('coverPreview').src = coverDataUrl;
     document.getElementById('coverPreview').style.display = 'block';
     document.getElementById('coverRemove').style.display = 'block';
     document.getElementById('coverPlaceholder').style.display = 'none';
-    saveData();
   };
   reader.readAsDataURL(file);
 }
 
 function removeCover(e) {
   e.stopPropagation();
+  coverDataUrl = null;
   document.getElementById('coverPreview').src = '';
   document.getElementById('coverPreview').style.display = 'none';
   document.getElementById('coverRemove').style.display = 'none';
   document.getElementById('coverPlaceholder').style.display = 'block';
   document.getElementById('coverInput').value = '';
-  saveData();
 }
 
+// Generate a simple SVG cover when none is uploaded
+function generateCover(title, author) {
+  const colors = [
+    ['#1a1a2e','#e94560'],
+    ['#0d3b66','#fac748'],
+    ['#1b4332','#95d5b2'],
+    ['#3d0066','#c77dff'],
+    ['#7b2d00','#ffb347'],
+    ['#003049','#fcbf49'],
+  ];
+  const [bg, accent] = colors[Math.floor(Math.random() * colors.length)];
+
+  // Wrap text for SVG
+  function wrapText(text, maxChars) {
+    const words = text.split(' ');
+    const lines = [];
+    let current = '';
+    words.forEach(w => {
+      if ((current + ' ' + w).trim().length > maxChars) {
+        if (current) lines.push(current.trim());
+        current = w;
+      } else {
+        current = (current + ' ' + w).trim();
+      }
+    });
+    if (current) lines.push(current.trim());
+    return lines;
+  }
+
+  const titleLines = wrapText(title || 'Untitled', 14);
+  const titleY = 160;
+  const lineH = 44;
+  const titleSVG = titleLines.map((line, i) =>
+    `<text x="150" y="${titleY + i * lineH}" text-anchor="middle" font-family="Georgia, serif" font-size="32" font-weight="bold" fill="#ffffff">${line}</text>`
+  ).join('');
+
+  const authorY = titleY + titleLines.length * lineH + 28;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="420" viewBox="0 0 300 420">
+    <rect width="300" height="420" fill="${bg}"/>
+    <rect x="0" y="0" width="8" height="420" fill="${accent}"/>
+    <rect x="0" y="380" width="300" height="40" fill="${accent}" opacity="0.15"/>
+    <line x1="24" y1="60" x2="276" y2="60" stroke="${accent}" stroke-width="1.5" opacity="0.4"/>
+    <line x1="24" y1="360" x2="276" y2="360" stroke="${accent}" stroke-width="1.5" opacity="0.4"/>
+    ${titleSVG}
+    <text x="150" y="${authorY}" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="${accent}" opacity="0.9">${author || 'Unknown Author'}</text>
+  </svg>`;
+
+  return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+}
+
+// ─── Validation ───────────────────────────────────────────────────────────────
+function validateMeta() {
+  const title = document.getElementById('metaTitle').value.trim();
+  const author = document.getElementById('metaAuthor').value.trim();
+  const hint = document.getElementById('validationHint');
+  let valid = true;
+
+  document.getElementById('metaTitle').classList.remove('error');
+  document.getElementById('metaAuthor').classList.remove('error');
+  hint.classList.remove('show');
+
+  if (!title) { document.getElementById('metaTitle').classList.add('error'); valid = false; }
+  if (!author) { document.getElementById('metaAuthor').classList.add('error'); valid = false; }
+  if (!valid) hint.classList.add('show');
+
+  return valid;
+}
+
+function clearError(fieldId) {
+  document.getElementById(fieldId).classList.remove('error');
+  const allClear = !document.getElementById('metaTitle').classList.contains('error')
+                && !document.getElementById('metaAuthor').classList.contains('error');
+  if (allClear) document.getElementById('validationHint').classList.remove('show');
+}
+
+// ─── Save to Supabase ─────────────────────────────────────────────────────────
+async function saveBook() {
+  if (!validateMeta()) {
+    showToast('Please fill in book title and author name.', 'error');
+    return;
+  }
+
+  saveCurrentContent();
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const payload = {
+    user_id: currentUser.id,
+    title: document.getElementById('metaTitle').value.trim(),
+    author_name: document.getElementById('metaAuthor').value.trim(),
+    synopsis: document.getElementById('metaSynopsis').value.trim(),
+    chapters: chapters,
+    tags: tags
+  };
+
+  try {
+    if (BOOK_ID) {
+      const { error } = await supabaseClient
+        .from('books')
+        .update(payload)
+        .eq('id', BOOK_ID);
+      if (error) throw error;
+      showToast('Saved to cloud!', 'success');
+    } else {
+      const { data, error } = await supabaseClient
+        .from('books')
+        .insert(payload)
+        .select('id')
+        .single();
+      if (error) throw error;
+      BOOK_ID = data.id;
+      window.history.replaceState({}, '', `?id=${BOOK_ID}`);
+      showToast('Book created!', 'success');
+    }
+  } catch (err) {
+    console.error('Supabase save error:', err);
+    showToast('Failed to save. Check console.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save to Cloud';
+  }
+}
+
+// ─── Preview ──────────────────────────────────────────────────────────────────
+function previewBook() {
+  saveCurrentContent();
+
+  const title = document.getElementById('metaTitle').value.trim();
+  const author = document.getElementById('metaAuthor').value.trim();
+
+  // Generate cover if none uploaded
+  const cover = coverDataUrl || generateCover(title, author);
+
+  // Bundle everything into sessionStorage for viewer.html
+  const previewData = {
+    title: title || 'Untitled',
+    author_name: author || 'Unknown Author',
+    synopsis: document.getElementById('metaSynopsis').value.trim(),
+    chapters: chapters,
+    tags: tags,
+    cover: cover
+  };
+
+  sessionStorage.setItem('quirki-preview', JSON.stringify(previewData));
+  window.open('viewer.html', '_blank');
+}
+
+// ─── Stats / UI helpers ───────────────────────────────────────────────────────
 function updateChapterWordCount() {
   const txt = document.getElementById('proseEditor').innerText || '';
   const words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
@@ -446,29 +631,12 @@ function updateChapterWordCount() {
 
 function updateStats() {
   document.getElementById('statChapters').textContent = chapters.length;
-  let totalWords = 0;
+  let total = 0;
   chapters.forEach(c => {
-    const cleanText = (c.content || '').replace(/<[^>]*>/g, ' ').trim();
-    if(cleanText) totalWords += cleanText.split(/\s+/).length;
+    const clean = (c.content || '').replace(/<[^>]*>/g, ' ').trim();
+    if (clean) total += clean.split(/\s+/).length;
   });
-  document.getElementById('statWords').textContent = totalWords;
-}
-
-function saveData() {
-  saveCurrentContent();
-  const payload = {
-    title: document.getElementById('metaTitle').value,
-    author: document.getElementById('metaAuthor').value,
-    synopsis: document.getElementById('metaSynopsis').value,
-    chapters: chapters,
-    tags: tags
-  };
-  localStorage.setItem('quirki-local-book', JSON.stringify(payload));
-}
-
-function saveAndExit() {
-  saveData();
-  window.location.href = 'quirki-writing.html';
+  document.getElementById('statWords').textContent = total;
 }
 
 function execCmd(cmd) {
@@ -480,11 +648,11 @@ function toggleTheme() {
   document.body.classList.toggle('light');
 }
 
-function showToast(msg, type='') {
+function showToast(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show ' + type;
-  setTimeout(() => { t.className = 'toast'; }, 2500);
+  setTimeout(() => { t.className = 'toast'; }, 2800);
 }
 </script>
 </body>
