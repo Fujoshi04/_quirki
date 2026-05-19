@@ -8,22 +8,38 @@
     
     <style>
         :root {
-            /* Design Tokens */
+            /* Design Tokens (Dark Theme Default) */
             --bg:          #1a1c1e;      
-            --bg-nav:      #1c1e20;      
+            --bg-nav:      #1c1e20;      /* Dark Charcoal Gray */
             --bg-card:     #212326;      
             --bg-section:  #1e2022;      
-            --teal:        #00e5c4;      
+            --teal:        #00e5c4;      /* Identity Glow Teal */
             --teal-dim:    #00b89e;      
-            --teal-glow:   rgba(0, 229, 196, 0.08); 
+            --teal-glow:   rgba(0, 229, 196, 0.08); /* Profile Restrained Glow */
             --text:        #d8dde3;      
-            --text-muted:  #6a7480;      
-            --border:      rgba(255, 255, 255, 0.06); 
+            --text-muted:  #7b8694;      /* Muted Luxury Gray Control Color */
+            --border:      rgba(255, 255, 255, 0.06); /* Faint Glass Separator */
 
             /* Typography */
             --serif: 'Playfair Display', Georgia, serif;
             --sans: 'DM Sans', sans-serif;
             --reading: 'Lora', Georgia, serif;
+            
+            --profile-img: none;
+        }
+
+        /* Light Theme Override Matrix */
+        body.light {
+            --bg:          #f7f4eb;      
+            --bg-nav:      #fbfaf7;      
+            --bg-card:     #ffffff;      
+            --bg-section:  #eae6db;      
+            --teal:        #801818;      /* Deep Crimson for light editorial aesthetic */
+            --teal-dim:    #601010;      
+            --teal-glow:   rgba(128, 24, 24, 0.05); 
+            --text:        #1c1b18;      
+            --text-muted:  #706e64;      
+            --border:      rgba(128, 24, 24, 0.12);
         }
 
         * {
@@ -38,7 +54,142 @@
             font-family: var(--sans);
             font-size: 0.92rem;
             min-height: 100vh;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
+
+        /* ─────────────────────────────
+             QUIRKI QUIET LUXURY NAV
+        ───────────────────────────── */
+        .quirki-nav {
+            position: sticky;       /* Pinned to the very top */
+            top: 0;
+            left: 0;
+            z-index: 1000;          /* Remains cleanly above content while scrolling */
+            width: 100%;
+            height: 56px;           /* Elegant, compact height layout */
+            background-color: var(--bg-nav);
+            border-bottom: 1px solid var(--border); /* Glass-like separator line */
+            display: flex;
+            align-items: center;    /* Perfect vertical centering along baseline */
+            justify-content: space-between; /* Brand left, empty breathing room middle, controls right */
+            padding: 0 24px;        /* 24px horizontal edge padding */
+            user-select: none;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Left Side Brand Layout */
+        .quirki-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;               /* Intentional 8px gap between icon and text */
+            font-family: var(--serif);
+            font-size: 1.25rem;
+            font-style: italic;     /* Italic */
+            font-weight: 600;        /* Semi-bold */
+            text-transform: lowercase; /* Lowercase editorial branding */
+            color: var(--teal);      
+            text-decoration: none;
+            letter-spacing: -0.01em;
+        }
+
+        .quirki-logo svg {
+            flex-shrink: 0;
+            color: var(--teal);
+        }
+
+        /* Right Side Utility Control Cadence */
+        .nav-right {
+            gap: 14px;             /* Exact 14px separation rhythm: 🌙 ←14px→ 🔔 ←14px→ [Z] */
+        }
+
+        /* Secondary Lightweight Theme Control */
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: color 0.2s ease, transform 0.1s ease;
+        }
+        .theme-toggle:hover {
+            color: var(--teal);     /* Shifts to brand color on hover glow */
+        }
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* Airy Outlined Notification Control */
+        .notif-btn {
+            position: relative;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            transition: color 0.2s ease;
+            text-decoration: none;
+        }
+        .notif-btn:hover {
+            color: var(--teal);
+        }
+
+        /* Non-anxiety visual indicator dot offset to top-right corner outer boundary */
+        .notif-dot {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            width: 5px;
+            height: 5px;
+            background-color: var(--teal);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--teal);
+        }
+
+        /* Visual Anchor Profile Box */
+        .profile-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;     /* Rounded square, oriented workspace box */
+            background-color: var(--teal-glow); /* Faint teal tint background */
+            background-image: var(--profile-img);
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(0, 229, 196, 0.25); /* Restrained teal outline border */
+            color: var(--teal);     /* Fallback uppercase letter placeholder token style */
+            font-family: var(--sans);
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            cursor: pointer;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+        .profile-box:hover {
+            border-color: var(--teal);
+        }
+
+        body.light .profile-box {
+            border-color: rgba(128, 24, 24, 0.25);
+        }
+
+        /* Smoothly flags visibility out once profile picture is updated */
+        body.has-profile-pic .profile-box {
+            color: transparent;
+            background-color: var(--bg-section);
+            border-color: var(--border);
+        }
+
 
         /* --- SCREEN LAYER 1: BOOK DETAILS MAIN SCENE --- */
         #bookDetailsScene {
@@ -46,13 +197,6 @@
             flex-direction: column;
             align-items: center;
             padding-bottom: 100px;
-        }
-
-        .viewer-header-bar {
-            width: 100%;
-            height: 56px;
-            background-color: var(--bg-nav);
-            border-bottom: 1px solid var(--border);
         }
 
         .hero-presentation-container {
@@ -272,8 +416,7 @@
             transition: color 0.2s;
         }
 
-
-        /* --- SCREEN LAYER 2: IMMERSIVE FULL SCREEN READER MODE --- */
+        /* --- SCREEN LAYER 2: IMMERSIVE READER MODE --- */
         #readerImmersiveScene {
             display: none; 
             min-height: 100vh;
@@ -295,6 +438,7 @@
             top: 0;
             background-color: var(--bg);
             z-index: 10;
+            transition: background-color 0.2s ease;
         }
 
         .reader-nav-action-btn {
@@ -382,7 +526,7 @@
             pointer-events: none;
         }
 
-        /* --- OVERLAY INTERFACE: DISMISSABLE READING SETTINGS DRAWER --- */
+        /* --- SETTINGS DRAWER --- */
         .reading-settings-bottom-drawer {
             position: fixed;
             bottom: 0;
@@ -504,9 +648,41 @@
 </head>
 <body>
 
-    <div id="bookDetailsScene">
-        <header class="viewer-header-bar"></header>
+    <nav class="quirki-nav">
+        <div class="nav-left">
+            <a href="quirki-home.html" class="quirki-logo">
+                <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+                    <path d="M13 2 C14.5 2 15.5 3 15 4.5 C16.5 3.5 18.5 4 19 5.5 C19.5 7 18.5 8.5 17 8.5 C18.5 9 19.5 10.5 19 12 C18.5 13.5 17 14 15.5 13.5 C16.5 15 16 17 14.5 17.5 C13 18 11.5 17 11.5 15.5 C10.5 17 9 17.5 7.5 16.5 C6 15.5 6 13.5 7.5 12.5 C6 12.5 4.5 11.5 4.5 10 C4.5 8.5 5.5 7.5 7 7.5 C5.5 7 4.5 5.5 5 4 C5.5 2.5 7.5 2 9 3 C8.5 1.5 10 0.5 11.5 1 C12.5 1.5 13 2 13 2Z" fill="currentColor"/>
+                </svg>
+                quirki
+            </a>
+        </div>
 
+        <div class="nav-right">
+            <button class="theme-toggle" id="globalThemeToggleTrigger" onclick="toggleTheme()">
+                🌙
+            </button>
+
+            <a href="quirki-notif.html" class="notif-btn">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 2a6 6 0 0 0-6 6v2.5L2.5 13h15L16 10.5V8a6 6 0 0 0-6-6Z"
+                        stroke="currentColor"
+                        stroke-width="1.4"
+                        stroke-linejoin="round"/>
+                    <path d="M8 15a2 2 0 0 0 4 0"
+                        stroke="currentColor"
+                        stroke-width="1.4"/>
+                </svg>
+                <span class="notif-dot"></span>
+            </a>
+
+            <a href="quirki-profile.html" class="profile-box" id="globalUserProfileBox">
+                Z
+            </a>
+        </div>
+    </nav>
+
+    <div id="bookDetailsScene">
         <main class="hero-presentation-container">
             <div class="book-canvas-wrapper">
                 <div class="book-cover-artifice" id="renderingTargetCover">
@@ -541,8 +717,7 @@
                     No summary available.
                 </div>
 
-                <div class="genre-pill-cloud" id="renderingTargetTags">
-                    </div>
+                <div class="genre-pill-cloud" id="renderingTargetTags"></div>
 
                 <div id="tableOfContentsSegment">
                     <div class="section-segment-header-line">
@@ -553,8 +728,7 @@
                         </div>
                     </div>
                     
-                    <div class="toc-tabular-matrix" id="renderingTargetTOC">
-                        </div>
+                    <div class="toc-tabular-matrix" id="renderingTargetTOC"></div>
                 </div>
 
                 <a href="workspace.html" class="workspace-return-footer-anchor">← Return to Workspace</a>
@@ -576,7 +750,7 @@
 
         <article class="reader-prose-editorial-column">
             <h1 class="editorial-chapter-main-headline" id="readerContentChapterTitle">Chapter Title</h1>
-            <div class="editorial-byline-stats" id="readerContentMetaByline">  </div>
+            <div class="editorial-byline-stats" id="readerContentMetaByline"> </div>
 
             <div class="immersive-reading-prose-body" id="immersiveProseCore"></div>
 
@@ -597,6 +771,7 @@
 
             <div class="drawer-row-layout">
                 <span class="drawer-section-label">Reading Settings</span>
+                <button class="drawer-action-btn" id="drawerThemeBtn" onclick="toggleTheme()">Mode</button>
             </div>
 
             <div class="drawer-row-layout">
@@ -621,7 +796,6 @@
         let currentActiveChapterIndex = 0;
         let globalFontSizePX = 17;
 
-        // Premium Default Fallback Dataset
         const fallbackMockBookAsset = {
             title: "Ashveil",
             author: "Zee",
@@ -643,6 +817,18 @@
 
         // --- DOM INIT PIPELINE ---
         window.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('quirki-theme') === 'light') {
+                document.body.classList.add('light');
+                updateThemeUiComponents(true);
+            }
+
+            // Sync saved custom image modifier
+            const savedAvatarPic = localStorage.getItem('quirki-user-avatar');
+            if (savedAvatarPic) {
+                document.documentElement.style.setProperty('--profile-img', `url('${savedAvatarPic}')`);
+                document.body.classList.add('has-profile-pic');
+            }
+
             const cachedWorkspaceData = sessionStorage.getItem("activePreviewPayload");
 
             if (cachedWorkspaceData) {
@@ -673,7 +859,6 @@
                         });
                     }
 
-                    // Dynamic Tag parsing system to capture setups and genres
                     let detectedTags = [];
                     if (Array.isArray(parsedEpub.tags)) {
                         detectedTags = parsedEpub.tags;
@@ -700,7 +885,6 @@
                         ]
                     };
 
-                    // Handle dynamic book cover presentation
                     const coverBox = document.getElementById("renderingTargetCover");
                     const fallbackGraphic = document.getElementById("renderingFallbackGraphic");
                     if (activeBookState.coverUrl) {
@@ -743,7 +927,7 @@
             }).join('');
         }
 
-        /* --- IMMERSIVE ENGINE ROUTING LAYER --- */
+        /* --- IMMERSIVE ENGINE LAYER --- */
         function transitionToImmersiveReader(chapterIndex) {
             currentActiveChapterIndex = chapterIndex;
             document.getElementById("bookDetailsScene").style.display = "none";
@@ -794,7 +978,7 @@
             }
         }
 
-        /* --- INTERFACE PRESENTATION ENGINE SETTINGS --- */
+        /* --- FONTS & EDITORIAL CONFIG CONTROLLER --- */
         function toggleSettingsDrawer(forceOpenState) {
             const drawer = document.getElementById("readerSettingsOverlayDrawer");
             drawer.style.display = forceOpenState ? "flex" : "none";
@@ -827,32 +1011,22 @@
             }
         }
 
-        // ── THEME INITIALIZATION SYSTEM (RUNS IMMEDIATELY) ──
-  if (localStorage.getItem('quirki-theme') === 'light') {
-    document.body.classList.add('light');
-  }
+        /* --- THEME CONTROLLER --- */
+        function toggleTheme() {
+            document.body.classList.toggle('light');
+            const isLightActive = document.body.classList.contains('light');
+            
+            localStorage.setItem('quirki-theme', isLightActive ? 'light' : 'dark');
+            updateThemeUiComponents(isLightActive);
+        }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('theme-btn');
-    if (btn) {
-      const isLight = document.body.classList.contains('light');
-      btn.textContent = isLight ? '🌑' : '🌙';
-    }
-  });
-
-  function toggleTheme() {
-    document.body.classList.toggle('light');
-    const isLight = document.body.classList.contains('light');
-    const btn = document.getElementById('theme-btn');
-
-    if (btn) {
-      btn.textContent = isLight ? '🌑' : '🌙';
-    }
-
-    localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
-  }
-</script>
-
+        function updateThemeUiComponents(isLight) {
+            const navToggleBtn = document.getElementById('globalThemeToggleTrigger');
+            const drawerBtn = document.getElementById('drawerThemeBtn');
+            
+            if (navToggleBtn) navToggleBtn.textContent = isLight ? "🌑" : "🌙";
+            if (drawerBtn) drawerBtn.textContent = isLight ? "Light Mode" : "Dark Mode";
+        }
+    </script>
 </body>
 </html>
-   
