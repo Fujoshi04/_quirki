@@ -829,7 +829,7 @@
                 document.body.classList.add('has-profile-pic');
             }
 
-            const cachedWorkspaceData = sessionStorage.getItem("activePreviewPayload");
+            const cachedWorkspaceData = sessionStorage.setItem('activePreviewPayload', JSON.stringify(previewData));
 
             if (cachedWorkspaceData) {
                 try {
