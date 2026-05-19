@@ -829,8 +829,7 @@
                 document.body.classList.add('has-profile-pic');
             }
 
-            const cachedWorkspaceData = sessionStorage.setItem('activePreviewPayload', JSON.stringify(previewData));
-
+            const cachedWorkspaceData = localStorage.getItem('activePreviewPayload');
             if (cachedWorkspaceData) {
                 try {
                     const parsedEpub = JSON.parse(cachedWorkspaceData);
