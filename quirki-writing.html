@@ -233,49 +233,190 @@
 </main>
 
 <script>
-    function toggleAnalytics() {
-        document.getElementById('analytics-view').classList.toggle('open');
-        document.getElementById('analytics-chevron').classList.toggle('open');
+    // Complete Mock Database for Quirki Writing Engine
+const bookData = {
+    "Ashveil": {
+        stats: { subscribers: "1,284", words: "218k" },
+        engagement: [
+            { label: "Likes", value: "8.3k", off: false },
+            { label: "Want to Read", value: "2.1k", off: false },
+            { label: "Reviews", value: "341", off: false },
+            { label: "Comments", value: "—", off: true }
+        ],
+        chapters: {
+            list: [
+                { num: "01", name: "The First Forgetting", reads: "8.3k", pct: 100 },
+                { num: "02", name: "Salt and Smoke", reads: "7.6k", pct: 91 },
+                { num: "03", name: "The Vault Below", reads: "7.1k", pct: 85 },
+                { num: "04", name: "What She Remembered", reads: "6.6k", pct: 80 },
+                { num: "05", name: "A Name Worth Keeping", reads: "6.1k", pct: 74 }
+            ],
+            remaining: 37
+        },
+        binge: [
+            { ch: "01 → 02", pct: 92 },
+            { ch: "02 → 03", pct: 85 },
+            { ch: "03 → 04", pct: 88 },
+            { ch: "04 → 05", pct: 79 },
+            { ch: "05 → 06", pct: 74 }
+        ]
+    },
+    "Ashveil: The Remnant": {
+        stats: { subscribers: "942", words: "114k" },
+        engagement: [
+            { label: "Likes", value: "4.1k", off: false },
+            { label: "Want to Read", value: "3.8k", off: false },
+            { label: "Reviews", value: "112", off: false },
+            { label: "Comments", value: "849", off: false }
+        ],
+        chapters: {
+            list: [
+                { num: "01", name: "The Ash Left Behind", reads: "4.1k", pct: 100 },
+                { num: "02", name: "Iron and Embers", reads: "3.9k", pct: 95 },
+                { num: "03", name: "The Broken Crown", reads: "3.4k", pct: 82 },
+                { num: "04", name: "Whispers of the Dead", reads: "2.8k", pct: 68 }
+            ],
+            remaining: 14
+        },
+        binge: [
+            { ch: "01 → 02", pct: 95 },
+            { ch: "02 → 03", pct: 82 },
+            { ch: "03 → 04", pct: 78 },
+            { ch: "04 → 05", pct: 81 }
+        ]
+    },
+    "The Weight of Salt": {
+        stats: { subscribers: "118", words: "12k" },
+        engagement: [
+            { label: "Likes", value: "42", off: false },
+            { label: "Want to Read", value: "855", off: false },
+            { label: "Reviews", value: "—", off: true },
+            { label: "Comments", value: "—", off: true }
+        ],
+        chapters: {
+            list: [
+                { num: "01", name: "The Tide Turns", reads: "112", pct: 100 },
+                { num: "02", name: "Brine and Bone", reads: "94", pct: 83 }
+            ],
+            remaining: 0
+        },
+        binge: [
+            { ch: "01 → 02", pct: 83 }
+        ]
     }
-    
-    function selectBook(el) {
-        document.querySelectorAll('.book-tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
+};
+
+function toggleAnalytics() {
+    document.getElementById('analytics-view').classList.toggle('open');
+    document.getElementById('analytics-chevron').classList.toggle('open');
+}
+
+function selectBook(el) {
+    // 1. Manage Active Button Tab State
+    document.querySelectorAll('.book-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+
+    const bookName = el.textContent.trim();
+    const data = bookData[bookName];
+    if (!data) return;
+
+    // 2. Global Author Stats Update
+    const statCards = document.querySelectorAll('.stat-card .stat-value');
+    if(statCards.length >= 2) {
+        statCards[0].textContent = data.stats.subscribers;
+        statCards[1].textContent = data.stats.words;
     }
 
-    /* THEME SYSTEM CONTROLLER */
-    function toggleTheme() {
-        document.body.classList.toggle('light');
-        const isLight = document.body.classList.contains('light');
-        document.getElementById('theme-btn').textContent = isLight ? '🌑' : '🌙';
-        localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
+    // 3. Grid Engagement Engine (Dynamic Class Toggling)
+    const engGrid = document.querySelector('.engagement-grid');
+    if (engGrid) {
+        engGrid.innerHTML = data.engagement.map(eng => `
+            <div class="eng-card ${eng.off ? 'eng-card--off' : ''}">
+                <div class="eng-label">${eng.label}</div>
+                <div class="eng-value">${eng.value}</div>
+            </div>
+        `).join('');
     }
 
-    // Dynamic state management loop
-    (function() {
-        const savedTheme = localStorage.getItem('quirki-theme');
-        if (savedTheme === 'light') {
-            document.body.classList.add('light');
-            const btn = document.getElementById('theme-btn');
-            if (btn) btn.textContent = '🌑';
+    // 4. Readers per Chapter Rendering Loop
+    const chapterList = document.querySelector('.chapter-list');
+    if (chapterList) {
+        let rowsHtml = data.chapters.list.map(ch => `
+            <div class="chapter-row">
+                <span class="chapter-num">${ch.num}</span>
+                <span class="chapter-name">${ch.name}</span>
+                <div class="chapter-bar-wrap">
+                    <div class="chapter-bar" style="width:${ch.pct}%"></div>
+                </div>
+                <span class="chapter-reads">${ch.reads}</span>
+            </div>
+        `).join('');
+
+        if (data.chapters.remaining > 0) {
+            rowsHtml += `
+                <div class="chapter-row" style="border-bottom:none;color:var(--text-muted);font-size:0.78rem;padding-top:14px;justify-content:center;">
+                    + ${data.chapters.remaining} more chapters
+                </div>
+            `;
         }
-    })();
+        chapterList.innerHTML = rowsHtml;
+    }
 
-    /* AVATAR SYSTEM CONTROLLER */
-    (function() {
-        const username = localStorage.getItem('quirki-username') || 'Zee';
-        const firstLetter = username.charAt(0).toUpperCase();
-        const avatar = localStorage.getItem('quirki-avatar');
-        const avatarElement = document.getElementById('navAvatar');
-        
-        if (avatarElement) {
-            if (avatar) {
-                avatarElement.innerHTML = `<img src="${avatar}" alt="Avatar">`;
-            } else {
-                avatarElement.textContent = firstLetter;
+    // 5. Chapter-to-Chapter Binge Calculation Matrix
+    const bingeBlock = document.querySelector('.binge-block');
+    if (bingeBlock) {
+        if(data.binge.length === 0) {
+            bingeBlock.style.display = 'none';
+        } else {
+            bingeBlock.style.display = 'block';
+            const bingeTable = bingeBlock.querySelector('.binge-table');
+            if (bingeTable) {
+                bingeTable.innerHTML = data.binge.map(bg => `
+                    <div class="binge-row">
+                        <span class="binge-ch">${bg.ch}</span>
+                        <div class="binge-bar-wrap">
+                            <div class="binge-bar" style="width:${bg.pct}%"></div>
+                        </div>
+                        <span class="binge-pct">${bg.pct}%</span>
+                    </div>
+                `).join('');
             }
         }
-    })();
+    }
+}
+
+/* THEME SYSTEM CONTROLLER */
+function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    document.getElementById('theme-btn').textContent = isLight ? '🌑' : '🌙';
+    localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
+}
+
+(function() {
+    const savedTheme = localStorage.getItem('quirki-theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light');
+        const btn = document.getElementById('theme-btn');
+        if (btn) btn.textContent = '🌑';
+    }
+})();
+
+/* AVATAR SYSTEM CONTROLLER */
+(function() {
+    const username = localStorage.getItem('quirki-username') || 'Zee';
+    const firstLetter = username.charAt(0).toUpperCase();
+    const avatar = localStorage.getItem('quirki-avatar');
+    const avatarElement = document.getElementById('navAvatar');
+    
+    if (avatarElement) {
+        if (avatar) {
+            avatarElement.innerHTML = `<img src="${avatar}" alt="Avatar">`;
+        } else {
+            avatarElement.textContent = firstLetter;
+        }
+    }
+})();
 </script>
 </body>
 </html>
