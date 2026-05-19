@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quirki — Ashveil</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root{
+  --bg:#1a1c1e;
+  --bg-nav:#1c1e20;
+  --bg-card:#212326;
+
+  --teal:#00e5c4;
+  --teal-glow:rgba(0,229,196,0.08);
+
+  --text:#d8dde3;
+  --text-muted:#6a7480;
+
+  --border:rgba(255,255,255,0.06);
+
+  --serif:'Playfair Display', Georgia, serif;
+  --sans:'DM Sans', sans-serif;
+  --reading:'Lora', Georgia, serif;
+
+  --font-size:17px;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  font-weight:300;
+  min-height:100vh;
+}
+
+/* LIGHT MODE */
+body.light{
+
+  /* Quirki Premium Warm Light Mode Tokens */
+  --bg:#f7f4eb;
+  --bg-nav:#fbfaf7;
+  --bg-card:#ffffff;
+  --bg-section:#eae6db;
+
+  /* Crimson Brand */
+  --teal:#801818;
+  --teal-dim:#601010;
+  --teal-glow:rgba(128,24,24,0.05);
+
+  /* Typography */
+  --text:#1c1b18;
+  --text-muted:#706e64;
+
+  /* Borders */
+  --border:rgba(128,24,24,0.12);
+
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* NAV */
+nav{
+  position:sticky;
+  top:0;
+  z-index:100;
+
+  background:var(--bg-nav);
+  border-bottom:1px solid var(--border);
+
+  height:56px;
+
+  padding:0 24px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.nav-left{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.nav-back{
+  color:var(--text-muted);
+  display:flex;
+  align-items:center;
+  text-decoration:none;
+  transition:color .2s;
+}
+
+.nav-back:hover{
+  color:var(--teal);
+}
+
+.logo{
+  display:flex;
+  color:var(--teal);
+  align-items:center;
+  gap:8px;
+
+  font-family:var(--serif);
+  font-size:1.4rem;
+  font-weight:600;
+  font-style:italic;
+
+  color:var(--teal);
+  text-decoration:none;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.nav-bell{
+  color:var(--text-muted);
+  cursor:pointer;
+  position:relative;
+
+  display:flex;
+  align-items:center;
+
+  transition:color .2s;
+}
+
+.nav-bell:hover{
+  color:var(--teal);
+}
+
+/* EXACT notif dot */
+.nav-bell .dot{
+  position:absolute;
+  top:0;
+  right:0;
+
+  width:7px;
+  height:7px;
+
+  border-radius:50%;
+
+  background:var(--teal);
+  border:1.5px solid color-mix(in srgb, var(--teal) 25%, transparent);
+
+}
+
+.nav-avatar{
+  width:32px;
+  height:32px;
+
+  border-radius:4px;
+
+  background:var(--teal-glow);
+  border:1.5px solid color-mix(in srgb, var(--teal) 25%, transparent);
+
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  text-decoration:none;
+
+  color:var(--teal);
+
+  font-size:.85rem;
+  font-weight:500;
+}
+
+.theme-btn{
+  width:32px;
+  height:32px;
+
+  border-radius:4px;
+
+  border:none;
+  background:transparent;
+
+  color:var(--text-muted);
+
+  cursor:pointer;
+
+  transition:.2s;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.theme-btn:hover{
+  background:var(--teal-glow);
+  color:var(--teal);
+}
+
+/* BOOK PAGE */
+#book-page{
+  display:block;
+}
+
+#reading-page{
+  display:none;
+}
+
+/* COVER */
+.book-cover-wrap{
+  width:100%;
+  max-width:600px;
+
+  margin:0 auto;
+
+  padding:28px 24px 0;
+
+  display:flex;
+  justify-content:center;
+
+  animation:fadeUp .35s .05s ease both;
+}
+
+.book-cover{
+  width:180px;
+  height:260px;
+
+  border-radius:6px;
+
+  background:linear-gradient(145deg,#1e2a28,#2a1e2e);
+
+  border:1px solid var(--border);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:3.5rem;
+
+  box-shadow:
+  0 12px 40px rgba(0,0,0,.5),
+  4px 4px 0 rgba(0,229,196,.06);
+
+  flex-shrink:0;
+}
+
+body.light .book-cover{
+  background:linear-gradient(145deg,#f3ede4,#e6ddd1);
+
+  border:1px solid rgba(128,24,24,0.12);
+
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.08),
+    4px 4px 0 rgba(128,24,24,0.04);
+
+  color:var(--teal);
+}
+
+/* META */
+.book-meta-wrap{
+  max-width:600px;
+  margin:0 auto;
+
+  padding:24px 24px 0;
+
+  animation:fadeUp .35s .1s ease both;
+}
+
+.book-title-main{
+  font-family:var(--serif);
+  font-size:clamp(1.6rem,6vw,2.2rem);
+  font-weight:600;
+
+  color:#e8ecf0;
+
+  line-height:1.15;
+
+  margin-bottom:8px;
+}
+
+body.light .book-title-main{
+  color:#181b1e;
+}
+
+.book-author-line{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  font-size:.85rem;
+
+  color:var(--text-muted);
+
+  margin-bottom:20px;
+}
+
+.book-author-line a{
+  color:var(--teal);
+  text-decoration:none;
+  font-weight:400;
+}
+
+
+/* STATS */
+.stats-row{
+  display:flex;
+
+  background:var(--bg-card);
+
+  border:1px solid var(--border);
+
+  border-radius:8px;
+
+  overflow:hidden;
+
+  margin-bottom:24px;
+}
+
+.stat-cell{
+  flex:1;
+
+  padding:14px 12px;
+
+  text-align:center;
+
+  border-right:1px solid var(--border);
+}
+
+.stat-cell:last-child{
+  border-right:none;
+}
+
+.stat-cell-label{
+  font-size:.62rem;
+  font-weight:500;
+
+  letter-spacing:.14em;
+  text-transform:uppercase;
+
+  color:var(--text-muted);
+
+  margin-bottom:4px;
+}
+
+.stat-cell-value{
+  font-family:var(--serif);
+  font-size:1.1rem;
+  font-weight:600;
+
+  color:#e4e9ee;
+}
+
+body.light .stat-cell-value{
+  color:#16181b;
+}
+
+/* ADD TO BOARD */
+.add-board-wrap{
+  position:relative;
+  margin-bottom:28px;
+}
+
+.btn-add-board{
+  width:100%;
+
+  padding:13px;
+
+  border:none;
+  border-radius:6px;
+
+  background:var(--teal);
+
+  color:#0e1211;
+
+  font-family:var(--sans);
+  font-size:.95rem;
+  font-weight:500;
+
+  cursor:pointer;
+
+  transition:background .2s;
+}
+
+.btn-add-board:hover{
+  background:#00c9ab;
+}
+
+body.light .btn-add-board:hover{
+  background:#601010;
+}
+
+.btn-add-board.added{
+  background:var(--teal-glow);
+  color:var(--teal);
+
+  border:1px solid rgba(0,229,196,.3);
+}
+
+.board-picker{
+  display:none;
+
+  position:absolute;
+  top:calc(100% + 8px);
+  left:0;
+  right:0;
+
+  z-index:50;
+
+  overflow:hidden;
+
+  border-radius:8px;
+
+  background:var(--bg-card);
+
+  border:1px solid rgba(0,229,196,.25);
+
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+
+  animation:fadeUp .2s ease both;
+}
+
+.board-picker.open{
+  display:block;
+}
+
+.board-picker-label{
+  font-size:.68rem;
+  font-weight:500;
+
+  letter-spacing:.16em;
+  text-transform:uppercase;
+
+  color:var(--text-muted);
+
+  padding:12px 16px 8px;
+}
+
+.board-picker-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:13px 16px;
+
+  border-top:1px solid var(--border);
+
+  cursor:pointer;
+
+  transition:background .15s;
+
+  font-size:.88rem;
+  font-weight:300;
+
+  color:var(--text);
+}
+
+.board-picker-item:hover{
+  background:var(--teal-glow);
+}
+
+.board-picker-item.selected{
+  color:var(--teal);
+}
+
+.board-check{
+  color:var(--teal);
+
+  opacity:0;
+
+  transition:opacity .15s;
+}
+
+.board-picker-item.selected .board-check{
+  opacity:1;
+}
+
+/* ABOUT */
+.blurb-section{
+  margin-bottom:24px;
+}
+
+.blurb-label{
+  font-size:.7rem;
+  font-weight:500;
+
+  letter-spacing:.18em;
+  text-transform:uppercase;
+
+  color:var(--teal);
+
+  margin-bottom:12px;
+}
+
+.blurb-text{
+  font-size:.92rem;
+  line-height:1.75;
+  font-weight:300;
+
+  color:var(--text);
+
+  margin-bottom:16px;
+}
+
+.tag-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.tag{
+  font-size:.72rem;
+
+  color:var(--text-muted);
+
+  background:var(--bg-card);
+
+  border:1px solid var(--border);
+
+  border-radius:4px;
+
+  padding:3px 9px;
+
+  cursor:pointer;
+
+  transition:border-color .2s,color .2s;
+}
+
+.tag:hover{
+  border-color:rgba(0,229,196,.3);
+  color:var(--teal);
+}
+
+/* TOC */
+.toc-section{
+  margin-bottom:32px;
+}
+
+.toc-label{
+  font-size:.7rem;
+  font-weight:500;
+
+  letter-spacing:.18em;
+  text-transform:uppercase;
+
+  color:var(--teal);
+
+  margin-bottom:14px;
+}
+
+.toc-list{
+  display:flex;
+  flex-direction:column;
+}
+
+.toc-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:13px 8px;
+
+  border-bottom:1px solid var(--border);
+
+  border-radius:4px;
+
+  margin:0 -8px;
+
+  cursor:pointer;
+
+  text-decoration:none;
+
+  transition:background .2s;
+}
+
+.toc-item:first-child{
+  border-top:1px solid var(--border);
+}
+
+.toc-item:hover{
+  background:var(--teal-glow);
+}
+
+.toc-item:hover .toc-chapter-name{
+  color:var(--teal);
+}
+
+.toc-left{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.toc-chapter-num{
+  font-size:.68rem;
+
+  letter-spacing:.1em;
+  text-transform:uppercase;
+
+  color:var(--text-muted);
+}
+
+.toc-chapter-name{
+  font-family:var(--serif);
+  font-size:.92rem;
+  font-weight:600;
+
+  color:#e0e5ea;
+
+  transition:color .2s;
+}
+
+body.light .toc-chapter-name{
+  color:#1b1d20;
+}
+
+.toc-words{
+  font-size:.72rem;
+  color:var(--text-muted);
+}
+
+/* START */
+.start-btn{
+  width:100%;
+
+  padding:15px;
+
+  border:none;
+  border-radius:8px;
+
+  background:var(--teal);
+
+  color:#0e1211;
+
+  font-family:var(--serif);
+  font-size:1rem;
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:background .2s, transform .15s;
+
+  letter-spacing:.02em;
+}
+
+.start-btn:hover{
+  background:#00c9ab;
+  transform:translateY(-1px);
+}
+
+body.light .start-btn:hover{
+  background:#601010;
+}
+
+/* READING */
+#reading-page{
+  min-height:100vh;
+  background:var(--bg);
+}
+
+.reading-nav{
+  position:sticky;
+  top:0;
+  z-index:100;
+
+  height:52px;
+
+  padding:0 20px;
+
+  background:var(--bg-nav);
+
+  border-bottom:1px solid var(--border);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  transition:opacity .3s, transform .3s;
+}
+
+.reading-nav.hidden{
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-100%);
+}
+
+.reading-back{
+  background:none;
+  border:none;
+
+  color:var(--text-muted);
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  font-family:var(--sans);
+  font-size:.85rem;
+
+  transition:color .2s;
+}
+
+.reading-back:hover{
+  color:var(--teal);
+}
+
+.reading-nav-title{
+  flex:1;
+
+  text-align:center;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+
+  padding:0 12px;
+
+  color:var(--text-muted);
+
+  font-family:var(--serif);
+  font-size:.9rem;
+  font-style:italic;
+}
+
+.reading-settings-btn{
+  background:none;
+  border:none;
+
+  cursor:pointer;
+
+  color:var(--text-muted);
+
+  display:flex;
+  align-items:center;
+
+  transition:color .2s;
+}
+
+.reading-settings-btn:hover{
+  color:var(--teal);
+}
+
+.reading-content{
+  max-width:640px;
+  margin:0 auto;
+
+  padding:40px 24px 80px;
+}
+
+.chapter-header{
+  margin-bottom:40px;
+  padding-bottom:28px;
+
+  border-bottom:1px solid var(--border);
+}
+
+.chapter-vol{
+  font-size:.68rem;
+  font-weight:500;
+
+  letter-spacing:.18em;
+  text-transform:uppercase;
+
+  color:var(--teal);
+
+  margin-bottom:8px;
+}
+
+.chapter-title{
+  font-family:var(--serif);
+  font-size:clamp(1.4rem,5vw,1.9rem);
+  font-weight:600;
+
+  color:#e8ecf0;
+
+  line-height:1.2;
+
+  margin-bottom:10px;
+}
+
+body.light .chapter-title{
+  color:#17191c;
+}
+
+.chapter-meta{
+  display:flex;
+  gap:14px;
+
+  font-size:.78rem;
+
+  color:var(--text-muted);
+}
+
+/* PROSE */
+.prose{
+  font-family:var(--reading);
+
+  font-size:var(--font-size);
+  line-height:1.95;
+  font-weight:400;
+
+  color:#cdd2d8;
+}
+
+body.light .prose{
+  color:#30363d;
+}
+
+.prose p{
+  margin-bottom:1.4em;
+}
+
+.prose em{
+  font-style:italic;
+}
+
+.prose strong{
+  font-weight:600;
+  color:#e0e5ea;
+}
+
+body.light .prose strong{
+  color:#111315;
+}
+
+/* CHAPTER NAV */
+.chapter-nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:12px;
+
+  margin-top:64px;
+  padding-top:28px;
+
+  border-top:1px solid var(--border);
+}
+
+.ch-nav-btn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  padding:10px 16px;
+
+  border-radius:6px;
+
+  background:var(--bg-card);
+
+  border:1px solid var(--border);
+
+  text-decoration:none;
+
+  color:var(--text-muted);
+
+  font-family:var(--sans);
+  font-size:.85rem;
+
+  transition:border-color .2s,color .2s;
+}
+
+.ch-nav-btn:hover{
+  border-color:rgba(0,229,196,.3);
+  color:var(--teal);
+}
+
+.ch-nav-btn.next{
+  margin-left:auto;
+}
+
+/* SETTINGS */
+.settings-panel{
+  display:none;
+
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+
+  z-index:200;
+
+  background:var(--bg-nav);
+
+  border-top:1px solid var(--border);
+
+  padding:20px 24px 32px;
+
+  animation:slideUp .25s ease;
+}
+
+.settings-panel.open{
+  display:block;
+}
+
+.settings-panel-title{
+  font-size:.7rem;
+  font-weight:500;
+
+  letter-spacing:.16em;
+  text-transform:uppercase;
+
+  color:var(--text-muted);
+
+  margin-bottom:16px;
+}
+
+.font-controls{
+  display:flex;
+  align-items:center;
+  gap:16px;
+
+  margin-bottom:20px;
+}
+
+.font-btn{
+  width:36px;
+  height:36px;
+
+  border-radius:6px;
+
+  background:var(--bg-card);
+
+  border:1px solid var(--border);
+
+  color:var(--text);
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  transition:border-color .2s;
+}
+
+.font-btn:hover{
+  border-color:rgba(0,229,196,.3);
+  color:var(--teal);
+}
+
+.font-size-display{
+  min-width:48px;
+
+  text-align:center;
+
+  font-family:var(--serif);
+  font-size:1.1rem;
+  font-weight:600;
+}
+
+.font-family-row{
+  display:flex;
+  gap:8px;
+}
+
+.font-family-btn{
+  flex:1;
+
+  padding:10px;
+
+  border-radius:6px;
+
+  background:var(--bg-card);
+
+  border:1px solid var(--border);
+
+  cursor:pointer;
+
+  color:var(--text-muted);
+
+  font-size:.85rem;
+
+  transition:border-color .2s,color .2s;
+}
+
+.font-family-btn.active{
+  border-color:var(--teal);
+  color:var(--teal);
+}
+
+.settings-close{
+  position:absolute;
+  top:16px;
+  right:20px;
+
+  background:none;
+  border:none;
+
+  cursor:pointer;
+
+  color:var(--text-muted);
+
+  font-size:1.1rem;
+}
+
+.settings-close:hover{
+  color:var(--teal);
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(14px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+@keyframes slideUp{
+  from{
+    transform:translateY(100%);
+  }
+  to{
+    transform:translateY(0);
+  }
+}
+
+@media(max-width:480px){
+  .reading-content{
+    padding:32px 20px 80px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+
+  <div class="nav-left">
+
+    <a href="quirki-reading.html" class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10 3L5 8l5 5"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+    <a href="quirki-home.html" class="logo">
+      <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+        <path d="M13 2 C14.5 2 15.5 3 15 4.5 C16.5 3.5 18.5 4 19 5.5 C19.5 7 18.5 8.5 17 8.5 C18.5 9 19.5 10.5 19 12 C18.5 13.5 17 14 15.5 13.5 C16.5 15 16 17 14.5 17.5 C13 18 11.5 17 11.5 15.5 C10.5 17 9 17.5 7.5 16.5 C6 15.5 6 13.5 7.5 12.5 C6 12.5 4.5 11.5 4.5 10 C4.5 8.5 5.5 7.5 7 7.5 C5.5 7 4.5 5.5 5 4 C5.5 2.5 7.5 2 9 3 C8.5 1.5 10 0.5 11.5 1 C12.5 1.5 13 2 13 2Z"
+        fill="currentColor"/>
+      </svg>
+      quirki
+    </a>
+
+  </div>
+
+  <div class="nav-right">
+
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+
+    <div class="nav-bell">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2a6 6 0 0 0-6 6v2.5L2.5 13h15L16 10.5V8a6 6 0 0 0-6-6Z"
+        stroke="currentColor"
+        stroke-width="1.4"
+        stroke-linejoin="round"/>
+        <path d="M8 15a2 2 0 0 0 4 0"
+        stroke="currentColor"
+        stroke-width="1.4"/>
+      </svg>
+
+      <span class="dot"></span>
+    </div>
+
+    <a href="quirki-profile.html" class="nav-avatar">Z</a>
+
+  </div>
+</nav>
+
+<!-- BOOK PAGE -->
+<div id="book-page">
+
+  <div class="book-cover-wrap">
+    <div class="book-cover">🌑</div>
+  </div>
+
+  <div class="book-meta-wrap">
+
+    <div class="book-title-main">Ashveil</div>
+
+    <div class="book-author-line">
+      by <a href="quirki-profile.html">Zee</a>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+
+      <div class="stat-cell">
+        <div class="stat-cell-label">Likes</div>
+        <div class="stat-cell-value">8.3k</div>
+      </div>
+
+      <div class="stat-cell">
+        <div class="stat-cell-label">Adds</div>
+        <div class="stat-cell-value">5.1k</div>
+      </div>
+
+      <div class="stat-cell">
+        <div class="stat-cell-label">Views</div>
+        <div class="stat-cell-value">41k</div>
+      </div>
+
+    </div>
+
+    <!-- BOARD -->
+    <div class="add-board-wrap">
+
+      <button
+      class="btn-add-board"
+      id="add-board-btn"
+      onclick="toggleBoardPicker()">
+      + Add to Board
+      </button>
+
+      <div class="board-picker" id="board-picker">
+
+        <div class="board-picker-label">Add to</div>
+
+        <div class="board-picker-item" onclick="addToBoard(this)">
+          <span>Want to Read</span>
+          <span class="board-check">✓</span>
+        </div>
+
+        <div class="board-picker-item" onclick="addToBoard(this)">
+          <span>Read</span>
+          <span class="board-check">✓</span>
+        </div>
+
+        <div class="board-picker-item" onclick="addToBoard(this)">
+          <span>Favourites</span>
+          <span class="board-check">✓</span>
+        </div>
+
+        <div class="board-picker-item" onclick="addToBoard(this)">
+          <span>Butterfly</span>
+          <span class="board-check">✓</span>
+        </div>
+
+        <div class="board-picker-item" onclick="addToBoard(this)">
+          <span>Did Not Like</span>
+          <span class="board-check">✓</span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ABOUT -->
+    <div class="blurb-section">
+
+      <p class="blurb-label">About</p>
+
+      <p class="blurb-text">
+        The Ashveil kingdom runs on stolen memory.
+        Every citizen gives one — a price for peace,
+        they're told. Mira has given hers three times.
+        She knows this because she counted the scars.
+        What she doesn't know is what she keeps forgetting,
+        and why someone keeps making sure she does.
+      </p>
+
+      <div class="tag-row">
+
+        <span class="tag">dark fantasy</span>
+        <span class="tag">slow burn</span>
+        <span class="tag">political intrigue</span>
+        <span class="tag">female lead</span>
+        <span class="tag">morally grey</span>
+        <span class="tag">complete</span>
+
+      </div>
+
+    </div>
+
+    <!-- TOC -->
+    <div class="toc-section">
+
+      <p class="toc-label">Table of Contents</p>
+
+      <div class="toc-list">
+
+        <a href="#"
+        class="toc-item"
+        onclick="startReading(event,'The First Forgetting','Chapter 1')">
+
+          <div class="toc-left">
+            <span class="toc-chapter-num">Chapter 1</span>
+            <span class="toc-chapter-name">The First Forgetting</span>
+          </div>
+
+          <span class="toc-words">3.2k words</span>
+        </a>
+
+        <a href="#"
+        class="toc-item"
+        onclick="startReading(event,'Salt and Smoke','Chapter 2')">
+
+          <div class="toc-left">
+            <span class="toc-chapter-num">Chapter 2</span>
+            <span class="toc-chapter-name">Salt and Smoke</span>
+          </div>
+
+          <span class="toc-words">2.8k words</span>
+        </a>
+
+        <a href="#"
+        class="toc-item"
+        onclick="startReading(event,'The Vault Below','Chapter 3')">
+
+          <div class="toc-left">
+            <span class="toc-chapter-num">Chapter 3</span>
+            <span class="toc-chapter-name">The Vault Below</span>
+          </div>
+
+          <span class="toc-words">3.5k words</span>
+        </a>
+
+        <a href="#"
+        class="toc-item"
+        onclick="startReading(event,'What She Remembered','Chapter 4')">
+
+          <div class="toc-left">
+            <span class="toc-chapter-num">Chapter 4</span>
+            <span class="toc-chapter-name">What She Remembered</span>
+          </div>
+
+          <span class="toc-words">4.1k words</span>
+        </a>
+
+        <a href="#"
+        class="toc-item"
+        onclick="startReading(event,'Glass Kingdom','Chapter 5')">
+
+          <div class="toc-left">
+            <span class="toc-chapter-num">Chapter 5</span>
+            <span class="toc-chapter-name">Glass Kingdom</span>
+          </div>
+
+          <span class="toc-words">3.9k words</span>
+        </a>
+
+        <a href="#"
+        class="toc-item"
+        onclick="startReading(event,'The Hollow Court','Chapter 6')">
+
+          <div class="toc-left">
+            <span class="toc-chapter-num">Chapter 6</span>
+            <span class="toc-chapter-name">The Hollow Court</span>
+          </div>
+
+          <span class="toc-words">4.4k words</span>
+        </a>
+
+        <div
+        class="toc-item"
+        style="color:var(--text-muted);font-size:.82rem;justify-content:center;cursor:default;">
+          + 38 more chapters
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- START -->
+    <button
+    class="start-btn"
+    onclick="startReading(null,'The First Forgetting','Chapter 1')">
+      Start Reading
+    </button>
+
+    <div style="height:48px;"></div>
+
+  </div>
+</div>
+
+<!-- READING -->
+<div id="reading-page">
+
+  <nav class="reading-nav" id="reading-nav">
+
+    <button class="reading-back" onclick="exitReading()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10 3L5 8l5 5"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <div class="reading-nav-title" id="reading-nav-title">
+      Ashveil
+    </div>
+
+    <button class="reading-settings-btn" onclick="toggleSettings()">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="2"
+        stroke="currentColor"
+        stroke-width="1.3"/>
+        <path d="M9 2v2M9 14v2M2 9h2M14 9h2M4.22 4.22l1.42 1.42M12.36 12.36l1.42 1.42M4.22 13.78l1.42-1.42M12.36 5.64l1.42-1.42"
+        stroke="currentColor"
+        stroke-width="1.3"
+        stroke-linecap="round"/>
+      </svg>
+    </button>
+
+  </nav>
+
+  <div class="reading-content">
+
+    <div class="chapter-header">
+
+      <div class="chapter-vol" id="reading-chapter-num">
+        Chapter 1
+      </div>
+
+      <div class="chapter-title" id="reading-chapter-title">
+        The First Forgetting
+      </div>
+
+      <div class="chapter-meta">
+        <span>3,241 words</span>
+        <span>by Zee</span>
+      </div>
+
+    </div>
+
+    <div class="prose" id="prose-content">
+
+      <p>
+      They said the forgetting was painless.
+      Mira had believed them the first time.
+      The second time, she'd believed them less.
+      The third time, she'd stopped asking.
+      </p>
+
+      <p>
+      The scar on her left wrist was the newest.
+      Still pink.
+      She'd woken with it three weeks ago and spent
+      the better part of an hour trying to remember
+      what had been taken.
+      </p>
+
+      <p>
+      The ceremony hall smelled of cedarwood and cold iron.
+      Forty-two people stood in rows ahead of her.
+      </p>
+
+      <p>
+      "First time?" the woman asked.
+      </p>
+
+      <p>
+      Mira looked at her wrist.
+      "No."
+      </p>
+
+      <p>
+      The scales tipped before she touched them.
+      </p>
+
+      <p>
+      She noticed.
+      She was almost certain no one else did.
+      </p>
+
+    </div>
+
+    <!-- CHAPTER NAV -->
+    <div class="chapter-nav">
+
+      <a href="#"
+      class="ch-nav-btn"
+      onclick="return false;"
+      style="opacity:.3;pointer-events:none;">
+
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M9 2L4 7l5 5"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"/>
+        </svg>
+
+        Previous
+      </a>
+
+      <a href="#"
+      class="ch-nav-btn next"
+      onclick="return false;">
+
+        Next
+
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M5 2l5 5-5 5"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linecap="round"/>
+        </svg>
+
+      </a>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="settings-panel" id="settings-panel">
+
+  <button class="settings-close" onclick="toggleSettings()">✕</button>
+
+  <div class="settings-panel-title">
+    Reading Settings
+  </div>
+
+  <div class="font-controls">
+
+    <button class="font-btn" onclick="changeFontSize(-1)">
+      A−
+    </button>
+
+    <div class="font-size-display" id="font-display">
+      17px
+    </div>
+
+    <button class="font-btn" onclick="changeFontSize(1)">
+      A+
+    </button>
+
+  </div>
+
+  <div class="font-family-row">
+
+    <button
+    class="font-family-btn active"
+    onclick="setFont(this,'Lora, Georgia, serif')">
+      Lora
+    </button>
+
+    <button
+    class="font-family-btn"
+    onclick="setFont(this,'Playfair Display, serif')"
+    style="font-family:'Playfair Display',serif">
+
+      Playfair
+    </button>
+
+    <button
+    class="font-family-btn"
+    onclick="setFont(this,'DM Sans, sans-serif')"
+    style="font-family:'DM Sans',sans-serif">
+
+      Sans
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+// BOOK -> READING
+function startReading(e, chapterTitle, chapterNum){
+  if(e) e.preventDefault();
+
+  document.getElementById('book-page').style.display='none';
+  document.getElementById('main-nav').style.display='none';
+  document.getElementById('reading-page').style.display='block';
+
+  document.getElementById('reading-chapter-title').textContent=chapterTitle;
+  document.getElementById('reading-chapter-num').textContent=chapterNum;
+
+  window.scrollTo(0,0);
+
+  initScrollHide();
+}
+
+function exitReading(){
+  document.getElementById('reading-page').style.display='none';
+  document.getElementById('book-page').style.display='block';
+  document.getElementById('main-nav').style.display='flex';
+
+  window.scrollTo(0,0);
+}
+
+// SCROLL HIDE
+function initScrollHide(){
+  let lastY=0;
+
+  const nav=document.getElementById('reading-nav');
+
+  window.addEventListener('scroll',()=>{
+
+    const y=window.scrollY;
+
+    if(y > lastY && y > 80){
+      nav.classList.add('hidden');
+    } else {
+      nav.classList.remove('hidden');
+    }
+
+    lastY=y;
+
+  }, { passive:true });
+}
+
+// reveal nav
+document.getElementById('reading-page')
+?.addEventListener('click',()=>{
+  document.getElementById('reading-nav')
+  ?.classList.remove('hidden');
+});
+
+// BOARD
+function toggleBoardPicker(){
+  document.getElementById('board-picker')
+  .classList.toggle('open');
+}
+
+function addToBoard(el){
+
+  el.classList.toggle('selected');
+
+  const anySelected =
+  document.querySelectorAll('.board-picker-item.selected').length > 0;
+
+  const btn=document.getElementById('add-board-btn');
+
+  btn.textContent=
+  anySelected
+  ? '✓ Added to Board'
+  : '+ Add to Board';
+
+  btn.classList.toggle('added', anySelected);
+}
+
+// close board
+document.addEventListener('click', e => {
+
+  if(
+    !e.target.closest('#board-picker') &&
+    !e.target.closest('#add-board-btn')
+  ){
+    document.getElementById('board-picker')
+    .classList.remove('open');
+  }
+
+});
+
+// SETTINGS
+function toggleSettings(){
+  document.getElementById('settings-panel')
+  .classList.toggle('open');
+}
+
+let fontSize=17;
+
+function changeFontSize(delta){
+
+  fontSize=Math.min(
+    24,
+    Math.max(13, fontSize + delta)
+  );
+
+  document.documentElement
+  .style
+  .setProperty('--font-size', fontSize + 'px');
+
+  document.getElementById('font-display')
+  .textContent=fontSize + 'px';
+}
+
+function setFont(btn, family){
+
+  document
+  .querySelectorAll('.font-family-btn')
+  .forEach(b => b.classList.remove('active'));
+
+  btn.classList.add('active');
+
+  document.getElementById('prose-content')
+  .style.fontFamily=family;
+}
+
+// THEME
+if(localStorage.getItem('quirki-theme') === 'light'){
+  document.body.classList.add('light');
+
+  const btn=document.getElementById('theme-btn');
+
+  if(btn){
+    btn.textContent='🌑';
+  }
+}
+
+function toggleTheme(){
+
+  document.body.classList.toggle('light');
+
+  const isLight =
+  document.body.classList.contains('light');
+
+  document.getElementById('theme-btn')
+  .textContent=isLight ? '🌑' : '🌙';
+
+  localStorage.setItem(
+    'quirki-theme',
+    isLight ? 'light' : 'dark'
+  );
+}
+</script>
+
+</body>
+</html>

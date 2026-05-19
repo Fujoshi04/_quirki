@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viewer | Quirki</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,400;0,600;1,400;1,600&family=DM+Sans:wght=300;400;500;600&family=Lora:ital,wght=0,400;0,500;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Design Tokens */
+            --bg:          #1a1c1e;      
+            --bg-nav:      #1c1e20;      
+            --bg-card:     #212326;      
+            --bg-section:  #1e2022;      
+            --teal:        #00e5c4;      
+            --teal-dim:    #00b89e;      
+            --teal-glow:   rgba(0, 229, 196, 0.08); 
+            --text:        #d8dde3;      
+            --text-muted:  #6a7480;      
+            --border:      rgba(255, 255, 255, 0.06); 
+
+            /* Typography */
+            --serif: 'Playfair Display', Georgia, serif;
+            --sans: 'DM Sans', sans-serif;
+            --reading: 'Lora', Georgia, serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 0.92rem;
+            min-height: 100vh;
+        }
+
+        /* --- SCREEN LAYER 1: BOOK DETAILS MAIN SCENE --- */
+        #bookDetailsScene {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 100px;
+        }
+
+        .viewer-header-bar {
+            width: 100%;
+            height: 56px;
+            background-color: var(--bg-nav);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-presentation-container {
+            width: 100%;
+            max-width: 720px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: left;
+            padding: 60px 20px 20px 20px;
+        }
+
+        .book-canvas-wrapper {
+            position: relative;
+            margin-bottom: 35px;
+        }
+
+        .book-cover-artifice {
+            width: 200px;
+            height: 280px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px; 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .fallback-artwork-circle {
+            width: 64px;
+            height: 64px;
+            background-color: var(--bg-section);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+            position: relative;
+        }
+        .fallback-artwork-circle::after {
+            content: '';
+            position: absolute;
+            top: 14px; left: 14px; width: 8px; height: 8px;
+            background: var(--bg); border-radius: 50%;
+            box-shadow: 18px 4px 0 var(--bg), 7px 20px 0 var(--bg), 22px 20px 0 var(--bg);
+        }
+
+        .metadata-text-block {
+            width: 100%;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .book-main-title {
+            font-family: var(--serif);
+            font-size: clamp(1.8rem, 6vw, 2.4rem);
+            font-weight: 400;
+            line-height: 1.2;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .book-byline-author {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+        .book-byline-author span {
+            color: var(--teal);
+        }
+
+        .metrics-tri-panel {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .metric-cell {
+            padding: 14px;
+            text-align: center;
+            border-right: 1px solid var(--border);
+        }
+        .metric-cell:last-child {
+            border-right: none;
+        }
+
+        .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-family: var(--serif);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .primary-action-trigger {
+            width: 100%;
+            background-color: var(--teal);
+            border: none;
+            color: var(--bg-nav);
+            padding: 18px;
+            border-radius: 4px; 
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .primary-action-trigger:hover {
+            background-color: var(--teal-dim);
+        }
+
+        .narrative-body-container {
+            width: 100%;
+            max-width: 720px;
+            padding: 0 10px;
+        }
+
+        .synopsis-text-area {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 24px;
+        }
+
+        .genre-pill-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+
+        .genre-tag-node {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .section-segment-header-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            margin-top: 20px;
+        }
+
+        .section-segment-label {
+            font-size: 0.7rem;
+            color: var(--teal);
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            font-weight: 500;
+        }
+
+        .header-inline-download-cluster {
+            display: flex;
+            gap: 8px;
+        }
+
+        .inline-download-tag {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .inline-download-tag:hover {
+            border-color: var(--text-muted);
+            color: var(--text);
+        }
+
+        .toc-tabular-matrix {
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid var(--border);
+            margin-bottom: 40px;
+        }
+
+        .toc-matrix-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .toc-matrix-row:hover .toc-chapter-title {
+            color: var(--teal);
+        }
+
+        .toc-meta-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .toc-chapter-title {
+            font-family: var(--serif);
+            font-size: 1.25rem;
+            color: var(--text);
+            transition: color 0.2s;
+        }
+
+
+        /* --- SCREEN LAYER 2: IMMERSIVE FULL SCREEN READER MODE --- */
+        #readerImmersiveScene {
+            display: none; 
+            min-height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding-bottom: 160px;
+        }
+
+        .reader-top-sticky-bar {
+            width: 100%;
+            height: 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background-color: var(--bg);
+            z-index: 10;
+        }
+
+        .reader-nav-action-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+        .reader-nav-action-btn:hover {
+            color: var(--text);
+        }
+
+        .reader-running-center-title {
+            font-family: var(--serif);
+            font-size: 0.9rem;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        .reader-prose-editorial-column {
+            width: 100%;
+            max-width: 680px;
+            padding: 60px 20px 20px 20px;
+        }
+
+        .editorial-chapter-main-headline {
+            font-family: var(--serif);
+            font-size: clamp(2rem, 5vw, 2.6rem);
+            color: var(--text);
+            font-weight: 400;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .editorial-byline-stats {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+        }
+
+        .immersive-reading-prose-body {
+            font-family: var(--reading);
+            font-size: 17px; 
+            line-height: 1.8;
+            color: var(--text);
+            transition: font-size 0.15s ease, font-family 0.15s ease;
+        }
+        .immersive-reading-prose-body p {
+            margin-bottom: 24px;
+        }
+
+        .pagination-turn-trigger-system {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 80px;
+            border-top: 1px solid var(--border);
+            padding-top: 24px;
+        }
+
+        .pagination-node-link {
+            font-family: var(--sans);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px 4px;
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        .pagination-node-link:hover {
+            color: var(--teal);
+        }
+        .pagination-node-link.hidden-node {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* --- OVERLAY INTERFACE: DISMISSABLE READING SETTINGS DRAWER --- */
+        .reading-settings-bottom-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--bg-nav);
+            border-top: 1px solid var(--border);
+            padding: 24px 40px;
+            z-index: 100;
+            display: none; 
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+        }
+
+        .drawer-row-layout {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .drawer-section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--text-muted);
+            width: 120px;
+            flex-shrink: 0;
+        }
+
+        .drawer-size-controls-cluster {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .drawer-action-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .drawer-action-btn:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+
+        .drawer-size-indicator-node {
+            font-family: var(--serif);
+            font-weight: 600;
+            color: var(--text);
+            font-size: 1rem;
+            min-width: 44px;
+            text-align: center;
+        }
+
+        .font-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            flex: 1;
+        }
+
+        .font-selection-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .font-selection-btn:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+        .font-selection-btn.active-setting {
+            border-color: var(--teal);
+            color: var(--teal);
+            background: rgba(0, 229, 196, 0.02);
+        }
+
+        .drawer-dismiss-trigger {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .drawer-dismiss-trigger:hover {
+            color: var(--text);
+        }
+
+        .workspace-return-footer-anchor {
+            display: block;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-top: 40px;
+            transition: color 0.2s ease;
+        }
+        .workspace-return-footer-anchor:hover {
+            color: var(--teal);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bookDetailsScene">
+        <header class="viewer-header-bar"></header>
+
+        <main class="hero-presentation-container">
+            <div class="book-canvas-wrapper">
+                <div class="book-cover-artifice" id="renderingTargetCover">
+                    <div class="fallback-artwork-circle" id="renderingFallbackGraphic"></div>
+                </div>
+            </div>
+
+            <div class="metadata-text-block">
+                <h1 class="book-main-title" id="renderingTargetTitle">Ashveil</h1>
+                <div class="book-byline-author">by <span id="renderingTargetAuthor">Zee</span></div>
+            </div>
+
+            <div class="metrics-tri-panel">
+                <div class="metric-cell">
+                    <div class="metric-label">Likes</div>
+                    <div class="metric-value" id="metricCellLikes">0</div>
+                </div>
+                <div class="metric-cell">
+                    <div class="metric-label">Adds</div>
+                    <div class="metric-value" id="metricCellAdds">0</div>
+                </div>
+                <div class="metric-cell">
+                    <div class="metric-label">Views</div>
+                    <div class="metric-value" id="metricCellViews">0</div>
+                </div>
+            </div>
+
+            <button class="primary-action-trigger" onclick="transitionToImmersiveReader(0)">Start Reading</button>
+
+            <div class="narrative-body-container">
+                <div class="synopsis-text-area" id="renderingTargetSummary">
+                    No summary available.
+                </div>
+
+                <div class="genre-pill-cloud" id="renderingTargetTags">
+                    </div>
+
+                <div id="tableOfContentsSegment">
+                    <div class="section-segment-header-line">
+                        <span class="section-segment-label">Table of Contents</span>
+                        <div class="header-inline-download-cluster">
+                            <button class="inline-download-tag">Download EPUB</button>
+                            <button class="inline-download-tag">Download PDF</button>
+                        </div>
+                    </div>
+                    
+                    <div class="toc-tabular-matrix" id="renderingTargetTOC">
+                        </div>
+                </div>
+
+                <a href="workspace.html" class="workspace-return-footer-anchor">← Return to Workspace</a>
+            </div>
+        </main>
+    </div>
+
+
+    <div id="readerImmersiveScene">
+        <nav class="reader-top-sticky-bar">
+            <button class="reader-nav-action-btn" onclick="exitReaderToDetailsView()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <div class="reader-running-center-title" id="readerTopBarBookTitle">Book Title</div>
+            <button class="reader-nav-action-btn" onclick="toggleSettingsDrawer(true)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </nav>
+
+        <article class="reader-prose-editorial-column">
+            <h1 class="editorial-chapter-main-headline" id="readerContentChapterTitle">Chapter Title</h1>
+            <div class="editorial-byline-stats" id="readerContentMetaByline">  </div>
+
+            <div class="immersive-reading-prose-body" id="immersiveProseCore"></div>
+
+            <footer class="pagination-turn-trigger-system">
+                <button class="pagination-node-link" id="prevChapterBtn" onclick="navigateAdjacentChapter(-1)">
+                    ← Prev
+                </button>
+                <button class="pagination-node-link" id="nextChapterBtn" onclick="navigateAdjacentChapter(1)">
+                    Next →
+                </button>
+            </footer>
+        </article>
+
+        <div class="reading-settings-bottom-drawer" id="readerSettingsOverlayDrawer">
+            <button class="drawer-dismiss-trigger" onclick="toggleSettingsDrawer(false)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+
+            <div class="drawer-row-layout">
+                <span class="drawer-section-label">Reading Settings</span>
+            </div>
+
+            <div class="drawer-row-layout">
+                <div class="drawer-size-controls-cluster">
+                    <button class="drawer-action-btn" onclick="alterReaderFontSize(-1)">A-</button>
+                    <div class="drawer-size-indicator-node" id="drawerFontSizePxLabel">17px</div>
+                    <button class="drawer-action-btn" onclick="alterReaderFontSize(1)">A+</button>
+                </div>
+            </div>
+
+            <div class="drawer-row-layout">
+                <div class="font-selection-grid">
+                    <button class="font-selection-btn active-setting" id="fBtnLora" onclick="setReaderFont('Lora')">Lora</button>
+                    <button class="font-selection-btn" id="fBtnPlayfair" onclick="setReaderFont('Playfair')">Playfair</button>
+                    <button class="font-selection-btn" id="fBtnSans" onclick="setReaderFont('Sans')">Sans</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentActiveChapterIndex = 0;
+        let globalFontSizePX = 17;
+
+        // Premium Default Fallback Dataset
+        const fallbackMockBookAsset = {
+            title: "Ashveil",
+            author: "Zee",
+            summary: "The Ashveil kingdom runs on stolen memory. Every citizen gives one — a price for peace, they're told. Mira has given hers three times. She knows this because she counted the scars. What she doesn't know is what she keeps forgetting, and why someone keeps making sure she does.",
+            likes: "8.3k",
+            adds: "5.1k",
+            views: "41k",
+            coverUrl: "",
+            tags: ["dark fantasy", "slow burn", "political intrigue"],
+            chapters: [
+                { title: "The First Forgetting", content: "<p>They said the forgetting was painless. Mira had believed them the first time. The second time, she'd believed them less. The third time, she'd stopped asking.</p><p>The scar on her left wrist was the newest. Still pink. She'd woken with it three weeks ago and spent the better part of an hour trying to remember what had been taken — the way you press your tongue to the gap where a tooth used to be. There was nothing. There never was.</p>" },
+                { title: "Salt and Smoke", content: "<p>The lower docks smelled of brine and scorched resin. Here, the memory-brokers did business away from the strict eyes of the Paladins. A single bottle of sapphire fluid could buy a family a year of safety—or wipe away the crime of a lifetime.</p>" },
+                { title: "The Vault Below", content: "<p>Beneath the flagstones of the cathedral lay the real foundation of the kingdom. Not stone, but glass. Thousands of crystalline canisters glowed with the stolen lifetimes of a generation, humming with a low, terrifying vibration.</p>" },
+                { title: "What She Remembered", content: "<p>The final scar wasn't on her wrist. It was hidden beneath her collarbone, deep and jagged. When Mira touched it this time, a sudden image flashed through her mind—a door of burning silver, and a voice she knew she loved but could no longer name.</p>" }
+            ]
+        };
+
+        let activeBookState = fallbackMockBookAsset;
+
+        // --- DOM INIT PIPELINE ---
+        window.addEventListener("DOMContentLoaded", () => {
+            const cachedWorkspaceData = sessionStorage.getItem("activePreviewPayload");
+
+            if (cachedWorkspaceData) {
+                try {
+                    const parsedEpub = JSON.parse(cachedWorkspaceData);
+                    let finalChaptersList = [];
+
+                    const rawChaptersArray = parsedEpub.chapters || parsedEpub.sections || parsedEpub.manuscript || parsedEpub.stories;
+
+                    if (Array.isArray(rawChaptersArray) && rawChaptersArray.length > 0) {
+                        finalChaptersList = rawChaptersArray.map((ch, idx) => ({
+                            title: ch.title || `Untitled Section ${idx + 1}`,
+                            content: ch.content || ch.htmlContent || ch.body || "<p>No chapter body available.</p>"
+                        }));
+                    } 
+                    else if (parsedEpub.content && parsedEpub.content.includes('class="preview-chapter-node"')) {
+                        const tempContainer = document.createElement('div');
+                        tempContainer.innerHTML = parsedEpub.content;
+                        const sections = tempContainer.querySelectorAll('.preview-chapter-node');
+                        
+                        sections.forEach((sec, idx) => {
+                            const h2 = sec.querySelector('h2');
+                            const div = sec.querySelector('div');
+                            finalChaptersList.push({
+                                title: h2 ? h2.textContent : `Untitled Section ${idx + 1}`,
+                                content: div ? div.innerHTML : sec.innerHTML
+                            });
+                        });
+                    }
+
+                    // Dynamic Tag parsing system to capture setups and genres
+                    let detectedTags = [];
+                    if (Array.isArray(parsedEpub.tags)) {
+                        detectedTags = parsedEpub.tags;
+                    } else if (typeof parsedEpub.tags === 'string' && parsedEpub.tags.trim()) {
+                        detectedTags = parsedEpub.tags.split(',').map(t => t.trim());
+                    } else if (parsedEpub.genre) {
+                        detectedTags = [parsedEpub.genre];
+                    }
+
+                    activeBookState = {
+                        title: parsedEpub.bookTitle || parsedEpub.title || "Untitled Book",
+                        author: parsedEpub.author || "Unknown Author",
+                        summary: parsedEpub.summary || parsedEpub.synopsis || "Preview Mode: Active manuscript workspace deployment tracking layer.",
+                        likes: parsedEpub.likes || "0",
+                        adds: parsedEpub.adds || "0",
+                        views: parsedEpub.views || "0",
+                        coverUrl: parsedEpub.coverUrl || parsedEpub.cover || "",
+                        tags: detectedTags.length > 0 ? detectedTags : ["Manuscript"],
+                        chapters: finalChaptersList.length > 0 ? finalChaptersList : [
+                            { 
+                                title: parsedEpub.chapterTitle || "Workspace Compilation Draft", 
+                                content: parsedEpub.content || "<p>No text content parsed.</p>" 
+                            }
+                        ]
+                    };
+
+                    // Handle dynamic book cover presentation
+                    const coverBox = document.getElementById("renderingTargetCover");
+                    const fallbackGraphic = document.getElementById("renderingFallbackGraphic");
+                    if (activeBookState.coverUrl) {
+                        coverBox.style.backgroundImage = `url('${activeBookState.coverUrl}')`;
+                        fallbackGraphic.style.display = "none";
+                    } else {
+                        coverBox.style.backgroundImage = "none";
+                        fallbackGraphic.style.display = "block";
+                    }
+
+                } catch (error) {
+                    console.error("Auto-Detect Parser Exception:", error);
+                }
+            }
+
+            renderBookLandingDetails();
+        });
+
+        function renderBookLandingDetails() {
+            document.getElementById("renderingTargetTitle").textContent = activeBookState.title;
+            document.getElementById("renderingTargetAuthor").textContent = activeBookState.author;
+            document.getElementById("renderingTargetSummary").textContent = activeBookState.summary;
+            
+            document.getElementById("metricCellLikes").textContent = activeBookState.likes;
+            document.getElementById("metricCellAdds").textContent = activeBookState.adds;
+            document.getElementById("metricCellViews").textContent = activeBookState.views;
+
+            const tagsBox = document.getElementById("renderingTargetTags");
+            tagsBox.innerHTML = activeBookState.tags.map(t => `<span class="genre-tag-node">${t}</span>`).join('');
+
+            const tocBox = document.getElementById("renderingTargetTOC");
+            tocBox.innerHTML = activeBookState.chapters.map((ch, index) => {
+                return `
+                    <div class="toc-matrix-row" onclick="transitionToImmersiveReader(${index})">
+                        <div class="toc-meta-stack">
+                            <span class="toc-chapter-title">${ch.title}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* --- IMMERSIVE ENGINE ROUTING LAYER --- */
+        function transitionToImmersiveReader(chapterIndex) {
+            currentActiveChapterIndex = chapterIndex;
+            document.getElementById("bookDetailsScene").style.display = "none";
+            document.getElementById("readerImmersiveScene").style.display = "flex";
+            window.scrollTo(0, 0);
+            mountChapterToReaderFrame();
+        }
+
+        function exitReaderToDetailsView() {
+            document.getElementById("readerImmersiveScene").style.display = "none";
+            document.getElementById("bookDetailsScene").style.display = "flex";
+            toggleSettingsDrawer(false);
+            window.scrollTo(0, 0);
+        }
+
+        function mountChapterToReaderFrame() {
+            const ch = activeBookState.chapters[currentActiveChapterIndex];
+            if (!ch) return;
+
+            document.getElementById("readerTopBarBookTitle").textContent = activeBookState.title;
+            document.getElementById("readerContentChapterTitle").textContent = ch.title;
+            
+            document.getElementById("readerContentMetaByline").innerHTML = ` `;
+            document.getElementById("immersiveProseCore").innerHTML = ch.content;
+
+            const prevBtn = document.getElementById("prevChapterBtn");
+            const nextBtn = document.getElementById("nextChapterBtn");
+
+            if (currentActiveChapterIndex > 0) {
+                prevBtn.classList.remove("hidden-node");
+            } else {
+                prevBtn.classList.add("hidden-node");
+            }
+
+            if (currentActiveChapterIndex < activeBookState.chapters.length - 1) {
+                nextBtn.classList.remove("hidden-node");
+            } else {
+                nextBtn.classList.add("hidden-node");
+            }
+        }
+
+        function navigateAdjacentChapter(directionStep) {
+            const target = currentActiveChapterIndex + directionStep;
+            if (target >= 0 && target < activeBookState.chapters.length) {
+                currentActiveChapterIndex = target;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                mountChapterToReaderFrame();
+            }
+        }
+
+        /* --- INTERFACE PRESENTATION ENGINE SETTINGS --- */
+        function toggleSettingsDrawer(forceOpenState) {
+            const drawer = document.getElementById("readerSettingsOverlayDrawer");
+            drawer.style.display = forceOpenState ? "flex" : "none";
+        }
+
+        function alterReaderFontSize(incrementDirection) {
+            globalFontSizePX += (incrementDirection * 1);
+            if (globalFontSizePX < 12) globalFontSizePX = 12;
+            if (globalFontSizePX > 34) globalFontSizePX = 34;
+
+            document.getElementById("drawerFontSizePxLabel").textContent = `${globalFontSizePX}px`;
+            document.getElementById("immersiveProseCore").style.fontSize = `${globalFontSizePX}px`;
+        }
+
+        function setReaderFont(fontKey) {
+            const prose = document.getElementById("immersiveProseCore");
+            document.getElementById("fBtnLora").classList.remove("active-setting");
+            document.getElementById("fBtnPlayfair").classList.remove("active-setting");
+            document.getElementById("fBtnSans").classList.remove("active-setting");
+
+            if (fontKey === 'Lora') {
+                prose.style.fontFamily = "var(--reading)";
+                document.getElementById("fBtnLora").classList.add("active-setting");
+            } else if (fontKey === 'Playfair') {
+                prose.style.fontFamily = "var(--serif)";
+                document.getElementById("fBtnPlayfair").classList.add("active-setting");
+            } else if (fontKey === 'Sans') {
+                prose.style.fontFamily = "var(--sans)";
+                document.getElementById("fBtnSans").classList.add("active-setting");
+            }
+        }
+    </script>
+</body>
+</html>

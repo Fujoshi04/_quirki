@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Quirki — Profile</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+*,
+*::before,
+*::after{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --bg:#1a1c1e;
+  --bg-nav:#1c1e20;
+  --bg-card:#212326;
+  --bg-section:#1e2022;
+
+  --banner1:#1e2a28;
+  --banner2:#1a2422;
+  --banner3:#1c1e20;
+
+  --teal:#00e5c4;
+  --teal-glow:rgba(0,229,196,0.08);
+
+  --text:#d8dde3;
+  --text-muted:#6a7480;
+
+  --border:rgba(255,255,255,0.06);
+
+  --serif:'Playfair Display', Georgia, serif;
+  --sans:'DM Sans', sans-serif;
+}
+
+body.light{
+  --bg:#f5f1e8;
+  --bg-nav:#f7f3eb;
+  --bg-card:#fffdf8;
+  --bg-section:#f0eadf;
+
+  --banner1:#f1e5d5;
+  --banner2:#ead9c7;
+  --banner3:#f5efe7;
+
+  --teal:#7a2e2e;
+  --teal-glow:rgba(122,46,46,0.06);
+
+  --text:#1c1b18;
+  --text-muted:#6f665f;
+
+  --border:rgba(122,46,46,0.10);
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  min-height:100vh;
+  transition:.25s;
+}
+
+/* NAV */
+nav{
+  position:sticky;
+  top:0;
+  z-index:100;
+  height:56px;
+  padding:0 24px;
+  background:var(--bg-nav);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.nav-left{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.nav-back{
+  color:var(--text-muted);
+  display:flex;
+  align-items:center;
+  text-decoration:none;
+  transition:.2s;
+}
+
+.nav-back:hover{
+  color:var(--teal);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  text-decoration:none;
+  font-family:var(--serif);
+  font-size:1.4rem;
+  font-weight:600;
+  font-style:italic;
+  color:var(--teal);
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.theme-btn{
+  width:32px;
+  height:32px;
+  border:none;
+  background:none;
+  border-radius:6px;
+  cursor:pointer;
+  color:var(--text-muted);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.2s;
+  font-size:1rem;
+}
+
+.theme-btn:hover{
+  background:var(--teal-glow);
+  color:var(--teal);
+}
+
+.nav-bell{
+  width:32px;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  color:var(--text-muted);
+  cursor:pointer;
+  transition:.2s;
+}
+
+
+.nav-bell:hover{
+  color:var(--teal);
+}
+
+.nav-bell .dot{
+  position:absolute;
+  top:4px;
+  right:4px;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--teal);
+}
+
+.nav-avatar{
+  width:32px;
+  height:32px;
+  border-radius:4px;
+  border:1px solid var(--border);
+  background:var(--teal-glow);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--teal);
+  text-decoration:none;
+  font-size:.9rem;
+  font-weight:500;
+}
+
+.nav-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+
+
+/* BANNER */
+.profile-banner{
+  width:100%;
+  height:120px;
+  background:linear-gradient(135deg, var(--banner1), var(--banner2), var(--banner3));
+  border-bottom:1px solid var(--border);
+}
+
+/* HEADER */
+.profile-header{
+  max-width:620px;
+  margin:auto;
+  padding:0 24px;
+  position: relative;
+}
+
+.profile-avatar-wrap{
+  position:relative;
+  margin-top:-36px;
+  margin-bottom:16px;
+  width:72px;
+}
+
+.profile-avatar{
+  width:72px;
+  height:72px;
+  border-radius:4px;
+  background:var(--bg-card);
+  border:2px solid var(--border);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--serif);
+  font-size:1.7rem;
+  font-weight:600;
+  color:var(--teal);
+}
+
+.profile-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.avatar-upload{
+  margin-top:10px;
+}
+
+.avatar-upload label{
+  font-size:.72rem;
+  color:var(--teal);
+  cursor:pointer;
+}
+
+.avatar-upload input{
+  display:none;
+}
+
+.profile-username-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.profile-username{
+  font-family:var(--serif);
+  font-size:1.55rem;
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+.profile-handle{
+  color:var(--text-muted);
+  font-size:.82rem;
+  margin-bottom:18px;
+}
+
+/* EDIT BUTTON */
+.edit-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  transition: .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-toggle-btn:hover {
+  color: var(--teal);
+  background: var(--teal-glow);
+}
+
+.edit-toggle-btn.active-cancel {
+  width: auto;
+  padding: 0 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--teal);
+  border: 1px solid var(--border);
+}
+
+/* MAIN */
+main{
+  max-width:620px;
+  margin:auto;
+  padding:30px 24px 80px;
+}
+
+.section-divider{
+  height:1px;
+  background:var(--border);
+  margin:34px 0;
+}
+
+.section-label{
+  font-size:.72rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--teal);
+  margin-bottom:14px;
+}
+
+/* PROFILE PRESENTATION WRAPPER */
+.profile-view-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.box-title{
+  font-size:.72rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--teal);
+  margin-bottom:14px;
+  margin-top: 24px;
+}
+
+.edit-box .box-title {
+  font-size:.75rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-bottom:14px;
+  margin-top: 0;
+}
+
+.edit-box{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px;
+  margin-bottom:18px;
+}
+
+.role-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.role-option{
+  border:1px solid var(--border);
+  background:none;
+  color:var(--text-muted);
+  border-radius:4px;
+  padding:7px 12px;
+  cursor:pointer;
+  font-size:.78rem;
+  transition:.2s;
+}
+
+.role-option.active{
+  color:var(--teal);
+  border-color:var(--teal);
+  background:var(--teal-glow);
+}
+
+.role-display{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom: 12px;
+}
+
+.role-tag{
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:5px 10px;
+  font-size:.7rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--teal);
+}
+
+.about-input{
+  width:100%;
+  min-height:120px;
+  resize:vertical;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:14px;
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:.92rem;
+  outline:none;
+}
+
+.global-save-btn{
+  width: 100%;
+  border: none;
+  background: var(--teal);
+  color: #111;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: .9rem;
+  font-weight: 600;
+  margin-top: 20px;
+  transition: .2s;
+}
+
+.global-save-btn:hover {
+  opacity: 0.9;
+}
+
+body.light .global-save-btn{
+  color:white;
+}
+
+.link-row{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.link-row input{
+  flex:1;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px;
+  color:var(--text);
+  outline:none;
+}
+
+.add-link-btn{
+  margin-top:4px;
+  border:none;
+  background:none;
+  color:var(--teal);
+  cursor:pointer;
+  font-size:.82rem;
+}
+
+.saved-about{
+  line-height:1.8;
+  color:var(--text);
+  font-size:.92rem;
+  white-space: pre-wrap;
+  margin-bottom: 24px;
+}
+
+.saved-links{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.saved-link{
+  display:flex;
+  gap:24px;
+  font-size:.92rem;
+}
+
+.saved-link-label{
+  color:var(--text-muted);
+  min-width:60px;
+}
+
+.saved-link a{
+  color:var(--teal);
+  text-decoration:none;
+}
+
+.saved-link a:hover{
+  text-decoration: underline;
+}
+
+/* BOARDS SECTION */
+.board-pack{
+  margin-bottom:34px;
+}
+
+.board-pack-name{
+  font-size:.72rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.board-pack-name::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:var(--border);
+}
+
+.book-list{
+  display:flex;
+  flex-direction:column;
+}
+
+.book-item{
+  display:flex;
+  gap:14px;
+  padding:16px 8px;
+  border-top:1px solid var(--border);
+  text-decoration:none;
+  color:inherit;
+}
+
+.book-cover{
+  width:40px;
+  height:54px;
+  border-radius:4px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+}
+
+.book-body{
+  flex:1;
+}
+
+.book-title{
+  font-family:var(--serif);
+  font-size:.96rem;
+  font-weight:600;
+  margin-bottom:4px;
+}
+
+.book-desc{
+  font-size:.8rem;
+  color:var(--text-muted);
+}
+
+.show-more-link {
+  font-size: 0.8rem;
+  color: var(--teal);
+  text-decoration: none;
+  padding: 8px;
+  display: inline-block;
+  transition: 0.2s;
+}
+
+.show-more-link:hover {
+  text-decoration: underline;
+}
+
+.hidden{
+  display:none !important;
+}
+
+@media(max-width:520px){
+  main{
+    padding:28px 20px 70px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="quirki-home.html" class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <a href="quirki-home.html" class="logo">
+      <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+        <path d="M13 2 C14.5 2 15.5 3 15 4.5 C16.5 3.5 18.5 4 19 5.5 C19.5 7 18.5 8.5 17 8.5 C18.5 9 19.5 10.5 19 12 C18.5 13.5 17 14 15.5 13.5 C16.5 15 16 17 14.5 17.5 C13 18 11.5 17 11.5 15.5 C10.5 17 9 17.5 7.5 16.5 C6 15.5 6 13.5 7.5 12.5 C6 12.5 4.5 11.5 4.5 10 C4.5 8.5 5.5 7.5 7 7.5 C5.5 7 4.5 5.5 5 4 C5.5 2.5 7.5 2 9 3 C8.5 1.5 10 0.5 11.5 1 C12.5 1.5 13 2 13 2Z" fill="currentColor"/>
+      </svg>
+      quirki
+    </a>
+  </div>
+
+  <div class="nav-right">
+    <button id="theme-btn" class="theme-btn" onclick="toggleTheme()">🌙</button>
+    <a href="quirki-notif.html" class="nav-bell">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2a6 6 0 0 0-6 6v2.5L2.5 13h15L16 10.5V8a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M8 15a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+      <span class="dot"></span>
+    </a>
+    <a href="quirki-profile.html" class="nav-avatar" id="navAvatar">Z</a>
+  </div>
+</nav>
+
+<div class="profile-banner"></div>
+
+<div class="profile-header">
+  <div class="profile-avatar-wrap">
+    <div class="profile-avatar" id="profileAvatar">Z</div>
+    <div class="avatar-upload edit-mode-element hidden">
+      <label>
+        Change photo
+        <input type="file" accept="image/*" onchange="uploadAvatar(event)">
+      </label>
+    </div>
+  </div>
+
+  <div class="profile-username-row">
+    <div>
+      <div class="profile-username" id="profileName">Zee</div>
+      <div class="profile-handle">@zee · member since 2025</div>
+      <div class="role-display view-mode-element" id="roleDisplay"></div>
+    </div>
+    
+    <button class="edit-toggle-btn" id="editToggleBtn" onclick="toggleEditMode()">
+      <svg width="18" height="4" viewBox="0 0 18 4" fill="none" id="dotsIcon">
+        <circle cx="2" cy="2" r="2" fill="currentColor"/>
+        <circle cx="9" cy="2" r="2" fill="currentColor"/>
+        <circle cx="16" cy="2" r="2" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<main>
+
+  <div id="profileViewDeck" class="profile-view-container view-mode-element">
+    <div class="box-title">About</div>
+    <div class="saved-about" id="savedAbout"></div>
+
+    <div class="saved-links" id="savedLinks"></div>
+  </div>
+
+  <div id="profileEditForm" class="edit-mode-element hidden">
+    <div class="edit-box">
+      <div class="box-title">Edit Roles</div>
+      <div class="role-buttons">
+        <button class="role-option">Author</button>
+        <button class="role-option">Reader</button>
+        <button class="role-option">Beta Reader</button>
+        <button class="role-option">Editor</button>
+      </div>
+    </div>
+
+    <div class="edit-box">
+      <div class="box-title">Edit About</div>
+      <textarea id="aboutInput" class="about-input" placeholder="Write something about yourself..."></textarea>
+    </div>
+
+    <div class="edit-box">
+      <div class="box-title">Edit Links</div>
+      <div id="linkInputs"></div>
+      <button class="add-link-btn" onclick="addLinkInput()">+ Add link</button>
+    </div>
+
+    <button class="global-save-btn" onclick="saveAllProfileData()">Save Profile</button>
+  </div>
+
+  <div class="section-divider"></div>
+  
+  <div class="section-label">Boards</div>
+  <div id="profileBoards"></div>
+
+</main>
+
+<script>
+let isEditMode = false;
+const username = localStorage.getItem('quirki-username') || 'Zee';
+document.getElementById('profileName').textContent = username;
+const firstLetter = username.charAt(0).toUpperCase();
+
+// Avatar Persist
+const avatar = localStorage.getItem('quirki-avatar');
+if(avatar){
+  document.getElementById('profileAvatar').innerHTML = `<img src="${avatar}">`;
+  document.getElementById('navAvatar').innerHTML = `<img src="${avatar}">`;
+} else {
+  document.getElementById('profileAvatar').textContent = firstLetter;
+  document.getElementById('navAvatar').textContent = firstLetter;
+}
+
+function uploadAvatar(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    localStorage.setItem('quirki-avatar', e.target.result);
+    document.getElementById('profileAvatar').innerHTML = `<img src="${e.target.result}">`;
+    document.getElementById('navAvatar').innerHTML = `<img src="${e.target.result}">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* THEME */
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isLight ? '🌑' : '🌙';
+}
+(function(){
+  const saved = localStorage.getItem('quirki-theme');
+  if(saved === 'light'){
+    document.body.classList.add('light');
+    document.getElementById('theme-btn').textContent = '🌑';
+  }
+})();
+
+/* MODE SWAPPING */
+function toggleEditMode() {
+  isEditMode = !isEditMode;
+  
+  const editElements = document.querySelectorAll('.edit-mode-element');
+  const viewElements = document.querySelectorAll('.view-mode-element');
+  const toggleBtn = document.getElementById('editToggleBtn');
+
+  if(isEditMode) {
+    toggleBtn.textContent = 'Cancel';
+    toggleBtn.classList.add('active-cancel');
+    editElements.forEach(el => el.classList.remove('hidden'));
+    viewElements.forEach(el => el.classList.add('hidden'));
+    setupLinkInputs();
+  } else {
+    toggleBtn.innerHTML = `
+      <svg width="18" height="4" viewBox="0 0 18 4" fill="none" id="dotsIcon">
+        <circle cx="2" cy="2" r="2" fill="currentColor"/>
+        <circle cx="9" cy="2" r="2" fill="currentColor"/>
+        <circle cx="16" cy="2" r="2" fill="currentColor"/>
+      </svg>
+    `;
+    toggleBtn.classList.remove('active-cancel');
+    editElements.forEach(el => el.classList.add('hidden'));
+    viewElements.forEach(el => el.classList.remove('hidden'));
+  }
+}
+
+/* ROLES */
+const roleButtons = document.querySelectorAll('.role-option');
+let selectedRoles = JSON.parse(localStorage.getItem('quirki-roles')) || [];
+
+function renderRoles(){
+  const display = document.getElementById('roleDisplay');
+  display.innerHTML = '';
+  
+  roleButtons.forEach(btn => {
+    const role = btn.textContent;
+    btn.classList.toggle('active', selectedRoles.includes(role));
+  });
+
+  selectedRoles.forEach(role => {
+    display.innerHTML += `<div class="role-tag">${role}</div>`;
+  });
+}
+
+roleButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const role = btn.textContent;
+    if(selectedRoles.includes(role)){
+      selectedRoles = selectedRoles.filter(r => r !== role);
+    } else {
+      selectedRoles.push(role);
+    }
+    renderRoles();
+  });
+});
+
+/* ABOUT */
+const savedAboutText = localStorage.getItem('quirki-about') || '';
+document.getElementById('savedAbout').textContent = savedAboutText || 'Write something about yourself in edit mode...';
+document.getElementById('aboutInput').value = savedAboutText;
+
+/* LINKS */
+function addLinkInput(label='', url=''){
+  const wrap = document.createElement('div');
+  wrap.className = 'link-row';
+  wrap.innerHTML = `
+    <input type="text" placeholder="Instagram / AO3 / Website" value="${label}">
+    <input type="text" placeholder="https://..." value="${url}">
+  `;
+  document.getElementById('linkInputs').appendChild(wrap);
+}
+
+let storedLinks = JSON.parse(localStorage.getItem('quirki-links')) || [];
+
+function setupLinkInputs() {
+  document.getElementById('linkInputs').innerHTML = '';
+  if(storedLinks.length){
+    storedLinks.forEach(link => addLinkInput(link.label, link.url));
+  } else {
+    addLinkInput();
+  }
+}
+
+function renderLinks(data){
+  const container = document.getElementById('savedLinks');
+  container.innerHTML = '';
+
+  data.forEach(link => {
+    container.innerHTML += `
+      <div class="saved-link">
+        <div class="saved-link-label">${link.label}</div>
+        <a href="${link.url}" target="_blank">${link.url}</a>
+      </div>
+    `;
+  });
+}
+
+/* SAVE ALL PROFILE DATA */
+function saveAllProfileData() {
+  localStorage.setItem('quirki-roles', JSON.stringify(selectedRoles));
+  
+  const aboutValue = document.getElementById('aboutInput').value.trim();
+  localStorage.setItem('quirki-about', aboutValue);
+  document.getElementById('savedAbout').textContent = aboutValue || 'Write something about yourself in edit mode...';
+
+  const rows = document.querySelectorAll('.link-row');
+  const linkData = [];
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const label = inputs[0].value.trim();
+    const url = inputs[1].value.trim();
+    if(label && url){
+      linkData.push({ label, url });
+    }
+  });
+  storedLinks = linkData;
+  localStorage.setItem('quirki-links', JSON.stringify(linkData));
+  renderLinks(linkData);
+
+  toggleEditMode();
+}
+
+/* BOARDS & FIRST BOOK RENDER LOGIC */
+function renderBoards() {
+  // Pulls your active workspace layout list from either profile-boards or primary board page
+  const boards = JSON.parse(localStorage.getItem('quirki-profile-boards')) || 
+                 JSON.parse(localStorage.getItem('quirki-boards')) || [];
+
+  const container = document.getElementById('profileBoards');
+  container.innerHTML = '';
+
+  if(boards.length === 0) {
+    container.innerHTML = '<span style="color:var(--text-muted); font-size:0.9rem;">No boards found.</span>';
+    return;
+  }
+
+  boards.forEach(board => {
+    let boardContentHtml = '';
+
+    // Check if board contains books array and has items
+    if (board.books && board.books.length > 0) {
+      const firstBook = board.books[0];
+      
+      boardContentHtml = `
+        <div class="book-list">
+          <a href="#" class="book-item">
+            <div class="book-cover"></div>
+            <div class="book-body">
+              <div class="book-title">${firstBook.title || 'Untitled Book'}</div>
+              <div class="book-desc">${firstBook.desc || 'No description provided.'}</div>
+            </div>
+          </a>
+        </div>
+      `;
+
+      // If there are 2 or more books in the board, show the fallback toggle text anchor
+      if (board.books.length >= 2) {
+        boardContentHtml += `
+          <a href="quirki-boards.html?board=${encodeURIComponent(board.name)}" class="show-more-link">
+            Show more in ${board.name}...
+          </a>
+        `;
+      }
+    }
+
+    // Append standard block element container markup structure
+    container.innerHTML += `
+      <div class="board-pack">
+        <div class="board-pack-name">
+          ${board.name}
+        </div>
+        ${boardContentHtml}
+      </div>
+    `;
+  });
+}
+
+// Runtime Startup Hooks Execution
+renderRoles();
+renderLinks(storedLinks);
+renderBoards();
+
+
+</script>
+
+</body>
+</html>

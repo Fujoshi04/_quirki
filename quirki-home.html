@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quirki — Home</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* DARK MODE */
+  --bg:#1a1c1e;
+  --bg-nav:#1c1e20;
+  --bg-rule:#1e2022;
+
+  --teal:#00e5c4;
+  --teal-dim:#00b89e;
+  --teal-glow:rgba(0,229,196,0.08);
+
+  --text:#d8dde3;
+  --text-muted:#6a7480;
+
+  --border:rgba(255,255,255,0.06);
+
+  --serif:'Playfair Display', Georgia, serif;
+  --sans:'DM Sans', sans-serif;
+}
+
+/* LIGHT MODE */
+body.light {
+  --bg:#f7f4eb;
+  --bg-nav:#fbfaf7;
+  --bg-rule:#eae6db;
+  --bg-card:#ffffff;
+  --bg-section:#eae6db;
+
+  --teal:#801818;
+  --teal-dim:#601010;
+  --teal-glow:rgba(128,24,24,0.05);
+
+  --text:#1c1b18;
+  --text-muted:#706e64;
+
+  --border:rgba(128,24,24,0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+
+  font-family: var(--sans);
+  font-weight: 300;
+
+  min-height: 100vh;
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+/* NAV */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  background: var(--bg-nav);
+  border-bottom: 1px solid var(--border);
+
+  padding: 0 24px;
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  font-style: italic;
+
+  color: var(--teal);
+
+  text-decoration: none;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* THEME TOGGLE */
+.theme-toggle {
+  background: none;
+  border: none;
+
+  cursor: pointer;
+
+  color: var(--text-muted);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1rem;
+
+  padding: 4px;
+
+  border-radius: 6px;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--teal);
+  background: var(--teal-glow);
+}
+
+/* BELL */
+.nav-bell {
+  color: var(--text-muted);
+
+  cursor: pointer;
+
+  transition: color 0.2s ease;
+
+  display: flex;
+  align-items: center;
+
+  position: relative;
+}
+
+.nav-bell:hover {
+  color: var(--teal);
+}
+
+.nav-bell .dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 7px;
+  height: 7px;
+
+  background: var(--teal);
+
+  border: 1.5px solid var(--bg-nav);
+
+  border-radius: 999px;
+}
+
+/* PROFILE */
+.nav-avatar {
+  text-decoration: none;
+
+  border-radius: 4px;
+
+  width: 32px;
+  height: 32px;
+
+  background: var(--teal-glow);
+
+  border: 1.5px solid color-mix(in srgb, var(--teal) 25%, transparent);
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--teal);
+
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* MAIN */
+main {
+  max-width: 600px;
+  margin: 0 auto;
+
+  padding: 40px 24px 80px;
+}
+
+/* RULES */
+.rules-block {
+  margin-bottom: 48px;
+  animation: fadeUp 0.35s ease both;
+}
+
+.rules-heading {
+  font-family: var(--serif);
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  color: var(--teal);
+
+  margin-bottom: 20px;
+}
+
+.rule {
+  padding: 18px 0;
+
+  border-bottom: 1px solid var(--border);
+
+  display: flex;
+  gap: 16px;
+}
+
+.rule:first-of-type {
+  border-top: 1px solid var(--border);
+}
+
+.rule-number {
+  font-family: var(--serif);
+  font-size: 0.8rem;
+
+  color: var(--teal);
+
+  opacity: 0.6;
+
+  flex-shrink: 0;
+
+  padding-top: 2px;
+
+  min-width: 20px;
+}
+
+.rule-title {
+  font-size: 0.92rem;
+  font-weight: 500;
+
+  color: var(--text);
+
+  margin-bottom: 4px;
+}
+
+.rule-desc {
+  font-size: 0.82rem;
+
+  color: var(--text-muted);
+
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+/* SECTIONS */
+.section-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 26px 8px;
+
+  border-bottom: 1px solid var(--border);
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  border-radius: 4px;
+
+  margin: 0 -8px;
+
+  transition: background 0.2s ease;
+}
+
+.section-item:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.section-item:hover {
+  background: var(--teal-glow);
+}
+
+.section-item:hover .section-arrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--teal);
+}
+
+.section-item:hover .section-name {
+  color: var(--teal);
+}
+
+.section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.section-name {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+
+  color: var(--text);
+
+  transition: color 0.2s ease;
+
+  line-height: 1;
+}
+
+.section-desc {
+  font-size: 0.84rem;
+
+  color: var(--text-muted);
+
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.section-arrow {
+  font-size: 1.1rem;
+
+  color: var(--text-muted);
+
+  opacity: 0.4;
+
+  transform: translateX(-4px);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    color 0.2s ease;
+
+  flex-shrink: 0;
+
+  margin-left: 16px;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rules-block { animation: fadeUp 0.35s 0.05s ease both; }
+
+.section-item:nth-child(1) { animation: fadeUp 0.35s 0.12s ease both; }
+.section-item:nth-child(2) { animation: fadeUp 0.35s 0.18s ease both; }
+.section-item:nth-child(3) { animation: fadeUp 0.35s 0.24s ease both; }
+.section-item:nth-child(4) { animation: fadeUp 0.35s 0.30s ease both; }
+
+/* MOBILE */
+@media (max-width: 480px) {
+  main {
+    padding: 32px 20px 80px;
+  }
+  .section-name {
+    font-size: 1.2rem;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+  <a href="quirki-home.html" class="logo">
+    <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+      <path d="M13 2 C14.5 2 15.5 3 15 4.5 C16.5 3.5 18.5 4 19 5.5 C19.5 7 18.5 8.5 17 8.5 C18.5 9 19.5 10.5 19 12 C18.5 13.5 17 14 15.5 13.5 C16.5 15 16 17 14.5 17.5 C13 18 11.5 17 11.5 15.5 C10.5 17 9 17.5 7.5 16.5 C6 15.5 6 13.5 7.5 12.5 C6 12.5 4.5 11.5 4.5 10 C4.5 8.5 5.5 7.5 7 7.5 C5.5 7 4.5 5.5 5 4 C5.5 2.5 7.5 2 9 3 C8.5 1.5 10 0.5 11.5 1 C12.5 1.5 13 2 13 2Z" fill="currentColor"/>
+    </svg>
+    quirki
+  </a>
+
+  <div class="nav-right">
+    <button id="theme-btn" class="theme-toggle" onclick="toggleTheme()">
+      🌙
+    </button>
+    
+    <a href="quirki-notif.html" class="nav-bell">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2a6 6 0 0 0-6 6v2.5L2.5 13h15L16 10.5V8a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M8 15a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+      <span class="dot"></span>
+    </a>
+
+    <a href="quirki-profile.html" class="nav-avatar" id="navAvatar">Z</a>
+  </div>
+</nav>
+
+<main>
+
+  <div class="rules-block">
+    <p class="rules-heading">
+      Rules & Guidelines
+    </p>
+
+    <div class="rule">
+      <span class="rule-number">01</span>
+      <div class="rule-body">
+        <div class="rule-title">
+          This is a space for original fiction
+        </div>
+        <div class="rule-desc">
+          Quirki is built around original stories. That's what this community is here for.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule">
+      <span class="rule-number">02</span>
+      <div class="rule-body">
+        <div class="rule-title">
+          No spam
+        </div>
+        <div class="rule-desc">
+          We're anti-spam in every form — comments, reviews, forum posts, or anything that clutters the space for everyone else.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule">
+      <span class="rule-number">03</span>
+      <div class="rule-body">
+        <div class="rule-title">
+          Engage honestly
+        </div>
+        <div class="rule-desc">
+          Points exist to reflect genuine contribution. Coordinated likes, fake reviews, or any attempt to game the system will result in removal.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule">
+      <span class="rule-number">04</span>
+      <div class="rule-body">
+        <div class="rule-title">
+          Discrimination has no place here
+        </div>
+        <div class="rule-desc">
+          Quirki does not tolerate discrimination of any kind.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule">
+      <span class="rule-number">05</span>
+      <div class="rule-body">
+        <div class="rule-title">
+          Quirki is 13+
+        </div>
+        <div class="rule-desc">
+          We'd love to have you here — all we ask is that you register as 13 or older.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-list">
+
+    <a href="quirki-reading.html" class="section-item">
+      <div class="section-body">
+        <span class="section-name">
+          Reading
+        </span>
+        <span class="section-desc">
+          Browse stories by genre, search by tag, find your next read
+        </span>
+      </div>
+      <span class="section-arrow">
+        →
+      </span>
+    </a>
+
+    <a href="quirki-writing.html" class="section-item">
+      <div class="section-body">
+        <span class="section-name">
+          Writing
+        </span>
+        <span class="section-desc">
+          Your stories — create, update, and manage your work
+        </span>
+      </div>
+      <span class="section-arrow">
+        →
+      </span>
+    </a>
+
+    <a href="quirki-discussion.html" class="section-item">
+      <div class="section-body">
+        <span class="section-name">
+          Discussion
+        </span>
+        <span class="section-desc">
+          The community forum — ideas, requests, appreciation, and help
+        </span>
+      </div>
+      <span class="section-arrow">
+        →
+      </span>
+    </a>
+
+    <a href="quirki-board.html" class="section-item">
+      <div class="section-body">
+        <span class="section-name">
+          Board
+        </span>
+        <span class="section-desc">
+          Your personal shelves — organise stories your own way
+        </span>
+      </div>
+      <span class="section-arrow">
+        →
+      </span>
+    </a>
+
+  </div>
+
+</main>
+
+<script>
+
+/* ── LOAD SAVED THEME ── */
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('quirki-theme');
+  if (savedTheme === 'light') {
+    document.body.classList.add('light');
+    const btn = document.getElementById('theme-btn');
+    if (btn) {
+      btn.textContent = '🌑';
+    }
+  }
+});
+
+/* ── TOGGLE THEME ── */
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+
+  localStorage.setItem(
+    'quirki-theme',
+    isLight ? 'light' : 'dark'
+  );
+
+  const btn = document.getElementById('theme-btn');
+  if (btn) {
+    btn.textContent = isLight ? '🌑' : '🌙';
+  }
+}
+
+</script>
+
+</body>
+</html>

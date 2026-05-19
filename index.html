@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quirki — For Everyone the Industry Forgot</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── TOKENS ── */
+
+:root {
+  --bg:#1a1c1e;
+  --bg-card:#212326;
+  --bg-nav:#1c1e20;
+
+  --teal:#00e5c4;
+  --teal-dim:#00b89e;
+  --teal-glow:rgba(0,229,196,0.10);
+
+  --text:#d8dde3;
+  --text-muted:#6a7480;
+  --border:rgba(255,255,255,0.06);
+
+  --serif:'Playfair Display', Georgia, serif;
+  --sans:'DM Sans', sans-serif;
+}
+
+/* ── LIGHT MODE ── */
+
+body.light {
+  --bg:#f5f5f0;
+  --bg-nav:#efefea;
+  --bg-card:#e8e8e3;
+
+  --teal:#8b1a1a;
+  --teal-dim:#6e1414;
+  --teal-glow:rgba(139,26,26,0.08);
+
+  --text:#1a1c1e;
+  --text-muted:#5a6370;
+  --border:rgba(0,0,0,0.08);
+}
+
+body.light .logo {
+  color:#8b1a1a;
+}
+
+body.light .logo svg path {
+  fill:#8b1a1a;
+}
+
+body.light .hero h1,
+body.light .section-title,
+body.light .role-name,
+body.light .modal-title,
+body.light .contact-value {
+  color:#1a1c1e;
+}
+
+body.light .hero-sub,
+body.light p {
+  color:#2a2c2e;
+}
+
+body.light .signin-btn {
+  background:#8b1a1a;
+  color:white;
+}
+
+body.light .signin-btn:hover {
+  background:#6e1414;
+}
+
+/* ── BASE ── */
+
+html, body {
+  width:100%;
+  min-height:100vh;
+  overflow-x:hidden;
+
+  background:var(--bg);
+  color:var(--text);
+
+  font-family:var(--sans);
+  font-weight:300;
+  line-height:1.7;
+}
+
+/* ── NAV ── */
+
+nav {
+  position:sticky;
+  top:0;
+  z-index:100;
+
+  height:56px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 24px;
+
+  background:var(--bg-nav);
+  border-bottom:1px solid var(--border);
+}
+
+.logo {
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  font-family:var(--serif);
+  font-size:1.4rem;
+  font-weight:600;
+  font-style:italic;
+
+  text-decoration:none;
+  color:var(--teal);
+}
+
+.theme-toggle {
+  background:none;
+  border:none;
+  cursor:pointer;
+
+  color:var(--text-muted);
+
+  font-size:1rem;
+
+  padding:4px;
+  border-radius:6px;
+
+  transition:color 0.2s;
+}
+
+.theme-toggle:hover {
+  color:var(--teal);
+}
+
+.signin-btn {
+  font-family:var(--sans);
+  font-size:0.85rem;
+  font-weight:500;
+
+  color:#0e1211;
+  background:var(--teal);
+
+  border:none;
+  border-radius:6px;
+
+  padding:7px 18px;
+
+  cursor:pointer;
+  transition:background 0.2s;
+}
+
+body.light .signin-btn {
+  color: #ffffff;
+}
+
+.signin-btn:hover {
+  background:var(--teal-dim);
+}
+
+/* ── WRAPPER ── */
+
+.page-wrap {
+  width:100%;
+  max-width:600px;
+
+  margin:0 auto;
+  padding:0 24px;
+}
+
+/* ── HERO ── */
+
+.hero {
+  min-height:calc(100vh - 56px);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
+
+  padding:48px 0;
+}
+
+.hero-eyebrow {
+  font-size:0.72rem;
+  font-weight:500;
+
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+
+  color:var(--teal);
+
+  margin-bottom:20px;
+
+  animation:fadeUp 0.4s ease both;
+}
+
+.hero h1 {
+  font-family:var(--serif);
+  font-size:2.8rem;
+  font-weight:600;
+  line-height:1.2;
+
+  color:#f0f3f6;
+
+  margin-bottom:20px;
+
+  animation:fadeUp 0.4s 0.08s ease both;
+}
+
+.hero h1 em {
+  color:var(--teal);
+  font-style:italic;
+}
+
+.hero-sub {
+  font-size:1rem;
+  color:var(--text-muted);
+}
+
+/* ── SECTION ── */
+
+.section {
+  padding:56px 0;
+  border-top:1px solid var(--border);
+}
+
+.section-label {
+  font-size:0.7rem;
+  font-weight:500;
+
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+
+  color:var(--teal);
+
+  margin-bottom:12px;
+}
+
+.section-title {
+  font-family:var(--serif);
+  font-size:1.9rem;
+  font-weight:600;
+  line-height:1.2;
+
+  color:#e8ecf0;
+
+  margin-bottom:24px;
+}
+
+.section-title em {
+  color:var(--teal);
+  font-style:italic;
+}
+
+p {
+  color:var(--text);
+  font-size:0.95rem;
+  font-weight:300;
+
+  margin-bottom:14px;
+}
+
+/* ── LIST ── */
+
+.who-list {
+  list-style:none;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+
+  margin-top:20px;
+}
+
+.who-list li {
+  display:flex;
+  gap:12px;
+
+  font-size:0.95rem;
+}
+
+.who-list li::before {
+  content:'—';
+  color:var(--teal);
+}
+
+/* ── ROLE LIST ── */
+
+.role-list {
+  display:flex;
+  flex-direction:column;
+}
+
+.role-item {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:22px 8px;
+
+  border-bottom:1px solid var(--border);
+
+  cursor:pointer;
+
+  border-radius:4px;
+  margin:0 -8px;
+
+  transition:background 0.2s;
+}
+
+.role-item:first-child {
+  border-top:1px solid var(--border);
+}
+
+.role-item:hover {
+  background:var(--teal-glow);
+}
+
+.role-item:hover .role-name {
+  color:var(--teal);
+}
+
+.role-item:hover .role-arrow {
+  color:var(--teal);
+  opacity:1;
+  transform:translateX(0);
+}
+
+.role-body {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.role-name {
+  font-family:var(--serif);
+  font-size:1.2rem;
+  font-weight:600;
+
+  color:#e4e9ee;
+
+  transition:color 0.2s;
+}
+
+.role-desc {
+  font-size:0.82rem;
+  color:var(--text-muted);
+}
+
+.role-arrow {
+  font-size:1.1rem;
+
+  color:var(--text-muted);
+
+  opacity:0.4;
+
+  transform:translateX(-4px);
+
+  transition:0.2s;
+}
+
+/* ── CONTACT ── */
+
+.contact-box {
+  background:var(--bg-card);
+
+  border:1px solid var(--border);
+  border-radius:10px;
+
+  padding:28px 24px;
+}
+
+.contact-item {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+
+  margin-bottom:18px;
+}
+
+.contact-label {
+  font-size:0.68rem;
+  font-weight:500;
+
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+
+  color:var(--teal);
+}
+
+.contact-divider {
+  height:1px;
+  background:var(--border);
+
+  margin:18px 0;
+}
+
+.contact-note {
+  font-size:0.82rem;
+  color:var(--text-muted);
+
+  margin-bottom:14px;
+}
+
+.flair-list {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.flair {
+  font-size:0.78rem;
+  font-weight:500;
+
+  color:var(--teal);
+
+  background:var(--teal-glow);
+
+  border:1px solid rgba(0,229,196,0.25);
+  border-radius:4px;
+
+  padding:4px 10px;
+}
+
+/* ── FOOTER ── */
+
+footer {
+  border-top:1px solid var(--border);
+
+  padding:32px 24px;
+
+  text-align:center;
+}
+
+.footer-logo {
+  font-family:var(--serif);
+  font-size:1.2rem;
+  font-weight:600;
+  font-style:italic;
+
+  color:var(--teal);
+
+  margin-bottom:6px;
+}
+
+.footer-tagline {
+  font-size:0.8rem;
+  color:var(--text-muted);
+  font-style:italic;
+}
+
+/* ── MODALS ── */
+
+.modal-overlay {
+  display:none;
+
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,0.6);
+
+  z-index:200;
+
+  backdrop-filter:blur(4px);
+}
+
+.modal-overlay.open {
+  display:block;
+}
+
+.login-modal {
+  display:none;
+
+  position:fixed;
+
+  top:50%;
+  left:50%;
+
+  transform:translate(-50%, -50%);
+
+  z-index:201;
+
+  width:90%;
+  max-width:360px;
+
+  background:var(--bg-card);
+
+  border:1px solid var(--border);
+  border-radius:12px;
+
+  padding:36px 32px;
+}
+
+.login-modal.open {
+  display:block;
+  animation:modalUp 0.25s ease both;
+}
+
+.modal-close {
+  position:absolute;
+  top:16px;
+  right:18px;
+
+  background:none;
+  border:none;
+
+  color:var(--text-muted);
+
+  cursor:pointer;
+}
+
+.modal-title {
+  font-family:var(--serif);
+  font-size:1.4rem;
+  font-weight:600;
+
+  margin-bottom:4px;
+}
+
+.modal-sub {
+  font-size:0.85rem;
+  color:var(--text-muted);
+
+  margin-bottom:28px;
+}
+
+.modal-field {
+  margin-bottom:16px;
+}
+
+.modal-label {
+  display:block;
+
+  font-size:0.7rem;
+  font-weight:500;
+
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+
+  margin-bottom:6px;
+}
+
+.modal-input {
+  width:100%;
+
+  background:var(--bg-nav);
+
+  border:1px solid var(--border);
+  border-radius:6px;
+
+  padding:11px 14px;
+
+  color:var(--text);
+  font-family: var(--sans);
+}
+
+.modal-submit {
+  width:100%;
+
+  padding:12px;
+
+  background:var(--teal);
+  color:#0e1211;
+
+  border:none;
+  border-radius:6px;
+
+  cursor:pointer;
+
+  margin-bottom:16px;
+  font-family: var(--sans);
+  font-weight: 500;
+}
+
+body.light .modal-submit {
+  color: #ffffff;
+}
+
+.modal-submit:hover {
+  background:var(--teal-dim);
+}
+
+.modal-footer {
+  text-align:center;
+  font-size:0.82rem;
+  color:var(--text-muted);
+}
+
+.modal-footer a {
+  color:var(--teal);
+  text-decoration:none;
+  font-weight: 500;
+}
+
+/* ── ANIMATIONS ── */
+
+@keyframes fadeUp {
+  from {
+    opacity:0;
+    transform:translateY(16px);
+  }
+
+  to {
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+@keyframes modalUp {
+  from {
+    opacity:0;
+    transform:translate(-50%, calc(-50% + 12px));
+  }
+
+  to {
+    opacity:1;
+    transform:translate(-50%, -50%);
+  }
+}
+
+@media (max-width:480px) {
+
+  .hero h1 {
+    font-size:2rem;
+  }
+
+  .page-wrap {
+    padding:0 20px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+
+  <a href="#" class="logo">
+    <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+      <path d="M13 2 C14.5 2 15.5 3 15 4.5 C16.5 3.5 18.5 4 19 5.5 C19.5 7 18.5 8.5 17 8.5 C18.5 9 19.5 10.5 19 12 C18.5 13.5 17 14 15.5 13.5 C16.5 15 16 17 14.5 17.5 C13 18 11.5 17 11.5 15.5 C10.5 17 9 17.5 7.5 16.5 C6 15.5 6 13.5 7.5 12.5 C6 12.5 4.5 11.5 4.5 10 C4.5 8.5 5.5 7.5 7 7.5 C5.5 7 4.5 5.5 5 4 C5.5 2.5 7.5 2 9 3 C8.5 1.5 10 0.5 11.5 1 C12.5 1.5 13 2 13 2Z" fill="#00e5c4"/>
+    </svg>
+    quirki
+  </a>
+
+  <div style="display:flex;align-items:center;gap:12px;">
+
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">
+      🌙
+    </button>
+
+    <button class="signin-btn" onclick="openLogin()">
+      Sign In
+    </button>
+
+  </div>
+
+</nav>
+
+<div class="modal-overlay" id="role-overlay" onclick="closeRolePopup()"></div>
+
+<div class="login-modal" id="role-popup">
+
+  <button class="modal-close" onclick="closeRolePopup()">✕</button>
+
+  <div class="modal-title">
+    Join Quirki
+  </div>
+
+  <div class="modal-sub">
+    Sign in or create an account to continue.
+  </div>
+
+  <button class="modal-submit" onclick="openRealLogin()">
+    Sign In
+  </button>
+
+  <button
+    class="modal-submit"
+    style="
+      background:transparent;
+      color:var(--text);
+      border:1px solid var(--border);
+    "
+    onclick="openRealRegister()">
+    Create Account
+  </button>
+
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeLogin()"></div>
+
+<div class="login-modal" id="login-modal">
+
+  <button class="modal-close" onclick="closeLogin()">✕</button>
+
+  <div class="modal-title" id="auth-title">
+    Sign In
+  </div>
+
+  <div class="modal-sub" id="auth-sub">
+    Welcome back.
+  </div>
+
+  <div class="modal-field" id="username-field">
+    <label class="modal-label">Username</label>
+    <input class="modal-input" id="auth-username" type="text" placeholder="@username">
+  </div>
+
+  <div class="modal-field" id="email-field" style="display: none;">
+    <label class="modal-label">Email</label>
+    <input class="modal-input" id="auth-email" type="email" placeholder="name@domain.com">
+  </div>
+
+  <div class="modal-field">
+    <label class="modal-label">Password</label>
+    <input class="modal-input" id="auth-password" type="password" placeholder="••••••••">
+  </div>
+
+  <p id="auth-error-msg" style="color:#ff6b6b; font-size:0.8rem; margin-bottom:14px; display:none; text-align:center;"></p>
+
+  <button class="modal-submit" id="auth-submit-btn">
+    Sign In
+  </button>
+
+  <div class="modal-footer">
+    <span id="auth-toggle-desc">Don't have an account?</span> 
+    <a href="#" id="auth-toggle-link">Create Account</a>
+  </div>
+
+</div>
+
+<div class="page-wrap">
+
+  <div class="hero">
+
+    <p class="hero-eyebrow">
+      Original Fiction Community
+    </p>
+
+    <h1>
+      The platform<br>
+      that was<br>
+      <em>built for you.</em>
+    </h1>
+
+    <p class="hero-sub">
+      A free community for indie authors and readers. Just stories.
+    </p>
+
+  </div>
+
+</div>
+
+<div class="page-wrap">
+
+  <div class="section">
+
+    <p class="section-label">
+      The Community
+    </p>
+
+    <h2 class="section-title">
+      Who Quirki<br>
+      Is <em>For</em>
+    </h2>
+
+    <p>
+      Quirki is for the quirky teens, young adults and older
+     who never quite fit the mould that publishing decided
+      was worth building for.
+    </p>
+
+    <ul class="who-list">
+      <li>No algorithms deciding what you see</li>
+      <li>No paywalls between you and a good story</li>
+      <li>No engagement metrics</li>
+    </ul>
+
+  </div>
+
+</div>
+
+<div class="page-wrap">
+
+  <div class="section">
+
+    <h2 class="section-title">
+      Create an Account<br>
+      To <em>Belong</em>
+    </h2>
+
+    <div class="role-list">
+
+      <div class="role-item" onclick="openRolePopup()">
+        <div class="role-body">
+          <span class="role-name">Reading</span>
+          <span class="role-desc">Discover original fiction and build your library</span>
+        </div>
+        <span class="role-arrow">→</span>
+      </div>
+
+      <div class="role-item" onclick="openRolePopup()">
+        <div class="role-body">
+          <span class="role-name">Writing</span>
+          <span class="role-desc">Post your work and build your audience</span>
+        </div>
+        <span class="role-arrow">→</span>
+      </div>
+
+      <div class="role-item" onclick="openRolePopup()">
+        <div class="role-body">
+          <span class="role-name">Beta Reading</span>
+          <span class="role-desc">Help authors shape stories before publishing</span>
+        </div>
+        <span class="role-arrow">→</span>
+      </div>
+
+      <div class="role-item" onclick="openRolePopup()">
+        <div class="role-body">
+          <span class="role-name">Editing</span>
+          <span class="role-desc">Offer editorial feedback and support writers</span>
+        </div>
+        <span class="role-arrow">→</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div class="page-wrap">
+
+  <div class="section">
+
+    <p class="section-label">
+      Reach Out
+    </p>
+
+    <h2 class="section-title">
+      Contact <em>Us</em>
+    </h2>
+
+    <div class="contact-box">
+
+      <div class="contact-item">
+        <span class="contact-label">Email</span>
+        <span class="contact-value">araeauter@gmail.com</span>
+      </div>
+
+      <div class="contact-divider"></div>
+
+      <p class="contact-note">
+        Add a flair to your subject line so we know what you need:
+      </p>
+
+      <div class="flair-list">
+        <span class="flair">[ENQUIRIES]</span>
+        <span class="flair">[SUPPORT]</span>
+        <span class="flair">[REPORT]</span>
+        <span class="flair">[REQUEST]</span>
+        <span class="flair">[PRESS]</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-logo">quirki</div>
+  <p class="footer-tagline">Built by Zee. For everyone the industry forgot.</p>
+</footer>
+
+<script type="module">
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+const supabaseUrl = 'https://niefhnktetrehrbesduz.supabase.co'
+const supabaseAnonKey = 'sb_publishable_7cLg3pnVrkV4IjhMakr-DA_l4BtiUis'
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
+let isSignUpMode = false; // false = Login, true = SignUp
+
+// Gather UI Targets
+const usernameField = document.getElementById('username-field');
+const emailField = document.getElementById('email-field');
+const authTitle = document.getElementById('auth-title');
+const authSub = document.getElementById('auth-sub');
+const submitBtn = document.getElementById('auth-submit-btn');
+const toggleLink = document.getElementById('auth-toggle-link');
+const toggleDesc = document.getElementById('auth-toggle-desc');
+const errorSlot = document.getElementById('auth-error-msg');
+
+const usernameInput = document.getElementById('auth-username');
+const emailInput = document.getElementById('auth-email');
+const passwordInput = document.getElementById('auth-password');
+
+// Expose navigation hooks to window context
+window.openRolePopup = function() {
+  document.getElementById('role-overlay').classList.add('open');
+  document.getElementById('role-popup').classList.add('open');
+}
+
+window.closeRolePopup = function() {
+  document.getElementById('role-overlay').classList.remove('open');
+  document.getElementById('role-popup').classList.remove('open');
+}
+
+window.openRealLogin = function() {
+  closeRolePopup();
+  setAuthMode(false);
+  openLogin();
+}
+
+window.openRealRegister = function() {
+  closeRolePopup();
+  setAuthMode(true);
+  openLogin();
+}
+
+window.openLogin = function() {
+  errorSlot.style.display = 'none';
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('login-modal').classList.add('open');
+}
+
+window.closeLogin = function() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.getElementById('login-modal').classList.remove('open');
+}
+
+// Dynamic State Interface Adjustments
+function setAuthMode(signUpActive) {
+  isSignUpMode = signUpActive;
+  errorSlot.style.display = 'none';
+  
+  if (isSignUpMode) {
+    authTitle.innerText = "Join Quirki";
+    authSub.innerText = "Claim your unique creator profile index.";
+    usernameField.style.display = "block";
+    emailField.style.display = "block"; // Show email for registration
+    submitBtn.innerText = "Create Account";
+    toggleDesc.innerText = "Already a creator?";
+    toggleLink.innerText = "Sign In";
+  } else {
+    authTitle.innerText = "Sign In";
+    authSub.innerText = "Welcome back.";
+    usernameField.style.display = "block"; // Keep username visible to type it in
+    emailField.style.display = "none";  // Hide email field for standard login
+    submitBtn.innerText = "Sign In";
+    toggleDesc.innerText = "Don't have an account?";
+    toggleLink.innerText = "Create Account";
+  }
+}
+
+toggleLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  setAuthMode(!isSignUpMode);
+});
+
+// CORE CLOUD AUTH SUBMIT LOGIC
+submitBtn.addEventListener('click', async () => {
+  const username = usernameInput.value.trim().toLowerCase();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  
+  errorSlot.style.display = 'none';
+
+  if (!username || !password) {
+    displayError("Username and Password elements are required.");
+    return;
+  }
+
+  if (isSignUpMode) {
+    // ───── SIGN UP ROUTINE ─────
+    if (!email) {
+      displayError("Email path is required for verification setup.");
+      return;
+    }
+
+    submitBtn.innerText = "Processing...";
+    submitBtn.disabled = true;
+
+    // Step A: Register secure auth profile
+    const { data, error } = await supabase.auth.signUp({ email, password });
+
+    if (error) {
+      submitBtn.innerText = "Create Account";
+      submitBtn.disabled = false;
+      displayError(error.message);
+      return;
+    }
+
+    // Step B: Write profile username entry to lookup table
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([{ id: data.user.id, username: username, email_lookup: email }]);
+
+      if (profileError) {
+        submitBtn.innerText = "Create Account";
+        submitBtn.disabled = false;
+        displayError("That username handle is already claimed.");
+        return;
+      }
+
+      alert("Profile requested! Check your email inbox to verify and unlock your workspace.");
+      closeLogin();
+    }
+  } else {
+    // ───── SMART USERNAME SIGN IN ROUTINE ─────
+    submitBtn.innerText = "Verifying...";
+    submitBtn.disabled = true;
+
+    // Step A: Read the database profiles table to get the linked email address
+    const { data: profile, error: searchError } = await supabase
+      .from('profiles')
+      .select('email_lookup')
+      .eq('username', username)
+      .single();
+
+    if (searchError || !profile) {
+      submitBtn.innerText = "Sign In";
+      submitBtn.disabled = false;
+      displayError("No profile found with that username.");
+      return;
+    }
+
+    // Step B: Log them in using their found email address and typed password
+    const { error: loginError } = await supabase.auth.signInWithPassword({ 
+      email: profile.email_lookup, 
+      password: password 
+    });
+
+    if (loginError) {
+      submitBtn.innerText = "Sign In";
+      submitBtn.disabled = false;
+      displayError("Invalid password configuration sequence.");
+      return;
+    }
+
+    // Direct entry handoff
+    window.location.href = 'quirki-home.html';
+  }
+});
+
+function displayError(msg) {
+  errorSlot.innerText = msg;
+  errorSlot.style.display = 'block';
+}
+
+</script>
+
+<script>
+/* ── THEME UTILITIES ── */
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('quirki-theme');
+  if (savedTheme === 'light') {
+    document.body.classList.add('light');
+    const btn = document.getElementById('theme-btn');
+    if (btn) btn.textContent = '🌑';
+  }
+});
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = isLight ? '🌑' : '🌙';
+}
+</script>
+
+</body>
+</html>
