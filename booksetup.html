@@ -620,7 +620,7 @@ function previewBook() {
     coverUrl: cover                           // viewer reads "coverUrl"
   };
 
-  sessionStorage.setItem('activePreviewPayload', JSON.stringify(previewData)); // matches viewer.html key
+  localStorage.setItem('activePreviewPayload', JSON.stringify(previewData)); // matches viewer.html key
   window.open('viewer.html', '_blank');
 }
 
