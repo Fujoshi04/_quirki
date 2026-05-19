@@ -94,11 +94,6 @@
             display:flex; align-items:center; justify-content:center;
             background-size:cover; background-position:center; overflow:hidden;
         }
-        .book-cover img {
-            width:100%; height:100%; object-fit:cover; display:none; border-radius:8px;
-        }
-        .cover-svg-wrap { width:100%; height:100%; }
-        .cover-svg-wrap svg { width:100%; height:100%; }
 
         .metadata-block { width:100%; margin-bottom:24px; text-align:center; }
         .book-title {
@@ -181,11 +176,20 @@
             font-size:0.8rem; color:var(--text-muted); margin-bottom:40px;
             border-bottom:1px solid var(--border); padding-bottom:24px;
         }
+
+        /* Prose — preserves stacking vs spacing exactly as authored */
         .prose-body {
             font-family:var(--reading); font-size:17px; line-height:1.8;
             color:var(--text); transition:font-size 0.15s,font-family 0.15s;
         }
-        .prose-body p { margin-bottom:24px; }
+        .prose-body p {
+            margin:0;
+            padding:0;
+        }
+        .prose-body p:empty::after {
+            content:'\00a0';
+        }
+
         .pagination {
             display:flex; justify-content:space-between; align-items:center;
             margin-top:80px; border-top:1px solid var(--border); padding-top:24px;
@@ -289,7 +293,7 @@
                 </div>
             </div>
             <div class="toc-list" id="tocList"></div>
-            <a href="quirki-writing.html" class="back-link">← Return to Writing</a>
+            <a href="bookbuilder.html" class="back-link">← Return to Book Builder</a>
         </div>
     </main>
 </div>
@@ -342,24 +346,28 @@
 </div>
 
 <script>
-// ─── State ────────────────────────────────────────────────
+// Theme runs immediately to prevent flash
+(function(){
+    if(localStorage.getItem('quirki-theme') === 'light'){
+        document.body.classList.add('light');
+    }
+})();
+
 let book = null;
 let chapterIndex = 0;
 let fontSize = 17;
 
-// ─── Init ─────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-    // Theme
-    if (localStorage.getItem('quirki-theme') === 'light') {
-        document.body.classList.add('light');
+    // Sync theme button
+    if(document.body.classList.contains('light')){
         document.getElementById('themeBtn').textContent = '🌑';
     }
 
-    // Load book data
-    const raw = localStorage.getItem('activePreviewPayload');
+    // ── KEY FIX: read from sessionStorage, same as builder writes ──
+    const raw = sessionStorage.getItem('activePreviewPayload');
 
-    if (!raw) {
-        showEmpty('No preview data found. Go back to your book and click Preview.');
+    if(!raw){
+        showEmpty('No preview data found. Go back to your book and click Preview →.');
         return;
     }
 
@@ -368,8 +376,9 @@ window.addEventListener('DOMContentLoaded', () => {
         book = {
             title:    data.title    || 'Untitled',
             author:   data.author   || 'Unknown Author',
-            summary:  data.summary  || data.synopsis || '',
-            coverUrl: data.coverUrl || data.cover    || '',
+            // handle both 'synopsis' and 'summary' key names
+            summary:  data.synopsis || data.summary || '',
+            coverUrl: data.coverUrl || data.cover   || '',
             tags:     Array.isArray(data.tags) ? data.tags : [],
             chapters: Array.isArray(data.chapters) ? data.chapters.map((ch, i) => ({
                 title:   ch.title   || `Chapter ${i + 1}`,
@@ -381,74 +390,69 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    if (book.chapters.length === 0) {
-        showEmpty('This book has no chapters yet.');
+    if(book.chapters.length === 0){
+        showEmpty('This book has no chapters yet. Add some in the Book Builder.');
         return;
     }
 
     renderDetails();
 });
 
-// ─── Render book details page ─────────────────────────────
-function renderDetails() {
+function renderDetails(){
     document.title = `${book.title} | Quirki`;
-    document.getElementById('bookTitle').textContent   = book.title;
-    document.getElementById('bookAuthor').textContent  = book.author;
+    document.getElementById('bookTitle').textContent  = book.title;
+    document.getElementById('bookAuthor').textContent = book.author;
     document.getElementById('bookSynopsis').textContent = book.summary;
 
     // Cover
     const coverEl = document.getElementById('bookCover');
-    if (book.coverUrl) {
+    if(book.coverUrl){
         coverEl.style.backgroundImage = `url('${book.coverUrl}')`;
-    } else {
-        coverEl.style.backgroundImage = 'none';
     }
 
     // Tags
-    const tagsEl = document.getElementById('bookTags');
-    tagsEl.innerHTML = book.tags.length
-        ? book.tags.map(t => `<span class="tag-pill">${t}</span>`).join('')
+    document.getElementById('bookTags').innerHTML = book.tags.length
+        ? book.tags.map(t => `<span class="tag-pill">#${t}</span>`).join('')
         : '';
 
     // TOC
-    const tocEl = document.getElementById('tocList');
-    tocEl.innerHTML = book.chapters.map((ch, i) => `
+    document.getElementById('tocList').innerHTML = book.chapters.map((ch, i) => `
         <div class="toc-row" onclick="openReader(${i})">
             <div class="toc-ch-title">${ch.title}</div>
         </div>
     `).join('');
 }
 
-// ─── Empty state ──────────────────────────────────────────
-function showEmpty(msg) {
+function showEmpty(msg){
     document.getElementById('bookDetailsScene').innerHTML = `
         <div class="empty-state">
             <h2>Nothing to preview</h2>
             <p>${msg}</p>
-            <a href="quirki-writing.html" style="margin-top:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;">← Back to Writing</a>
+            <a href="bookbuilder.html" style="margin-top:16px;color:var(--teal);text-decoration:none;font-size:0.85rem;">← Back to Book Builder</a>
         </div>
     `;
 }
 
-// ─── Reader ───────────────────────────────────────────────
-function openReader(idx) {
+function openReader(idx){
     chapterIndex = idx;
     document.getElementById('bookDetailsScene').style.display = 'none';
     document.getElementById('readerScene').style.display      = 'flex';
+    document.querySelector('.quirki-nav').style.display       = 'none';
     window.scrollTo(0, 0);
     mountChapter();
 }
 
-function closeReader() {
+function closeReader(){
     document.getElementById('readerScene').style.display      = 'none';
     document.getElementById('bookDetailsScene').style.display = 'flex';
+    document.querySelector('.quirki-nav').style.display       = 'flex';
     openDrawer(false);
     window.scrollTo(0, 0);
 }
 
-function mountChapter() {
+function mountChapter(){
     const ch = book.chapters[chapterIndex];
-    if (!ch) return;
+    if(!ch) return;
 
     document.getElementById('readerTitle').textContent   = book.title;
     document.getElementById('chapterTitle').textContent  = ch.title;
@@ -460,36 +464,34 @@ function mountChapter() {
     document.getElementById('nextBtn').className = 'page-btn' + (chapterIndex === book.chapters.length - 1 ? ' hidden' : '');
 }
 
-function navigate(dir) {
+function navigate(dir){
     const next = chapterIndex + dir;
-    if (next >= 0 && next < book.chapters.length) {
+    if(next >= 0 && next < book.chapters.length){
         chapterIndex = next;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top:0, behavior:'smooth' });
         mountChapter();
     }
 }
 
-// ─── Settings drawer ──────────────────────────────────────
-function openDrawer(state) {
+function openDrawer(state){
     document.getElementById('settingsDrawer').style.display = state ? 'flex' : 'none';
 }
 
-function changeFontSize(dir) {
+function changeFontSize(dir){
     fontSize = Math.min(34, Math.max(12, fontSize + dir));
-    document.getElementById('fontSizeLabel').textContent = `${fontSize}px`;
-    document.getElementById('proseBody').style.fontSize = `${fontSize}px`;
+    document.getElementById('fontSizeLabel').textContent    = `${fontSize}px`;
+    document.getElementById('proseBody').style.fontSize     = `${fontSize}px`;
 }
 
-function setFont(key) {
+function setFont(key){
     const prose = document.getElementById('proseBody');
     document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
-    if (key === 'Lora')     { prose.style.fontFamily = 'var(--reading)'; document.getElementById('fLora').classList.add('active'); }
-    if (key === 'Playfair') { prose.style.fontFamily = 'var(--serif)';   document.getElementById('fPlayfair').classList.add('active'); }
-    if (key === 'Sans')     { prose.style.fontFamily = 'var(--sans)';    document.getElementById('fSans').classList.add('active'); }
+    if(key === 'Lora')     { prose.style.fontFamily = 'var(--reading)'; document.getElementById('fLora').classList.add('active'); }
+    if(key === 'Playfair') { prose.style.fontFamily = 'var(--serif)';   document.getElementById('fPlayfair').classList.add('active'); }
+    if(key === 'Sans')     { prose.style.fontFamily = 'var(--sans)';    document.getElementById('fSans').classList.add('active'); }
 }
 
-// ─── Theme ────────────────────────────────────────────────
-function toggleTheme() {
+function toggleTheme(){
     document.body.classList.toggle('light');
     const isLight = document.body.classList.contains('light');
     localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
