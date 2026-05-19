@@ -796,24 +796,12 @@
         let currentActiveChapterIndex = 0;
         let globalFontSizePX = 17;
 
-        const fallbackMockBookAsset = {
-            title: "Ashveil",
-            author: "Zee",
-            summary: "The Ashveil kingdom runs on stolen memory. Every citizen gives one — a price for peace, they're told. Mira has given hers three times. She knows this because she counted the scars. What she doesn't know is what she keeps forgetting, and why someone keeps making sure she does.",
-            likes: "8.3k",
-            adds: "5.1k",
-            views: "41k",
-            coverUrl: "",
-            tags: ["dark fantasy", "slow burn", "political intrigue"],
-            chapters: [
-                { title: "The First Forgetting", content: "<p>They said the forgetting was painless. Mira had believed them the first time. The second time, she'd believed them less. The third time, she'd stopped asking.</p><p>The scar on her left wrist was the newest. Still pink. She'd woken with it three weeks ago and spent the better part of an hour trying to remember what had been taken — the way you press your tongue to the gap where a tooth used to be. There was nothing. There never was.</p>" },
-                { title: "Salt and Smoke", content: "<p>The lower docks smelled of brine and scorched resin. Here, the memory-brokers did business away from the strict eyes of the Paladins. A single bottle of sapphire fluid could buy a family a year of safety—or wipe away the crime of a lifetime.</p>" },
-                { title: "The Vault Below", content: "<p>Beneath the flagstones of the cathedral lay the real foundation of the kingdom. Not stone, but glass. Thousands of crystalline canisters glowed with the stolen lifetimes of a generation, humming with a low, terrifying vibration.</p>" },
-                { title: "What She Remembered", content: "<p>The final scar wasn't on her wrist. It was hidden beneath her collarbone, deep and jagged. When Mira touched it this time, a sudden image flashed through her mind—a door of burning silver, and a voice she knew she loved but could no longer name.</p>" }
-            ]
-        };
-
-        let activeBookState = fallbackMockBookAsset;
+        let activeBookState = {
+    title: "", author: "", summary: "",
+    likes: "0", adds: "0", views: "0",
+    coverUrl: "", tags: [], chapters: []
+};
+        activeBookState = fallbackMockBookAsset;
 
         // --- DOM INIT PIPELINE ---
         window.addEventListener("DOMContentLoaded", () => {
