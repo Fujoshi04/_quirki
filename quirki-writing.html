@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quirki — Writing</title>
+    <title>Quirki — Writing Engine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,400;0,600;1,400;1,600&family=DM+Sans:wght=300;400;500&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -14,18 +14,19 @@
             --teal:#00e5c4; --teal-dim:#00b89e; --teal-glow:rgba(0,229,196,0.08);
             --text:#d8dde3; --text-muted:#6a7480; --border:rgba(255,255,255,0.06);
             --serif:'Playfair Display',Georgia,serif; --sans:'DM Sans',sans-serif;
+            --avatar-border: 1.5px solid rgba(0,229,196,0.25);
         }
 
-        /* ── LIGHT MODE (WITH ORIGINAL CRIMSON PALETTE) ── */
         body.light {
             --bg:#f5f1e8; --bg-nav:#f7f3eb; --bg-card:#fffdf8; --bg-section:#e0e0db;
             --teal:#7a2e2e; --teal-dim:#5c2222; --teal-glow:rgba(122,46,46,0.06);
             --text:#1c1b18; --text-muted:#6f665f; --border:rgba(122,46,46,0.10);
+            --avatar-border: 1.5px solid rgba(122,46,46,0.25);
         }
 
         body { background:var(--bg); color:var(--text); font-family:var(--sans); font-weight:300; min-height:100vh; transition: background 0.25s, color 0.25s; }
 
-        /* ── NAV ── */
+        /* ── NAV BAR ── */
         nav { position:sticky; top:0; z-index:100; background:var(--bg-nav); border-bottom:1px solid var(--border); padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between; }
         .nav-left { display:flex; align-items:center; gap:16px; }
         .nav-back { color:var(--text-muted); cursor:pointer; transition:color 0.2s; display:flex; align-items:center; text-decoration:none; background:none; border:none; }
@@ -37,22 +38,20 @@
         .nav-bell:hover { color:var(--teal); }
         .nav-bell .dot { position:absolute; top:0; right:0; width:7px; height:7px; border-radius:50%; background:var(--teal); border:1.5px solid var(--bg-nav); }
         
-        .nav-avatar { width:32px; height:32px; border-radius:4px; background:var(--teal-glow); border:1.5px solid rgba(0,229,196,0.25); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--teal); font-size:0.85rem; font-weight:500; text-decoration:none; overflow:hidden; }
-        body.light .nav-avatar { border:1.5px solid rgba(122,46,46,0.25); }
+        .nav-avatar { width:32px; height:32px; border-radius:4px; background:var(--teal-glow); border:var(--avatar-border); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--teal); font-size:0.85rem; font-weight:500; text-decoration:none; overflow:hidden; }
         .nav-avatar img { width:100%; height:100%; object-fit:cover; }
         .theme-toggle { background:none; border:none; cursor:pointer; color:var(--text-muted); display:flex; align-items:center; transition:color 0.2s; font-size:1rem; padding:4px; border-radius:6px; }
         .theme-toggle:hover { color:var(--teal); }
 
-        /* ── MAIN ── */
+        /* ── MAIN LAYOUT ── */
         main { max-width:600px; margin:0 auto; padding:40px 24px 80px; }
-
         .page-title { font-family:var(--serif); font-size:clamp(1.8rem,6vw,2.4rem); font-weight:600; color:#e4e9ee; line-height:1.15; margin-bottom:40px; animation:fadeUp 0.35s ease both; }
         body.light .page-title { color:#1c1b18; }
 
         .section-label { font-size:0.7rem; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--teal); margin-bottom:14px; }
         .section-divider { height:1px; background:var(--border); margin:40px 0 32px; }
 
-        /* ── CREATE BOOK BUTTON ── */
+        /* ── ACTION INTERFACES ── */
         .create-btn {
             display:flex; align-items:center; justify-content:space-between;
             width:100%; padding:22px 24px;
@@ -63,72 +62,51 @@
         }
         .create-btn:hover { border-color:rgba(0,229,196,0.4); background:#232527; }
         body.light .create-btn:hover { border-color:rgba(122,46,46,0.4); background:#fcf9f2; }
-        .create-btn:hover .create-btn-title { color:var(--teal); }
         .create-btn-body { display:flex; flex-direction:column; gap:4px; }
-        .create-btn-title { font-family:var(--serif); font-size:1.15rem; font-weight:600; color:#e4e9ee; transition:color 0.2s; }
+        .create-btn-title { font-family:var(--serif); font-size:1.15rem; font-weight:600; color:#e4e9ee; }
         body.light .create-btn-title { color:#1c1b18; }
         .create-btn-sub { font-size:0.8rem; color:var(--text-muted); font-weight:300; }
         .create-btn-icon { width:38px; height:38px; border-radius:8px; background:var(--teal-glow); border:1px solid rgba(0,229,196,0.2); display:flex; align-items:center; justify-content:center; color:var(--teal); font-size:1.4rem; flex-shrink:0; }
-        body.light .create-btn-icon { border:1px solid rgba(122,46,46,0.2); }
 
-        /* ── ORGANISE ── */
+        /* ── DYNAMIC INVENTORY LIST ── */
+        .books-list-container { display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+        .empty-state-text { font-size:0.85rem; color:var(--text-muted); font-style:italic; padding:10px 0; }
+        .book-list-item { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; text-decoration:none; transition: border-color 0.15s; }
+        .book-list-item:hover { border-color: var(--teal); }
+        .book-item-title { font-family:var(--serif); font-size:1rem; font-weight:600; color:#e0e5ea; }
+        body.light .book-item-title { color:#1c1b18; }
+        .book-item-meta { font-size:0.78rem; color:var(--text-muted); }
+
+        /* ── ORGANISATION BLOCKS ── */
         .organise-info { font-size:0.88rem; color:var(--text-muted); font-weight:300; line-height:1.6; margin-bottom:20px; border-left:2px solid rgba(0,229,196,0.2); padding-left:16px; }
         body.light .organise-info { border-left:2px solid rgba(122,46,46,0.2); }
-        .group-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:18px 20px; margin-bottom:10px; cursor:pointer; transition:border-color 0.2s; }
-        .group-card:hover { border-color:rgba(0,229,196,0.3); }
-        body.light .group-card:hover { border-color:rgba(122,46,46,0.3); }
+        .group-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:18px 20px; margin-bottom:10px; }
         .group-name { font-family:var(--serif); font-size:1rem; font-weight:600; color:#e0e5ea; margin-bottom:4px; }
         body.light .group-name { color:#1c1b18; }
         .group-books { font-size:0.78rem; color:var(--text-muted); font-weight:300; }
-        .organise-add { display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--teal); cursor:pointer; padding:12px 0; font-weight:400; background:none; border:none; transition:opacity 0.2s; }
-        .organise-add:hover { opacity:0.7; }
+        .organise-add { display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--teal); cursor:pointer; padding:12px 0; font-weight:400; background:none; border:none; }
 
-        /* ── ANALYTICS ── */
-        .analytics-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; padding:0; background:none; border:none; cursor:pointer; margin-bottom:0; }
+        /* ── CLEAN SLATE ANALYTICS ── */
+        .analytics-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; padding:0; background:none; border:none; cursor:pointer; }
         .analytics-toggle-label { font-size:0.7rem; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--teal); }
-        .analytics-chevron { color:var(--teal); font-size:0.9rem; transition:transform 0.2s; }
-        .analytics-chevron.open { transform:rotate(180deg); }
+        .analytics-chevron { color:var(--teal); font-size:0.9rem; transition: transform 0.2s; }
         #analytics-view { display:none; }
         #analytics-view.open { display:block; }
 
         .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:28px; }
         .stat-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:18px 16px; }
         .stat-label { font-size:0.68rem; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; }
-        .stat-value { font-family:var(--serif); font-size:1.6rem; font-weight:600; color:#e4e9ee; line-height:1; }
+        .stat-value { font-family:var(--serif); font-size:1.6rem; font-weight:600; color:#e4e9ee; }
         body.light .stat-value { color:#1c1b18; }
 
-        .book-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:28px; }
-        .book-tab { padding:7px 16px; border-radius:20px; border:1px solid var(--border); background:var(--bg-card); font-size:0.82rem; color:var(--text-muted); cursor:pointer; transition:border-color 0.2s,color 0.2s,background 0.2s; font-family:var(--sans); font-weight:400; }
-        .book-tab.active { border-color:var(--teal); color:var(--teal); background:var(--teal-glow); }
-
-        .engagement-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:32px; }
+        .engagement-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:32px; }
         .eng-card { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:14px 12px; text-align:center; }
         .eng-label { font-size:0.65rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; }
         .eng-value { font-family:var(--serif); font-size:1.15rem; font-weight:600; color:#e4e9ee; }
         body.light .eng-value { color:#1c1b18; }
-        .eng-card--off { opacity:0.35; }
-
-        .chapter-section-label { font-size:0.7rem; font-weight:500; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-muted); margin-bottom:14px; }
-        .chapter-list { display:flex; flex-direction:column; gap:2px; }
-        .chapter-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
-        .chapter-row:first-child { border-top:1px solid var(--border); }
-        .chapter-num { font-size:0.72rem; color:var(--text-muted); min-width:52px; flex-shrink:0; }
-        .chapter-name { font-size:0.82rem; color:var(--text); flex:1; font-weight:300; }
-        .chapter-bar-wrap { flex:1; max-width:80px; height:4px; background:var(--bg-section); border-radius:2px; overflow:hidden; }
-        .chapter-bar { height:100%; background:var(--teal); border-radius:2px; opacity:0.6; }
-        .chapter-reads { font-size:0.75rem; color:var(--text-muted); min-width:36px; text-align:right; }
-
-        .binge-block { margin-top:32px; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:20px; }
-        .binge-label { font-size:0.68rem; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:14px; }
-        .binge-table { display:flex; flex-direction:column; gap:10px; }
-        .binge-row { display:flex; align-items:center; gap:12px; }
-        .binge-ch { font-size:0.75rem; color:var(--text-muted); min-width:72px; flex-shrink:0; }
-        .binge-bar-wrap { flex:1; height:4px; background:var(--bg-section); border-radius:2px; overflow:hidden; }
-        .binge-bar { height:100%; background:var(--teal); border-radius:2px; opacity:0.7; }
-        .binge-pct { font-size:0.78rem; color:var(--teal); min-width:36px; text-align:right; flex-shrink:0; }
 
         @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-        @media(max-width:480px) { main{padding:32px 20px 80px;} .engagement-grid{grid-template-columns:repeat(2,1fr);} }
+        @media(max-width:480px) { main{padding:32px 20px 80px;} .engagement-grid{grid-template-columns:1fr;} }
     </style>
 </head>
 <body>
@@ -146,7 +124,7 @@
         </a>
     </div>
     <div class="nav-right">
-        <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle light/dark">🌙</button>
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button>
         
         <a href="quirki-notif.html" class="nav-bell">
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
@@ -171,12 +149,19 @@
         <div class="create-btn-icon">+</div>
     </a>
 
+    <p class="section-label">Your Books</p>
+    <div class="books-list-container" id="your-books-list">
+        <div class="empty-state-text">No saved books found. Create a book above to begin writing.</div>
+    </div>
+
     <div class="section-divider"></div>
 
     <p class="section-label">Organise Your Books</p>
-    <p class="organise-info">Group your books into series, trilogies, or any collection that makes sense. Readers who find one book will see the rest.</p>
-    <div class="group-card"><div class="group-name">The Ashveil Series</div><div class="group-books">Ashveil · Ashveil: The Remnant</div></div>
-    <button class="organise-add">
+    <p class="organise-info">Group your books into series, trilogies, or any custom collection layout.</p>
+    
+    <div id="group-container"></div>
+    
+    <button class="organise-add" onclick="createNewGroup()">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         Create a new group
     </button>
@@ -190,233 +175,133 @@
 
     <div id="analytics-view">
         <div style="height:24px;"></div>
+        
         <div class="stat-grid">
-            <div class="stat-card"><div class="stat-label">Subscribers</div><div class="stat-value">1,284</div></div>
-            <div class="stat-card"><div class="stat-label">Words Written</div><div class="stat-value">218k</div></div>
-        </div>
-
-        <p class="chapter-section-label" style="margin-bottom:12px;">Book</p>
-        <div class="book-tabs">
-            <button class="book-tab active" onclick="selectBook(this)">Ashveil</button>
-            <button class="book-tab" onclick="selectBook(this)">Ashveil: The Remnant</button>
-            <button class="book-tab" onclick="selectBook(this)">The Weight of Salt</button>
+            <div class="stat-card"><div class="stat-label">Subscribers</div><div class="stat-value" id="analytic-subs">12</div></div>
+            <div class="stat-card"><div class="stat-label">Words Written</div><div class="stat-value" id="analytic-words">0</div></div>
         </div>
 
         <div class="engagement-grid">
-            <div class="eng-card"><div class="eng-label">Likes</div><div class="eng-value">8.3k</div></div>
-            <div class="eng-card"><div class="eng-label">Want to Read</div><div class="eng-value">2.1k</div></div>
-            <div class="eng-card"><div class="eng-label">Reviews</div><div class="eng-value">341</div></div>
-            <div class="eng-card eng-card--off"><div class="eng-label">Comments</div><div class="eng-value">—</div></div>
-        </div>
-
-        <p class="chapter-section-label">Readers per Chapter</p>
-        <div class="chapter-list">
-            <div class="chapter-row"><span class="chapter-num">01</span><span class="chapter-name">The First Forgetting</span><div class="chapter-bar-wrap"><div class="chapter-bar" style="width:100%"></div></div><span class="chapter-reads">8.3k</span></div>
-            <div class="chapter-row"><span class="chapter-num">02</span><span class="chapter-name">Salt and Smoke</span><div class="chapter-bar-wrap"><div class="chapter-bar" style="width:91%"></div></div><span class="chapter-reads">7.6k</span></div>
-            <div class="chapter-row"><span class="chapter-num">03</span><span class="chapter-name">The Vault Below</span><div class="chapter-bar-wrap"><div class="chapter-bar" style="width:85%"></div></div><span class="chapter-reads">7.1k</span></div>
-            <div class="chapter-row"><span class="chapter-num">04</span><span class="chapter-name">What She Remembered</span><div class="chapter-bar-wrap"><div class="chapter-bar" style="width:80%"></div></div><span class="chapter-reads">6.6k</span></div>
-            <div class="chapter-row"><span class="chapter-num">05</span><span class="chapter-name">A Name Worth Keeping</span><div class="chapter-bar-wrap"><div class="chapter-bar" style="width:74%"></div></div><span class="chapter-reads">6.1k</span></div>
-            <div class="chapter-row" style="border-bottom:none;color:var(--text-muted);font-size:0.78rem;padding-top:14px;justify-content:center;">+ 37 more chapters</div>
-        </div>
-
-        <div class="binge-block">
-            <div class="binge-label">Chapter-to-Chapter Binge Rate</div>
-            <div class="binge-table">
-                <div class="binge-row"><span class="binge-ch">01 → 02</span><div class="binge-bar-wrap"><div class="binge-bar" style="width:92%"></div></div><span class="binge-pct">92%</span></div>
-                <div class="binge-row"><span class="binge-ch">02 → 03</span><div class="binge-bar-wrap"><div class="binge-bar" style="width:85%"></div></div><span class="binge-pct">85%</span></div>
-                <div class="binge-row"><span class="binge-ch">03 → 04</span><div class="binge-bar-wrap"><div class="binge-bar" style="width:88%"></div></div><span class="binge-pct">88%</span></div>
-                <div class="binge-row"><span class="binge-ch">04 → 05</span><div class="binge-bar-wrap"><div class="binge-bar" style="width:79%"></div></div><span class="binge-pct">79%</span></div>
-                <div class="binge-row"><span class="binge-ch">05 → 06</span><div class="binge-bar-wrap"><div class="binge-bar" style="width:74%"></div></div><span class="binge-pct">74%</span></div>
-            </div>
+            <div class="eng-card"><div class="eng-label">Adds</div><div class="eng-value" id="analytic-adds">4</div></div>
+            <div class="eng-card"><div class="eng-label">Comments</div><div class="eng-value" id="analytic-comments">0</div></div>
+            <div class="eng-card"><div class="eng-label">Reviews</div><div class="eng-value" id="analytic-reviews">0</div></div>
         </div>
     </div>
 </main>
 
 <script>
-    // Complete Mock Database for Quirki Writing Engine
-const bookData = {
-    "Ashveil": {
-        stats: { subscribers: "1,284", words: "218k" },
-        engagement: [
-            { label: "Likes", value: "8.3k", off: false },
-            { label: "Want to Read", value: "2.1k", off: false },
-            { label: "Reviews", value: "341", off: false },
-            { label: "Comments", value: "—", off: true }
-        ],
-        chapters: {
-            list: [
-                { num: "01", name: "The First Forgetting", reads: "8.3k", pct: 100 },
-                { num: "02", name: "Salt and Smoke", reads: "7.6k", pct: 91 },
-                { num: "03", name: "The Vault Below", reads: "7.1k", pct: 85 },
-                { num: "04", name: "What She Remembered", reads: "6.6k", pct: 80 },
-                { num: "05", name: "A Name Worth Keeping", reads: "6.1k", pct: 74 }
-            ],
-            remaining: 37
-        },
-        binge: [
-            { ch: "01 → 02", pct: 92 },
-            { ch: "02 → 03", pct: 85 },
-            { ch: "03 → 04", pct: 88 },
-            { ch: "04 → 05", pct: 79 },
-            { ch: "05 → 06", pct: 74 }
-        ]
-    },
-    "Ashveil: The Remnant": {
-        stats: { subscribers: "942", words: "114k" },
-        engagement: [
-            { label: "Likes", value: "4.1k", off: false },
-            { label: "Want to Read", value: "3.8k", off: false },
-            { label: "Reviews", value: "112", off: false },
-            { label: "Comments", value: "849", off: false }
-        ],
-        chapters: {
-            list: [
-                { num: "01", name: "The Ash Left Behind", reads: "4.1k", pct: 100 },
-                { num: "02", name: "Iron and Embers", reads: "3.9k", pct: 95 },
-                { num: "03", name: "The Broken Crown", reads: "3.4k", pct: 82 },
-                { num: "04", name: "Whispers of the Dead", reads: "2.8k", pct: 68 }
-            ],
-            remaining: 14
-        },
-        binge: [
-            { ch: "01 → 02", pct: 95 },
-            { ch: "02 → 03", pct: 82 },
-            { ch: "03 → 04", pct: 78 },
-            { ch: "04 → 05", pct: 81 }
-        ]
-    },
-    "The Weight of Salt": {
-        stats: { subscribers: "118", words: "12k" },
-        engagement: [
-            { label: "Likes", value: "42", off: false },
-            { label: "Want to Read", value: "855", off: false },
-            { label: "Reviews", value: "—", off: true },
-            { label: "Comments", value: "—", off: true }
-        ],
-        chapters: {
-            list: [
-                { num: "01", name: "The Tide Turns", reads: "112", pct: 100 },
-                { num: "02", name: "Brine and Bone", reads: "94", pct: 83 }
-            ],
-            remaining: 0
-        },
-        binge: [
-            { ch: "01 → 02", pct: 83 }
-        ]
-    }
-};
+    let userCreatedBooks = [];
 
-function toggleAnalytics() {
-    document.getElementById('analytics-view').classList.toggle('open');
-    document.getElementById('analytics-chevron').classList.toggle('open');
-}
+    // Parse data saved from booksetup.html workspace
+    function loadSavedBooksData() {
+        const saved = localStorage.getItem('quirki-local-book');
+        if (saved) {
+            try {
+                const bookData = JSON.parse(saved);
+                
+                // Calculate word counts across all active paragraphs
+                let totalWords = 0;
+                if (bookData.chapters) {
+                    bookData.chapters.forEach(c => {
+                        const cleanText = (c.content || '').replace(/<[^>]*>/g, ' ').trim();
+                        if (cleanText) totalWords += cleanText.split(/\s+/).length;
+                    });
+                }
 
-function selectBook(el) {
-    // 1. Manage Active Button Tab State
-    document.querySelectorAll('.book-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
+                // Append the processed record into our runtime array
+                userCreatedBooks = [{
+                    title: bookData.title || 'Untitled Book',
+                    chapters: bookData.chapters ? bookData.chapters.length : 0,
+                    words: totalWords
+                }];
 
-    const bookName = el.textContent.trim();
-    const data = bookData[bookName];
-    if (!data) return;
-
-    // 2. Global Author Stats Update
-    const statCards = document.querySelectorAll('.stat-card .stat-value');
-    if(statCards.length >= 2) {
-        statCards[0].textContent = data.stats.subscribers;
-        statCards[1].textContent = data.stats.words;
-    }
-
-    // 3. Grid Engagement Engine (Dynamic Class Toggling)
-    const engGrid = document.querySelector('.engagement-grid');
-    if (engGrid) {
-        engGrid.innerHTML = data.engagement.map(eng => `
-            <div class="eng-card ${eng.off ? 'eng-card--off' : ''}">
-                <div class="eng-label">${eng.label}</div>
-                <div class="eng-value">${eng.value}</div>
-            </div>
-        `).join('');
-    }
-
-    // 4. Readers per Chapter Rendering Loop
-    const chapterList = document.querySelector('.chapter-list');
-    if (chapterList) {
-        let rowsHtml = data.chapters.list.map(ch => `
-            <div class="chapter-row">
-                <span class="chapter-num">${ch.num}</span>
-                <span class="chapter-name">${ch.name}</span>
-                <div class="chapter-bar-wrap">
-                    <div class="chapter-bar" style="width:${ch.pct}%"></div>
-                </div>
-                <span class="chapter-reads">${ch.reads}</span>
-            </div>
-        `).join('');
-
-        if (data.chapters.remaining > 0) {
-            rowsHtml += `
-                <div class="chapter-row" style="border-bottom:none;color:var(--text-muted);font-size:0.78rem;padding-top:14px;justify-content:center;">
-                    + ${data.chapters.remaining} more chapters
-                </div>
-            `;
-        }
-        chapterList.innerHTML = rowsHtml;
-    }
-
-    // 5. Chapter-to-Chapter Binge Calculation Matrix
-    const bingeBlock = document.querySelector('.binge-block');
-    if (bingeBlock) {
-        if(data.binge.length === 0) {
-            bingeBlock.style.display = 'none';
-        } else {
-            bingeBlock.style.display = 'block';
-            const bingeTable = bingeBlock.querySelector('.binge-table');
-            if (bingeTable) {
-                bingeTable.innerHTML = data.binge.map(bg => `
-                    <div class="binge-row">
-                        <span class="binge-ch">${bg.ch}</span>
-                        <div class="binge-bar-wrap">
-                            <div class="binge-bar" style="width:${bg.pct}%"></div>
-                        </div>
-                        <span class="binge-pct">${bg.pct}%</span>
-                    </div>
-                `).join('');
+                // Feed real word counts into the Analytics dashboard block
+                const wordsTile = document.getElementById('analytic-words');
+                if (wordsTile) {
+                    wordsTile.textContent = totalWords > 999 ? (totalWords / 1000).toFixed(1) + 'k' : totalWords;
+                }
+            } catch(e) {
+                console.error("Failed to compile dashboard metrics", e);
+                userCreatedBooks = [];
             }
         }
     }
-}
 
-/* THEME SYSTEM CONTROLLER */
-function toggleTheme() {
-    document.body.classList.toggle('light');
-    const isLight = document.body.classList.contains('light');
-    document.getElementById('theme-btn').textContent = isLight ? '🌑' : '🌙';
-    localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
-}
+    function renderSavedBooks() {
+        const bookListElement = document.getElementById('your-books-list');
+        if (!bookListElement) return;
+        
+        if (userCreatedBooks.length === 0) {
+            bookListElement.innerHTML = '<div class="empty-state-text">No saved books found. Create a book above to begin writing.</div>';
+            return;
+        }
 
-(function() {
-    const savedTheme = localStorage.getItem('quirki-theme');
-    if (savedTheme === 'light') {
-        document.body.classList.add('light');
-        const btn = document.getElementById('theme-btn');
-        if (btn) btn.textContent = '🌑';
+        bookListElement.innerHTML = '';
+        userCreatedBooks.forEach(book => {
+            // Make the book item an interactive link pointing back to the workspace
+            bookListElement.innerHTML += `
+                <a href="booksetup.html" class="book-list-item">
+                    <span class="book-item-title">${escapeHTML(book.title)}</span>
+                    <span class="book-item-meta">${book.chapters} Ch. · ${book.words.toLocaleString()}w</span>
+                </a>
+            `;
+        });
     }
-})();
 
-/* AVATAR SYSTEM CONTROLLER */
-(function() {
-    const username = localStorage.getItem('quirki-username') || 'Zee';
-    const firstLetter = username.charAt(0).toUpperCase();
-    const avatar = localStorage.getItem('quirki-avatar');
-    const avatarElement = document.getElementById('navAvatar');
-    
-    if (avatarElement) {
-        if (avatar) {
-            avatarElement.innerHTML = `<img src="${avatar}" alt="Avatar">`;
-        } else {
-            avatarElement.textContent = firstLetter;
+    function createNewGroup() {
+        if (userCreatedBooks.length === 0) {
+            alert("You must write and save a book first before you can organize collections!");
+            return;
+        }
+
+        const groupName = prompt("Name your custom book group collection:");
+        if (!groupName || groupName.trim() === "") return;
+
+        const container = document.getElementById('group-container');
+        if (container) {
+            const titleList = userCreatedBooks.map(b => escapeHTML(b.title)).join(' · ');
+            const card = document.createElement('div');
+            card.className = "group-card";
+            card.innerHTML = `
+                <div class="group-name">${escapeHTML(groupName)}</div>
+                <div class="group-books">${titleList}</div>
+            `;
+            container.appendChild(card);
         }
     }
-})();
+
+    function toggleAnalytics() {
+        const panel = document.getElementById('analytics-view');
+        const chev = document.getElementById('analytics-chevron');
+        if (!panel || !chev) return;
+        
+        panel.classList.toggle('open');
+        chev.style.transform = panel.classList.contains('open') ? 'rotate(180deg)' : 'none';
+    }
+
+    function escapeHTML(str) {
+        return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('light');
+        const isLight = document.body.classList.contains('light');
+        document.getElementById('theme-btn').textContent = isLight ? '🌑' : '🌙';
+        localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
+    }
+
+    // Run layout routines cleanly on load
+    (function() {
+        loadSavedBooksData();
+        renderSavedBooks();
+        
+        const savedTheme = localStorage.getItem('quirki-theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light');
+            const btn = document.getElementById('theme-btn');
+            if (btn) btn.textContent = '🌑';
+        }
+    })();
 </script>
 </body>
 </html>
