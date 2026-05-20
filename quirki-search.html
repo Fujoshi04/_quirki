@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Books | Quirki</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        :root {
+            --bg:#1a1c1e; --bg-nav:#1c1e20; --bg-card:#212326; --bg-section:#1e2022;
+            --teal:#00e5c4; --teal-dim:#00b89e; --teal-glow:rgba(0,229,196,0.08);
+            --teal-g2:rgba(0,229,196,0.15);
+            --text:#d8dde3; --text-muted:#6a7480; --border:rgba(255,255,255,0.06);
+            --serif:'Playfair Display',Georgia,serif;
+            --sans:'DM Sans',sans-serif;
+            --mono:'DM Mono',monospace;
+        }
+        body.light {
+            --bg:#f5f1e8; --bg-nav:#f7f3eb; --bg-card:#fffdf8; --bg-section:#e0e0db;
+            --teal:#7a2e2e; --teal-dim:#5c2222; --teal-glow:rgba(122,46,46,0.06);
+            --teal-g2:rgba(122,46,46,0.12);
+            --text:#1c1b18; --text-muted:#6f665f; --border:rgba(122,46,46,0.10);
+        }
+        body { background:var(--bg); color:var(--text); font-family:var(--sans); min-height:100vh; transition:background 0.25s,color 0.25s; }
+
+        /* NAV */
+        nav { position:sticky; top:0; z-index:100; background:var(--bg-nav); border-bottom:1px solid var(--border); padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between; }
+        .nav-left { display:flex; align-items:center; gap:16px; }
+        .logo { display:flex; align-items:center; gap:8px; font-family:var(--serif); font-size:1.4rem; font-weight:600; color:var(--teal); font-style:italic; text-decoration:none; }
+        .nav-back { color:var(--text-muted); display:flex; align-items:center; text-decoration:none; transition:color 0.2s; }
+        .nav-back:hover { color:var(--teal); }
+        .nav-right { display:flex; align-items:center; gap:14px; }
+        .theme-btn { background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:1rem; padding:4px; transition:color 0.2s; }
+        .theme-btn:hover { color:var(--teal); }
+        .nav-avatar { width:32px; height:32px; border-radius:4px; background:transparent; border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:0.85rem; font-weight:500; text-decoration:none; transition:border-color 0.2s,color 0.2s; }
+        .nav-avatar:hover { border-color:var(--teal); color:var(--teal); }
+
+        /* LAYOUT */
+        main { max-width:680px; margin:0 auto; padding:40px 24px 80px; }
+        .page-title { font-family:var(--serif); font-size:clamp(1.8rem,6vw,2.4rem); font-weight:600; color:var(--text); margin-bottom:8px; }
+        .page-sub { font-size:0.85rem; color:var(--text-muted); margin-bottom:32px; }
+
+        /* SEARCH BAR */
+        .search-wrap { position:relative; margin-bottom:16px; }
+        .search-input {
+            width:100%; padding:14px 48px 14px 16px;
+            background:var(--bg-card); border:1px solid var(--border);
+            border-radius:8px; color:var(--text); font-family:var(--sans);
+            font-size:0.95rem; outline:none; transition:border-color 0.2s;
+        }
+        .search-input:focus { border-color:var(--teal); }
+        .search-input::placeholder { color:var(--text-muted); }
+        .search-icon { position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none; }
+
+        /* TAGS FILTER */
+        .tags-filter-wrap { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; min-height:32px; }
+        .tag-filter-pill {
+            background:var(--bg-card); border:1px solid var(--border);
+            color:var(--text-muted); padding:5px 12px; border-radius:20px;
+            font-size:0.78rem; cursor:pointer; transition:all 0.15s;
+            font-family:var(--mono);
+        }
+        .tag-filter-pill:hover { border-color:var(--teal); color:var(--teal); }
+        .tag-filter-pill.active { background:var(--teal-g2); border-color:var(--teal); color:var(--teal); }
+
+        /* RESULTS META */
+        .results-meta { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; min-height:24px; }
+        .results-count { font-family:var(--mono); font-size:0.72rem; color:var(--text-muted); }
+        .results-count span { color:var(--teal); font-weight:500; }
+        .clear-btn { background:none; border:none; color:var(--text-muted); font-size:0.75rem; cursor:pointer; font-family:var(--sans); padding:0; }
+        .clear-btn:hover { color:var(--teal); }
+
+        /* BOOK LIST */
+        .book-list { display:flex; flex-direction:column; gap:10px; }
+
+        .book-row {
+            background:var(--bg-card); border:1px solid var(--border);
+            border-radius:8px; padding:18px 20px; cursor:pointer;
+            transition:border-color 0.15s, background 0.15s;
+            text-decoration:none; display:block;
+        }
+        .book-row:hover { border-color:var(--teal); background:var(--bg-section); }
+
+        .book-row-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; }
+        .book-row-title { font-family:var(--serif); font-size:1.05rem; font-weight:600; color:var(--text); line-height:1.3; }
+        .book-row-author { font-size:0.78rem; color:var(--teal); margin-top:2px; }
+        .book-row-chapters { font-family:var(--mono); font-size:0.68rem; color:var(--text-muted); flex-shrink:0; margin-left:12px; margin-top:3px; }
+
+        .book-row-synopsis {
+            font-size:0.82rem; color:var(--text-muted); line-height:1.55;
+            margin-bottom:10px;
+            display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+            line-clamp:2;
+        }
+
+        .book-row-tags { display:flex; flex-wrap:wrap; gap:6px; }
+        .book-tag {
+            background:var(--teal-glow); color:var(--teal); border:1px solid rgba(0,229,196,0.15);
+            padding:3px 9px; border-radius:3px; font-family:var(--mono); font-size:0.67rem;
+        }
+        body.light .book-tag { border-color:rgba(122,46,46,0.15); }
+
+        /* STATES */
+        .state-box { padding:60px 20px; text-align:center; color:var(--text-muted); }
+        .state-box h3 { font-family:var(--serif); font-size:1.3rem; font-style:italic; color:var(--text); margin-bottom:8px; }
+        .state-box p { font-size:0.85rem; line-height:1.6; }
+
+        .skeleton { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; height:110px; animation:pulse 1.4s ease infinite; }
+        .skeleton:nth-child(2) { opacity:0.6; } .skeleton:nth-child(3) { opacity:0.3; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-left">
+        <a href="quirki-home.html" class="nav-back">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="quirki-home.html" class="logo">quirki</a>
+    </div>
+    <div class="nav-right">
+        <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+        <a href="quirki-profile.html" class="nav-avatar" id="navAvatar">?</a>
+    </div>
+</nav>
+
+<main>
+    <h1 class="page-title" id="pageTitle">Loading…</h1>
+    <p class="page-sub">Search books by title, author, or filter by tag.</p>
+
+    <div class="search-wrap">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by title or author…" oninput="onSearch()">
+        <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+    </div>
+
+    <div class="tags-filter-wrap" id="tagsFilterWrap"></div>
+
+    <div class="results-meta" id="resultsMeta" style="display:none;">
+        <div class="results-count" id="resultsCount"></div>
+        <button class="clear-btn" onclick="clearFilters()">Clear filters</button>
+    </div>
+
+    <div class="book-list" id="bookList">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+    </div>
+</main>
+
+<script>
+const SUPABASE_URL = 'https://niefhnktetrehrbesduz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_7cLg3pnVrkV4IjhMakr-DA_l4BtiUis';
+const { createClient }  = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let allBooks     = [];
+let activeTags   = new Set();
+let searchQuery  = '';
+let debounceTimer = null;
+
+// ── Init ──────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+    if (localStorage.getItem('quirki-theme') === 'light') {
+        document.body.classList.add('light');
+        document.getElementById('themeBtn').textContent = '🌑';
+    }
+
+    // Show avatar initial if logged in
+    const { data: { user } } = await sb.auth.getUser();
+    if (user) document.getElementById('navAvatar').textContent = (user.email || 'U')[0].toUpperCase();
+
+    await loadAllBooks();
+});
+
+// ── Load all public books ─────────────────────────────────
+async function loadAllBooks() {
+    const { data, error } = await sb
+        .from('books')
+        .select('id, title, author_name, synopsis, tags, chapters')
+        .order('created_at', { ascending: false });
+
+    if (error || !data) {
+        showState('Could not load books', 'Check your connection and try again.');
+        return;
+    }
+
+    allBooks = data;
+    document.getElementById('pageTitle').textContent = `${allBooks.length} book${allBooks.length !== 1 ? 's' : ''} available`;
+    buildTagFilters();
+    renderBooks(allBooks);
+}
+
+// ── Build tag filter pills from all books ─────────────────
+function buildTagFilters() {
+    const tagMap = new Map();
+    allBooks.forEach(book => {
+        const tags = Array.isArray(book.tags) ? book.tags : [];
+        tags.forEach(t => {
+            const key = t.toLowerCase().trim();
+            if (key) tagMap.set(key, (tagMap.get(key) || 0) + 1);
+        });
+    });
+
+    // Sort by frequency
+    const sorted = [...tagMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20);
+
+    const wrap = document.getElementById('tagsFilterWrap');
+    if (sorted.length === 0) { wrap.style.display = 'none'; return; }
+
+    wrap.innerHTML = sorted.map(([tag, count]) =>
+        `<button class="tag-filter-pill" onclick="toggleTag('${tag}')" id="tag-${CSS.escape(tag)}">#${tag} <span style="opacity:0.5">${count}</span></button>`
+    ).join('');
+}
+
+// ── Toggle a tag filter ───────────────────────────────────
+function toggleTag(tag) {
+    if (activeTags.has(tag)) {
+        activeTags.delete(tag);
+        document.getElementById(`tag-${CSS.escape(tag)}`)?.classList.remove('active');
+    } else {
+        activeTags.add(tag);
+        document.getElementById(`tag-${CSS.escape(tag)}`)?.classList.add('active');
+    }
+    applyFilters();
+}
+
+// ── Search input (debounced) ──────────────────────────────
+function onSearch() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+        applyFilters();
+    }, 250);
+}
+
+// ── Apply search + tag filters ────────────────────────────
+function applyFilters() {
+    let filtered = allBooks;
+
+    if (searchQuery) {
+        filtered = filtered.filter(b =>
+            (b.title || '').toLowerCase().includes(searchQuery) ||
+            (b.author_name || '').toLowerCase().includes(searchQuery)
+        );
+    }
+
+    if (activeTags.size > 0) {
+        filtered = filtered.filter(b => {
+            const bookTags = (Array.isArray(b.tags) ? b.tags : []).map(t => t.toLowerCase().trim());
+            return [...activeTags].every(at => bookTags.includes(at));
+        });
+    }
+
+    const hasFilters = searchQuery || activeTags.size > 0;
+    document.getElementById('resultsMeta').style.display = hasFilters ? 'flex' : 'none';
+    renderBooks(filtered);
+}
+
+function clearFilters() {
+    searchQuery = '';
+    activeTags.clear();
+    document.getElementById('searchInput').value = '';
+    document.querySelectorAll('.tag-filter-pill').forEach(p => p.classList.remove('active'));
+    document.getElementById('resultsMeta').style.display = 'none';
+    renderBooks(allBooks);
+}
+
+// ── Render book list ──────────────────────────────────────
+function renderBooks(books) {
+    const list = document.getElementById('bookList');
+    const count = document.getElementById('resultsCount');
+
+    if (count) {
+        count.innerHTML = `<span>${books.length}</span> result${books.length !== 1 ? 's' : ''}`;
+    }
+
+    if (books.length === 0) {
+        list.innerHTML = `
+            <div class="state-box">
+                <h3>No books found</h3>
+                <p>Try a different search or remove some filters.</p>
+            </div>`;
+        return;
+    }
+
+    list.innerHTML = books.map(book => {
+        const tags    = Array.isArray(book.tags) ? book.tags : [];
+        const chCount = Array.isArray(book.chapters) ? book.chapters.length : 0;
+        const synopsis = (book.synopsis || '').trim() || 'No synopsis available.';
+        const tagPills = tags.slice(0, 5).map(t => `<span class="book-tag">#${escapeHTML(t)}</span>`).join('');
+
+        return `
+            <a class="book-row" href="public-book.html?id=${book.id}">
+                <div class="book-row-top">
+                    <div>
+                        <div class="book-row-title">${escapeHTML(book.title || 'Untitled')}</div>
+                        <div class="book-row-author">${escapeHTML(book.author_name || 'Unknown Author')}</div>
+                    </div>
+                    <div class="book-row-chapters">${chCount} ch.</div>
+                </div>
+                <div class="book-row-synopsis">${escapeHTML(synopsis)}</div>
+                ${tagPills ? `<div class="book-row-tags">${tagPills}</div>` : ''}
+            </a>
+        `;
+    }).join('');
+}
+
+function showState(title, msg) {
+    document.getElementById('bookList').innerHTML = `
+        <div class="state-box"><h3>${title}</h3><p>${msg}</p></div>`;
+}
+
+function escapeHTML(str) {
+    return String(str).replace(/[&<>'"]/g, t => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[t]||t));
+}
+
+function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    localStorage.setItem('quirki-theme', isLight ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = isLight ? '🌑' : '🌙';
+}
+</script>
+</body>
+</html>
